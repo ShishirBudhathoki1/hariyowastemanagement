@@ -1,0 +1,2091 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Staff Dashboard — Hariyo Waste</title>
+  <link rel="stylesheet" href="/wms/css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* Small dashboard-local helpers (no external libs) */
+    .nav-link { display:flex; align-items:center; gap:10px; width:100%; text-align:left;
+      color:#cfe0d6; background:transparent; border:none; padding:10px 12px;
+      border-radius:var(--r-sm); font-size:.9rem; font-weight:600;
+      transition:background .15s, color .15s; cursor:pointer; }
+    .nav-link:hover { background:rgba(255,255,255,.06); color:#fff; }
+    .nav-link.active { background:var(--green-600); color:#fff; }
+    .nav-link .ico { width:18px; height:18px; flex-shrink:0; display:inline-flex; }
+    .nav-link .ico svg { width:18px; height:18px; }
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    @media (max-width:980px){ .grid-2 { grid-template-columns:1fr; } }
+    .bar-row { display:grid; grid-template-columns:140px 1fr 50px; align-items:center; gap:12px; margin:10px 0; }
+    .bar-lbl { font-size:.84rem; font-weight:600; color:var(--ink-700); }
+    .bar-track { background:var(--ink-100); border-radius:var(--r-full); height:14px; overflow:hidden; }
+    .bar-fill { background:linear-gradient(90deg, var(--green-500), var(--green-700)); height:100%; border-radius:var(--r-full); transition:width .3s; }
+    .bar-val { font-weight:800; color:var(--ink-900); text-align:right; font-size:.86rem; }
+    .bar-fill.amber { background:linear-gradient(90deg, #fbbf24, var(--earth-600)); }
+    .bar-fill.blue  { background:linear-gradient(90deg, #60a5fa, #1e40af); }
+    .bar-fill.gray  { background:linear-gradient(90deg, var(--ink-300), var(--ink-500)); }
+    .mini-stat { display:flex; align-items:center; gap:10px; }
+    .mini-stat .dot { width:10px; height:10px; border-radius:50%; }
+    .summary-row { display:flex; gap:18px; flex-wrap:wrap; margin-bottom:14px; }
+    .id-mono { font-family:ui-monospace,'SFMono-Regular',Menlo,monospace; font-weight:700; color:var(--green-800); }
+    .journey-elem { display:flex; gap:12px; padding:10px 0; border-bottom:1px dashed var(--border); }
+    .journey-elem:last-child { border-bottom:none; }
+    .journey-elem .j-ico { width:32px; height:32px; border-radius:50%; background:var(--green-100); color:var(--green-700); display:grid; place-items:center; flex-shrink:0; }
+    .journey-eval .j-ico { background:var(--ink-100); color:var(--ink-500); }
+    .journey-elem .j-meta { flex:1; }
+    .journey-elem .j-stage { font-weight:700; font-size:.86rem; }
+    .journey-elem .j-time { font-size:.78rem; color:var(--ink-500); }
+    .journey-elem .j-note { font-size:.84rem; color:var(--ink-700); margin-top:2px; }
+    .checkbox-row { display:flex; align-items:center; gap:8px; font-size:.84rem; color:var(--ink-700); cursor:pointer; }
+    .checkbox-row input { width:auto; }
+    .banner { background:var(--green-50); border:1px solid var(--green-200); border-radius:var(--r-md); padding:14px 16px; display:flex; align-items:center; gap:10px; color:var(--green-800); font-weight:600; }
+    .banner .ico { width:24px; height:24px; color:var(--green-600); }
+    .sub-h { font-size:.78rem; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-500); font-weight:700; margin:18px 0 10px; }
+    .notif-grid { display:grid; grid-template-columns:1fr; gap:10px; }
+    .kv { display:grid; grid-template-columns:120px 1fr; gap:6px 12px; font-size:.86rem; }
+    .kv .k { color:var(--ink-500); font-weight:600; }
+    .kv .v { color:var(--ink-900); font-weight:600; }
+    .top-actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .top-actions .btn { flex:1; min-width:140px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="/wms/js/data.js"></script>
+  <script src="/wms/js/utils.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    const { db, session } = WMS;
+    const UI = window.UI;
+
+    /* ============================================================
+       STATE
+       ============================================================ */
+    const state = {
+      view: 'overview',
+      search: '',
+      filter: 'all',
+    };
+
+    /* ============================================================
+       HELPERS
+       ============================================================ */
+    const esc = (s) => UI.escapeHtml(s == null ? '' : s);
+    const biz = (id) => db.businesses.get(id);
+    const worker = (id) => (id ? db.workers.get(id) : null);
+    const farm = (id) => (id ? db.farms.get(id) : null);
+    const booking = (id) => (id ? db.bookings.get(id) : null);
+
+    function statusBadge(status) {
+      const { label, cls } = UI.statusLabel(status);
+      return `<span class="badge ${cls}">${esc(label)}</span>`;
+    }
+    function wasteBadge(type) {
+      const map = { organic: 'badge-green', recyclable: 'badge-blue', mixed: 'badge-amber' };
+      return `<span class="badge ${map[type] || 'badge-gray'}">${esc(type)}</span>`;
+    }
+    function roleBadge(role) {
+      const map = {
+        collector: 'badge-blue',
+        sorter: 'badge-amber',
+        compost_operator: 'badge-green',
+        driver: 'badge-purple',
+      };
+      return `<span class="badge ${map[role] || 'badge-gray'}">${esc(role.replace(/_/g, ' '))}</span>`;
+    }
+    function workerName(id) {
+      if (!id) return '<span class="muted">Unassigned</span>';
+      const w = worker(id);
+      return w ? esc(w.name) : '<span class="muted">—</span>';
+    }
+    function bizName(id) {
+      const b = biz(id);
+      return b ? esc(b.name) : '<span class="muted">—</span>';
+    }
+    function truncate(s, n) {
+      s = String(s || '');
+      return s.length > n ? esc(s.slice(0, n - 1)) + '…' : esc(s);
+    }
+    function notifDot(status) {
+      const m = { sent: '🟢', not_sent: '⚪', failed: '🔴' };
+      return m[status] || '⚪';
+    }
+    function notifBadgeCls(status) {
+      return status === 'sent' ? 'badge-green' : status === 'failed' ? 'badge-red' : 'badge-gray';
+    }
+    function notifLabel(status) {
+      return status === 'sent' ? 'Sent' : status === 'failed' ? 'Failed' : 'Not Sent';
+    }
+    function countNotifs(filter) {
+      let n = 0;
+      for (const b of db.batches.all()) {
+        for (const s of UI.STAGE_ORDER) {
+          const st = UI.notifStatus(b, s);
+          if (filter === 'all' || st === filter) n++;
+        }
+      }
+      return n;
+    }
+    function lastUpdate(batch) {
+      const tl = batch.timeline || [];
+      if (!tl.length) return UI.fmtDate(batch.createdAt);
+      return UI.fmtDate(tl[tl.length - 1].at);
+    }
+    function empty(msg, icon) {
+      return `<div class="empty"><div class="ico">${UI.iconSvg(icon || 'info')}</div><p>${esc(msg)}</p></div>`;
+    }
+    function copyText(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text).then(() => true).catch(() => false);
+      }
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); ta.remove();
+        return Promise.resolve(true);
+      } catch (e) { return Promise.resolve(false); }
+    }
+
+    /* ============================================================
+       LOGIN GATE
+       ============================================================ */
+    function mountGate() {
+      const root = document.getElementById('root');
+      root.innerHTML = `
+        <div class="gate">
+          <div class="gate-card">
+            <div class="brand">
+              <span class="mark">H</span>
+              <span>Hariyo Waste<small>Operations</small></span>
+            </div>
+            <h1>Staff Dashboard</h1>
+            <p class="sub">Sign in to manage batches, workers, and customer notifications.</p>
+            <form id="gateForm">
+              <div class="field">
+                <label for="g-name">Your name</label>
+                <input class="input" id="g-name" type="text" placeholder="e.g. Sarita Adhikari" autocomplete="name" />
+              </div>
+              <div class="field">
+                <label for="g-code">Staff code</label>
+                <input class="input" id="g-code" type="password" placeholder="hariyo" autocomplete="current-password" />
+                <div class="hint">Demo code: <code>hariyo</code> (or any non-empty value).</div>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+            </form>
+            <div class="quick">
+              <p>Need a quick tour? Use demo login:</p>
+              <button class="btn btn-outline btn-block" id="demoLogin">Demo login — Sarita (Operations)</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById('gateForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('g-name').value.trim();
+        const code = document.getElementById('g-code').value.trim();
+        if (!code) {
+          UI.toast('Please enter a staff code.', { title: 'Sign-in failed', type: 'error' });
+          return;
+        }
+        session.set({ role: 'staff', name: name || 'Staff Member', code });
+        UI.toast(`Welcome, ${name || 'Staff Member'}!`, { title: 'Signed in' });
+        mountApp();
+      });
+      document.getElementById('demoLogin').addEventListener('click', () => {
+        session.set({ role: 'staff', name: 'Sarita Adhikari', code: 'hariyo', team: 'Operations' });
+        UI.toast('Logged in as Sarita Adhikari (Operations).', { title: 'Demo login' });
+        mountApp();
+      });
+    }
+
+    /* ============================================================
+       APP SHELL
+       ============================================================ */
+    const NAV = [
+      { grp: 'Overview', items: [ { v: 'overview', l: 'Overview', i: 'dashboard' } ] },
+      { grp: 'Operations', items: [
+        { v: 'businesses', l: 'Businesses', i: 'buildings' },
+        { v: 'bookings', l: 'Bookings', i: 'calendar' },
+        { v: 'workers', l: 'Workers', i: 'users' },
+        { v: 'collections', l: 'Collections', i: 'truck' },
+      ] },
+      { grp: 'Processing', items: [
+        { v: 'batches', l: 'Batches', i: 'package' },
+        { v: 'sorting', l: 'Sorting', i: 'layers' },
+        { v: 'composting', l: 'Composting', i: 'sprout' },
+        { v: 'farm', l: 'Farm Deliveries', i: 'wheat' },
+      ] },
+      { grp: 'System', items: [
+        { v: 'notifications', l: 'Notifications', i: 'bell' },
+        { v: 'reports', l: 'Reports', i: 'chart' },
+      ] },
+    ];
+
+    const VIEW_TITLES = {
+      overview: 'Overview',
+      businesses: 'Businesses',
+      bookings: 'Bookings',
+      workers: 'Workers',
+      collections: 'Collections',
+      batches: 'Batches',
+      sorting: 'Sorting',
+      composting: 'Composting',
+      farm: 'Farm Deliveries',
+      notifications: 'Notifications',
+      reports: 'Reports',
+    };
+
+    function mountApp() {
+      const root = document.getElementById('root');
+      root.innerHTML = `
+        <div class="dash">
+          <aside class="dash-side" id="dashSide">
+            <div class="brand">
+              <span class="mark">H</span>
+              <span>Hariyo Waste<small>Staff Console</small></span>
+            </div>
+            <nav class="dash-nav" id="dashNav"></nav>
+            <div class="foot" id="sideFoot"></div>
+          </aside>
+          <div class="dash-backdrop" id="dashBackdrop"></div>
+          <div class="dash-main">
+            <header class="dash-top">
+              <div style="display:flex;align-items:center;gap:10px">
+                <button class="dash-toggle" id="dashToggle" aria-label="Toggle menu">${UI.iconSvg('menu')}</button>
+                <h1 id="viewTitle">Overview</h1>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                <span class="badge badge-green"><span class="dot"></span> Live · Kathmandu Valley</span>
+                <button class="btn btn-outline btn-sm" id="resetBtn" aria-label="Reset demo data">${UI.iconSvg('refresh')} Reset</button>
+                <a class="btn btn-ghost btn-sm" href="/wms/index.html" aria-label="Public site">${UI.iconSvg('home')} Public Site</a>
+              </div>
+            </header>
+            <main class="dash-content" id="dashContent"></main>
+          </div>
+        </div>
+      `;
+      buildNav();
+      buildSideFoot();
+      wireShell();
+      render();
+    }
+
+    function buildNav() {
+      const nav = document.getElementById('dashNav');
+      let html = '';
+      for (const g of NAV) {
+        html += `<div class="grp">${esc(g.grp)}</div>`;
+        for (const it of g.items) {
+          html += `<button class="nav-link" data-view="${it.v}"><span class="ico">${UI.iconSvg(it.i)}</span>${esc(it.l)}</button>`;
+        }
+      }
+      nav.innerHTML = html;
+      nav.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-view]');
+        if (!btn) return;
+        setView(btn.dataset.view);
+      });
+    }
+
+    function setView(v) {
+      state.view = v;
+      state.search = '';
+      state.filter = 'all';
+      closeSidebar();
+      render();
+    }
+
+    function buildSideFoot() {
+      const u = session.get() || { name: 'Staff' };
+      const foot = document.getElementById('sideFoot');
+      foot.innerHTML = `
+        <div style="font-weight:700;color:#cfe0d6">${esc(u.name)}</div>
+        <div style="margin-top:2px">${esc(u.team || 'Operations')}</div>
+        <button class="btn btn-ghost btn-sm" id="logoutBtn" style="margin-top:8px;color:#cfe0d6">${UI.iconSvg('logout')} Logout</button>
+      `;
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        session.clear();
+        document.getElementById('root').innerHTML = '';
+        mountGate();
+      });
+    }
+
+    function wireShell() {
+      document.getElementById('dashToggle').addEventListener('click', () => {
+        document.getElementById('dashSide').classList.toggle('open');
+        document.getElementById('dashBackdrop').classList.toggle('open');
+      });
+      document.getElementById('dashBackdrop').addEventListener('click', closeSidebar);
+      document.getElementById('resetBtn').addEventListener('click', () => {
+        WMS.reset();
+        UI.toast('Demo data reset to seed state.', { title: 'Reset complete', type: 'info' });
+        render();
+      });
+      // Esc closes modals
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') UI.closeAllModals();
+      });
+      // Delegated click for action buttons — bound to document so it catches
+      // clicks inside BOTH the dashboard content AND open modals.
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return;
+        handleAction(btn.dataset.action, btn.dataset.id || '', btn);
+      });
+      // Delegated change for filter/search inputs (dashboard content only)
+      document.getElementById('dashContent').addEventListener('input', (e) => {
+        const t = e.target;
+        if (t.dataset.role === 'search') {
+          state.search = t.value;
+          render();
+          // restore focus + caret to end
+          const r = document.querySelector('[data-role="search"]');
+          if (r) { r.focus(); r.setSelectionRange(t.value.length, t.value.length); }
+        }
+      });
+      document.getElementById('dashContent').addEventListener('change', (e) => {
+        const t = e.target;
+        if (t.dataset.role === 'filter') {
+          state.filter = t.value;
+          render();
+        }
+      });
+    }
+
+    function closeSidebar() {
+      document.getElementById('dashSide').classList.remove('open');
+      document.getElementById('dashBackdrop').classList.remove('open');
+    }
+
+    /* ============================================================
+       RENDER DISPATCHER
+       ============================================================ */
+    function render() {
+      document.getElementById('viewTitle').textContent = VIEW_TITLES[state.view] || 'Dashboard';
+      document.querySelectorAll('#dashNav button[data-view]').forEach((b) => {
+        b.classList.toggle('active', b.dataset.view === state.view);
+      });
+      const c = document.getElementById('dashContent');
+      UI.clear(c);
+      const map = {
+        overview: renderOverview,
+        businesses: renderBusinesses,
+        bookings: renderBookings,
+        workers: renderWorkers,
+        collections: renderCollections,
+        batches: renderBatches,
+        sorting: renderSorting,
+        composting: renderComposting,
+        farm: renderFarm,
+        notifications: renderNotifications,
+        reports: renderReports,
+      };
+      (map[state.view] || renderOverview)(c);
+    }
+
+    /* ============================================================
+       VIEW 1 — OVERVIEW
+       ============================================================ */
+    function renderOverview(c) {
+      const allBatches = db.batches.all();
+      const active = allBatches.filter((b) => b.status !== 'delivered' && b.status !== 'recycled');
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const todays = allBatches
+        .filter((b) => {
+          const ev = (b.timeline || []).find((t) => t.stage === 'collection');
+          if (!ev) return false;
+          return new Date(ev.at) >= today;
+        })
+        .sort((a, b) => {
+          const ax = (a.timeline.find((t) => t.stage === 'collection') || {}).at || '';
+          const bx = (b.timeline.find((t) => t.stage === 'collection') || {}).at || '';
+          return bx.localeCompare(ax);
+        });
+      const recent = (todays.length ? todays : allBatches.slice().sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''))).slice(0, 5);
+
+      const html = `
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="ico">${UI.iconSvg('package')}</div>
+            <div class="lbl">Total Batches</div>
+            <div class="val">${allBatches.length}</div>
+            <div class="trend">+${Math.max(0, allBatches.length - 4)} vs seed</div>
+          </div>
+          <div class="kpi">
+            <div class="ico">${UI.iconSvg('layers')}</div>
+            <div class="lbl">Active Batches</div>
+            <div class="val">${active.length}</div>
+            <div class="trend">In pipeline</div>
+          </div>
+          <div class="kpi">
+            <div class="ico">${UI.iconSvg('buildings')}</div>
+            <div class="lbl">Businesses Served</div>
+            <div class="val">${db.businesses.all().length}</div>
+            <div class="trend">Hotels / Cafés</div>
+          </div>
+          <div class="kpi">
+            <div class="ico">${UI.iconSvg('users')}</div>
+            <div class="lbl">Field Workers</div>
+            <div class="val">${db.workers.all().length}</div>
+            <div class="trend">All active</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-head">
+              <h3>Today's Collections</h3>
+              <span class="muted" style="font-size:.82rem">${todays.length} today</span>
+            </div>
+            <div class="card-body">
+              ${recent.length === 0 ? empty('No collections yet today.', 'truck')
+                : `<div class="list">${recent.map((b) => {
+                    const ev = (b.timeline || []).find((t) => t.stage === 'collection') || {};
+                    return `<div class="list-item">
+                      <div class="av">${UI.initials(bizName(b.businessId) || '?')}</div>
+                      <div class="meta">
+                        <div class="top"><span class="title id-mono">${esc(b.id)}</span> ${wasteBadge(b.wasteType)}</div>
+                        <div class="sub">${bizName(b.businessId)} · ${UI.fmtKg(b.weightKg)} · ${esc(UI.fmtTime(ev.at))}</div>
+                      </div>
+                      <div class="actions">
+                        <button class="btn btn-ghost btn-sm" data-action="view-batch" data-id="${esc(b.id)}">${UI.iconSvg('eye')} View</button>
+                      </div>
+                    </div>`;
+                  }).join('')}</div>`}
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Batches In Progress</h3>
+              <span class="muted" style="font-size:.82rem">${active.length} active</span>
+            </div>
+            <div class="card-body">
+              ${active.length === 0 ? empty('No active batches.', 'package')
+                : `<div class="table-wrap"><table class="tbl">
+                  <thead><tr><th>Batch</th><th>Business</th><th>Stage</th><th></th></tr></thead>
+                  <tbody>
+                    ${active.slice(0, 6).map((b) => `
+                      <tr>
+                        <td><span class="mono">${esc(b.id)}</span></td>
+                        <td>${truncate(bizName(b.businessId), 24)}</td>
+                        <td>${statusBadge(b.status)}</td>
+                        <td><button class="btn btn-ghost btn-sm" data-action="view-batch" data-id="${esc(b.id)}">View</button></td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table></div>`}
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <div class="card-head"><h3>Quick Actions</h3></div>
+          <div class="card-body">
+            <div class="top-actions">
+              <button class="btn btn-primary" data-action="new-booking">${UI.iconSvg('calendar')} New Booking</button>
+              <button class="btn btn-outline" data-action="new-business">${UI.iconSvg('plus')} Add Business</button>
+              <button class="btn btn-outline" data-action="new-worker">${UI.iconSvg('plus')} Add Worker</button>
+              <button class="btn btn-ghost" data-action="goto" data-id="batches">${UI.iconSvg('package')} Go to Batches</button>
+            </div>
+          </div>
+        </div>
+      `;
+      c.innerHTML = html;
+    }
+
+    /* ============================================================
+       VIEW 2 — BUSINESSES
+       ============================================================ */
+    function renderBusinesses(c) {
+      const all = db.businesses.all();
+      const q = (state.search || '').toLowerCase();
+      const f = state.filter;
+      const rows = all.filter((b) => {
+        if (f !== 'all' && b.type !== f) return false;
+        if (!q) return true;
+        return (b.name + ' ' + (b.address || '')).toLowerCase().includes(q);
+      });
+      const types = ['hotel', 'cafe', 'restaurant', 'office', 'shop', 'other'];
+      const html = `
+        <div class="view-head">
+          <div>
+            <h2>Businesses</h2>
+            <div class="desc">${all.length} total · hotels, cafés, restaurants</div>
+          </div>
+          <button class="btn btn-primary" data-action="new-business">${UI.iconSvg('plus')} Add Business</button>
+        </div>
+        <div class="toolbar">
+          <span class="input" style="display:flex;align-items:center;gap:6px;min-width:240px">
+            ${UI.iconSvg('search')}
+            <input data-role="search" placeholder="Search by name or address…" value="${esc(state.search)}" style="border:none;outline:none;width:100%;font:inherit" />
+          </span>
+          <span class="spacer"></span>
+          <select class="select" data-role="filter">
+            <option value="all" ${f === 'all' ? 'selected' : ''}>All types</option>
+            ${types.map((t) => `<option value="${t}" ${f === t ? 'selected' : ''}>${t}</option>`).join('')}
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr>
+              <th>ID</th><th>Name</th><th>Type</th><th>Contact</th><th>Phone</th><th>Address</th><th>Created</th><th>Actions</th>
+            </tr></thead>
+            <tbody>
+              ${rows.length === 0 ? `<tr><td colspan="8">${empty('No businesses match your filters.', 'buildings')}</td></tr>` :
+                rows.map((b) => `
+                  <tr>
+                    <td><span class="mono">${esc(b.id)}</span></td>
+                    <td>${esc(b.name)}</td>
+                    <td>${statusBadge(b.type)}</td>
+                    <td>${esc(b.contactPerson || '—')}</td>
+                    <td>${esc(b.phone || '—')}</td>
+                    <td>${truncate(b.address || '—', 28)}</td>
+                    <td>${UI.fmtDateShort(b.createdAt)}</td>
+                    <td>
+                      <button class="btn btn-ghost btn-sm" data-action="view-business" data-id="${esc(b.id)}" aria-label="View">${UI.iconSvg('eye')}</button>
+                      <button class="btn btn-ghost btn-sm" data-action="edit-business" data-id="${esc(b.id)}" aria-label="Edit">${UI.iconSvg('edit')}</button>
+                      <button class="btn btn-ghost btn-sm" data-action="del-business" data-id="${esc(b.id)}" aria-label="Delete">${UI.iconSvg('trash')}</button>
+                    </td>
+                  </tr>
+                `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+      c.innerHTML = html;
+    }
+
+    /* ============================================================
+       VIEW 3 — BOOKINGS
+       ============================================================ */
+    function renderBookings(c) {
+      const all = db.bookings.all();
+      const q = (state.search || '').toLowerCase();
+      const f = state.filter;
+      const rows = all.filter((b) => {
+        if (f !== 'all' && b.status !== f) return false;
+        if (!q) return true;
+        const bz = biz(b.businessId);
+        return (b.id + ' ' + (bz ? bz.name : '')).toLowerCase().includes(q);
+      });
+      const statuses = ['pending', 'scheduled', 'collected'];
+      const html = `
+        <div class="view-head">
+          <div>
+            <h2>Bookings</h2>
+            <div class="desc">${all.length} total · customer pickup requests</div>
+          </div>
+          <button class="btn btn-primary" data-action="new-booking">${UI.iconSvg('plus')} New Booking</button>
+        </div>
+        <div class="toolbar">
+          <span class="input" style="display:flex;align-items:center;gap:6px;min-width:240px">
+            ${UI.iconSvg('search')}
+            <input data-role="search" placeholder="Search by ID or business…" value="${esc(state.search)}" style="border:none;outline:none;width:100%;font:inherit" />
+          </span>
+          <span class="spacer"></span>
+          <select class="select" data-role="filter">
+            <option value="all" ${f === 'all' ? 'selected' : ''}>All statuses</option>
+            ${statuses.map((s) => `<option value="${s}" ${f === s ? 'selected' : ''}>${UI.statusLabel(s).label}</option>`).join('')}
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr>
+              <th>ID</th><th>Business</th><th>Waste Type</th><th>Qty</th><th>Preferred Date</th><th>Status</th><th>Worker</th><th>Actions</th>
+            </tr></thead>
+            <tbody>
+              ${rows.length === 0 ? `<tr><td colspan="8">${empty('No bookings match your filters.', 'calendar')}</td></tr>` :
+                rows.map((b) => {
+                  const bz = biz(b.businessId);
+                  return `<tr>
+                    <td><span class="mono">${esc(b.id)}</span></td>
+                    <td>${bz ? esc(bz.name) : '—'}</td>
+                    <td>${wasteBadge(b.wasteType)}</td>
+                    <td>${UI.fmtKg(b.quantityKg)}</td>
+                    <td>${UI.fmtDateShort(b.preferredDate)}</td>
+                    <td>${statusBadge(b.status)}</td>
+                    <td>${workerName(b.workerId)}</td>
+                    <td>
+                      ${b.status === 'pending' ? `<button class="btn btn-outline btn-sm" data-action="assign-worker" data-id="${esc(b.id)}">Assign</button>` : ''}
+                      ${b.status === 'scheduled' ? `<button class="btn btn-primary btn-sm" data-action="convert-batch" data-id="${esc(b.id)}">Convert</button>` : ''}
+                      <button class="btn btn-ghost btn-sm" data-action="del-booking" data-id="${esc(b.id)}" aria-label="Delete">${UI.iconSvg('trash')}</button>
+                    </td>
+                  </tr>`;
+                }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+      c.innerHTML = html;
+    }
+
+    /* ============================================================
+       VIEW 4 — WORKERS
+       ============================================================ */
+    function renderWorkers(c) {
+      const all = db.workers.all();
+      const q = (state.search || '').toLowerCase();
+      const f = state.filter;
+      const rows = all.filter((w) => {
+        if (f !== 'all' && w.role !== f) return false;
+        if (!q) return true;
+        return (w.name + ' ' + (w.areas || '') + ' ' + (w.phone || '')).toLowerCase().includes(q);
+      });
+      const roles = ['collector', 'sorter', 'compost_operator', 'driver'];
+      const html = `
+        <div class="view-head">
+          <div>
+            <h2>Workers</h2>
+            <div class="desc">${all.length} field workers · collectors, sorters, operators, drivers</div>
+          </div>
+          <button class="btn btn-primary" data-action="new-worker">${UI.iconSvg('plus')} Add Worker</button>
+        </div>
+        <div class="toolbar">
+          <span class="input" style="display:flex;align-items:center;gap:6px;min-width:240px">
+            ${UI.iconSvg('search')}
+            <input data-role="search" placeholder="Search workers…" value="${esc(state.search)}" style="border:none;outline:none;width:100%;font:inherit" />
+          </span>
+          <span class="spacer"></span>
+          <select class="select" data-role="filter">
+            <option value="all" ${f === 'all' ? 'selected' : ''}>All roles</option>
+            ${roles.map((r) => `<option value="${r}" ${f === r ? 'selected' : ''}>${r.replace(/_/g, ' ')}</option>`).join('')}
+          </select>
+        </div>
+        ${rows.length === 0 ? empty('No workers match your filters.', 'users') :
+          `<div class="list">
+            ${rows.map((w) => `
+              <div class="list-item">
+                <div class="av">${UI.initials(w.name)}</div>
+                <div class="meta">
+                  <div class="top"><span class="title">${esc(w.name)}</span> ${roleBadge(w.role)} ${statusBadge(w.status || 'active')}</div>
+                  <div class="sub">${esc(w.phone || '—')} · ${esc(w.areas || 'No area')}</div>
+                </div>
+                <div class="actions">
+                  <button class="btn btn-ghost btn-sm" data-action="view-worker" data-id="${esc(w.id)}" aria-label="View">${UI.iconSvg('eye')}</button>
+                  <button class="btn btn-ghost btn-sm" data-action="edit-worker" data-id="${esc(w.id)}" aria-label="Edit">${UI.iconSvg('edit')}</button>
+                  <button class="btn btn-ghost btn-sm" data-action="del-worker" data-id="${esc(w.id)}" aria-label="Delete">${UI.iconSvg('trash')}</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>`}
+      `;
+      c.innerHTML = html;
+    }
+
+    /* ============================================================
+       VIEW 5 — COLLECTIONS
+       ============================================================ */
+    function renderCollections(c) {
+      const all = db.batches.all();
+      const just = all.filter((b) => {
+        const cs = UI.stageStatus(b, 'collection');
+        const ss = UI.stageStatus(b, 'sorting');
+        return (cs === 'done' || cs === 'in_progress') && ss === 'pending';
+      });
+      const html = `
+        <div class="view-head">
+          <div>
+            <h2>Collections</h2>
+            <div class="desc">Batches just collected — awaiting arrival at sorting facility</div>
+          </div>
+        </div>
+        ${just.length === 0 ? empty('No batches awaiting sorting facility arrival.', 'truck') :
+          `<div class="list">
+            ${just.map((b) => {
+              const ev = (b.timeline || []).find((t) => t.stage === 'collection') || {};
+              return `<div class="list-item">
+                <div class="av">${UI.iconSvg('truck')}</div>
+                <div class="meta">
+                  <div class="top"><span class="title id-mono">${esc(b.id)}</span> ${wasteBadge(b.wasteType)} ${statusBadge(b.status)}</div>
+                  <div class="sub">${bizName(b.businessId)} · ${UI.fmtKg(b.weightKg)} · Collector: ${workerName(b.workerId)} · Collected ${UI.fmtDate(ev.at)}</div>
+                </div>
+                <div class="actions">
+                  <button class="btn btn-primary btn-sm" data-action="reach-sorting" data-id="${esc(b.id)}">Confirm Reached Sorting</button>
+                  <button class="btn btn-ghost btn-sm" data-action="view-batch" data-id="${esc(b.id)}">View</button>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>`}
+      `;
+      c.innerHTML = html;
+    }
+
+    /* ============================================================
+       VIEW 6 — BATCHES (CENTRAL)
+       ============================================================ */
+    function renderBatches(c) {
+      const all = db.batches.all();
+      const q = (state.search || '').toLowerCase();
+      const f = state.filter;
+      const rows = all.filter((b) => {
+        if (f !== 'all' && b.status !== f) return false;
+        if (!q) return true;
+        const bz = biz(b.businessId);
+        return (b.id + ' ' + (bz ? bz.name : '')).toLowerCase().includes(q);
+      });
+      const statuses = ['collected', 'sorting', 'composting', 'ready_for_delivery', 'delivered', 'recycled'];
+      const html = `
+        <div class="view-head">
+          <div>
+            <h2>Batches</h2>
+            <div class="desc">${all.length} total · central tracking entities</div>
+          </div>
+          <button class="btn btn-primary" data-action="new-batch">${UI.iconSvg('plus')} New Batch</button>
+        </div>
+        <div class="toolbar">
+          <span class="input" style="display:flex;align-items:center;gap:6px;min-width:240px">
+            ${UI.iconSvg('search')}
+            <input data-role="search" placeholder="Search by Batch ID or business…" value="${esc(state.search)}" style="border:none;outline:none;width:100%;font:inherit" />
+          </span>
+          <span class="spacer"></span>
+          <select class="select" data-role="filter">
+            <option value="all" ${f === 'all' ? 'selected' : ''}>All stages</option>
+            ${statuses.map((s) => `<option value="${s}" ${f === s ? 'selected' : ''}>${UI.statusLabel(s).label}</option>`).join('')}
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr>
+              <th>Batch ID</th><th>Business</th><th>Worker</th><th>Type</th><th>Weight</th><th>Stage</th><th>Updated</th><th>Notifs</th><th>Actions</th>
+            </tr></thead>
+            <tbody>
+              ${rows.length === 0 ? `<tr><td colspan="9">${empty('No batches match your filters.', 'package')}</td></tr>` :
+                rows.map((b) => {
+                  const sent = (b.notifications || []).filter((n) => n.status === 'sent').length;
+                  return `<tr>
+                    <td><span class="mono">${esc(b.id)}</span></td>
+                    <td>${truncate(bizName(b.businessId), 22)}</td>
+                    <td>${workerName(b.workerId)}</td>
+                    <td>${wasteBadge(b.wasteType)}</td>
+                    <td>${UI.fmtKg(b.weightKg)}</td>
+                    <td>${statusBadge(b.status)}</td>
+                    <td>${UI.fmtDateShort(lastUpdate(b))}</td>
+                    <td><span class="badge ${sent > 0 ? 'badge-green' : 'badge-gray'}">${sent}/${UI.STAGE_ORDER.length}</span></td>
+                    <td>
+                      <button class="btn btn-ghost btn-sm" data-action="view-batch" data-id="${esc(b.id)}">View</button>
+                      ${(b.status !== 'delivered' && b.status !== 'recycled') ? `<button class="btn btn-primary btn-sm" data-action="advance-batch" data-id="${esc(b.id)}">Advance</button>` : ''}
+                    </td>
+                  </tr>`;
+                }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+      c.innerHTML = html;
+    }
+
+    /* ============================================================
+       VIEW 7 — SORTING
+       ============================================================ */
+    function renderSorting(c) {
+      const all = db.batches.all().filter((b) => UI.stageStatus(b, 'sorting') === 'in_progress');
+      const html = `
+        <div class="view-head">
+          <div>
+            <h2>Sorting Facility</h2>
+            <div class="desc">Batches currently being segregated at Balkhu facility</div>
+          </div>
+        </div>
+        ${all.length === 0 ? empty('No batches in sorting right now.', 'layers') :
+          `<div class="list">
+            ${all.map((b) => {
+              const ev = (b.timeline || []).filter((t) => t.stage === 'sorting').slice(-1)[0] || {};
+              const isRecyclable = b.wasteType === 'recyclable';
+              return `<div class="list-item" style="flex-wrap:wrap">
+                <div class="av">${UI.iconSvg('layers')}</div>
+                <div class="meta">
+                  <div class="top"><span class="title id-mono">${esc(b.id)}</span> ${wasteBadge(b.wasteType)} ${statusBadge(b.status)}</div>
+                  <div class="sub">${bizName(b.businessId)} · ${UI.fmtKg(b.weightKg)} · Arrived ${UI.fmtDate(ev.at)}</div>
+                </div>
+                <div class="actions" style="flex-direction:column;align-items:stretch;gap:8px">
+                  <label class="checkbox-row"><input type="checkbox" data-role="auto-notify" data-id="${esc(b.id)}" checked> Send customer message on confirm</label>
+                  ${isRecyclable
+                    ? `<button class="btn btn-primary btn-sm" data-action="send-recycling" data-id="${esc(b.id)}">${UI.iconSvg('recycle')} Send to Recycling Partner</button>`
+                    : `<button class="btn btn-primary btn-sm" data-action="complete-sorting" data-id="${esc(b.id)}">${UI.iconSvg('sprout')} Confirm Sorting → Start Composting</button>`
+                  }
+                </div>
+              </div>`;
+            }).join('')}
+          </div>`}
+      `;
+      c.innerHTML = html;
+    }
+
+    /* ============================================================
+       VIEW 8 — COMPOSTING
+       ============================================================ */
+    function renderComposting(c) {
+      const all = db.batches.all().filter((b) => b.status === 'composting');
+      const html = `
+        <div class="view-head">
+          <div>
+            <h2>Composting</h2>
+            <div class="desc">Organic batches in windrow processing at Bhaktapur plant</div>
+          </div>
+        </div>
+        ${all.length === 0 ? empty('No batches in composting right now.', 'sprout') :
+          `<div class="list">
+            ${all.map((b) => {
+              const ev = (b.timeline || []).filter((t) => t.stage === 'composting').slice(-1)[0] || {};
+              return `<div class="list-item" style="flex-wrap:wrap">
+                <div class="av">${UI.iconSvg('sprout')}</div>
+                <div class="meta">
+                  <div class="top"><span class="title id-mono">${esc(b.id)}</span> ${wasteBadge(b.wasteType)} ${statusBadge(b.status)}</div>
+                  <div class="sub">${bizName(b.businessId)} · ${UI.fmtKg(b.weightKg)} organic · Started ${UI.fmtDate(ev.at)}</div>
+                </div>
+                <div class="actions" style="flex-direction:column;align-items:stretch;gap:8px">
+                  <label class="checkbox-row"><input type="checkbox" data-role="auto-notify" data-id="${esc(b.id)}" checked> Send customer message on confirm</label>
+                  <button class="btn btn-primary btn-sm" data-action="complete-composting" data-id="${esc(b.id)}">${UI.iconSvg('wheat')} Confirm Compost Ready</button>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>`}
+      `;
+      c.innerHTML = html;
+    }
+
+    /* ============================================================
+       VIEW 9 — FARM DELIVERIES
+       ============================================================ */
+    function renderFarm(c) {
+      const ready = db.batches.all().filter((b) => b.status === 'ready_for_delivery');
+      const delivered = db.batches.all().filter((b) => b.status === 'delivered');
+      const html = `
+        <div class="view-head">
+          <div>
+            <h2>Farm Deliveries</h2>
+            <div class="desc">Compost ready for farms + completed deliveries</div>
+          </div>
+        </div>
+        <div class="sub-h">Ready for Delivery</div>
+        ${ready.length === 0 ? empty('No compost batches awaiting delivery.', 'wheat') :
+          `<div class="list">
+            ${ready.map((b) => {
+              const ev = (b.timeline || []).filter((t) => t.stage === 'composting').slice(-1)[0] || {};
+              const suggested = Math.round((b.weightKg || 0) * 0.6);
+              return `<div class="list-item" style="flex-wrap:wrap">
+                <div class="av">${UI.iconSvg('wheat')}</div>
+                <div class="meta">
+                  <div class="top"><span class="title id-mono">${esc(b.id)}</span> ${statusBadge(b.status)}</div>
+                  <div class="sub">${bizName(b.businessId)} · Source ${UI.fmtKg(b.weightKg)} · Suggested yield ~${suggested}kg · Ready ${UI.fmtDate(ev.at)}</div>
+                </div>
+                <div class="actions">
+                  <button class="btn btn-primary btn-sm" data-action="assign-farm" data-id="${esc(b.id)}">Assign Farm + Deliver</button>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>`}
+
+        <div class="sub-h" style="margin-top:24px">Completed Deliveries</div>
+        ${delivered.length === 0 ? empty('No deliveries logged yet.', 'checkCircle') :
+          `<div class="table-wrap"><table class="tbl">
+            <thead><tr><th>Batch</th><th>Business</th><th>Farm</th><th>Delivered</th><th>Driver</th><th>Date</th></tr></thead>
+            <tbody>
+              ${delivered.map((b) => {
+                const fr = farm(b.farmId);
+                const ev = (b.timeline || []).find((t) => t.stage === 'farm_delivery') || {};
+                return `<tr>
+                  <td><span class="mono">${esc(b.id)}</span></td>
+                  <td>${truncate(bizName(b.businessId), 22)}</td>
+                  <td>${fr ? esc(fr.name) : '—'}</td>
+                  <td>${UI.fmtKg(b.deliveredKg)}</td>
+                  <td>${workerName(b.workerId)}</td>
+                  <td>${UI.fmtDateShort(ev.at || b.createdAt)}</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table></div>`}
+      `;
+      c.innerHTML = html;
+    }
+
+    /* ============================================================
+       VIEW 10 — NOTIFICATIONS
+       ============================================================ */
+    function renderNotifications(c) {
+      const f = state.filter;
+      const q = (state.search || '').toLowerCase();
+      const all = db.batches.all();
+      const items = [];
+      for (const b of all) {
+        for (const s of UI.STAGE_ORDER) {
+          const st = UI.notifStatus(b, s);
+          if (f !== 'all' && st !== f) continue;
+          if (q && !b.id.toLowerCase().includes(q)) continue;
+          const notif = (b.notifications || []).find((n) => n.stage === s) || { at: null };
+          items.push({ batchId: b.id, batch: b, stage: s, status: st, at: notif.at });
+        }
+      }
+      const sent = countNotifs('sent');
+      const notSent = countNotifs('not_sent');
+      const failed = countNotifs('failed');
+      const html = `
+        <div class="view-head">
+          <div>
+            <h2>Notifications</h2>
+            <div class="desc">All customer messages across all batches</div>
+          </div>
+        </div>
+        <div class="summary-row">
+          <div class="mini-stat"><span class="dot" style="background:var(--status-sent)"></span> <strong>${sent}</strong> Sent</div>
+          <div class="mini-stat"><span class="dot" style="background:var(--status-notsent)"></span> <strong>${notSent}</strong> Not Sent</div>
+          <div class="mini-stat"><span class="dot" style="background:var(--status-failed)"></span> <strong>${failed}</strong> Failed</div>
+        </div>
+        <div class="toolbar">
+          <span class="input" style="display:flex;align-items:center;gap:6px;min-width:220px">
+            ${UI.iconSvg('search')}
+            <input data-role="search" placeholder="Search by Batch ID…" value="${esc(state.search)}" style="border:none;outline:none;width:100%;font:inherit" />
+          </span>
+          <span class="spacer"></span>
+          <select class="select" data-role="filter">
+            <option value="all" ${f === 'all' ? 'selected' : ''}>All</option>
+            <option value="sent" ${f === 'sent' ? 'selected' : ''}>Sent</option>
+            <option value="not_sent" ${f === 'not_sent' ? 'selected' : ''}>Not Sent</option>
+            <option value="failed" ${f === 'failed' ? 'selected' : ''}>Failed</option>
+          </select>
+        </div>
+        ${items.length === 0 ? empty('No notifications match your filters.', 'bell') :
+          `<div class="list">
+            ${items.map((it) => {
+              const meta = UI.STAGE_META[it.stage];
+              const msg = UI.notifMessage(it.batch, it.stage);
+              return `<div class="notif">
+                <div class="row">
+                  <div>
+                    <span class="id-mono">${esc(it.batchId)}</span>
+                    <span class="stage" style="margin-left:8px">${esc(meta.label)}</span>
+                  </div>
+                  <span class="badge ${notifBadgeCls(it.status)}">${notifDot(it.status)} ${notifLabel(it.status)}</span>
+                </div>
+                <div class="msg-text">${esc(msg)}</div>
+                <div class="row">
+                  <span class="muted" style="font-size:.78rem">${it.at ? UI.fmtDate(it.at) : '— not yet sent —'}</span>
+                  <div class="controls">
+                    ${it.status === 'not_sent' ? `<button class="btn btn-primary btn-sm" data-action="send-notif" data-id="${esc(it.batchId)}" data-stage="${esc(it.stage)}">Send</button>` : ''}
+                    ${it.status === 'failed' ? `<button class="btn btn-primary btn-sm" data-action="retry-notif" data-id="${esc(it.batchId)}" data-stage="${esc(it.stage)}">Retry</button>` : ''}
+                    ${it.status === 'sent' ? `<button class="btn btn-outline btn-sm" data-action="resend-notif" data-id="${esc(it.batchId)}" data-stage="${esc(it.stage)}">Re-send</button>` : ''}
+                    <button class="btn btn-ghost btn-sm" data-action="fail-notif" data-id="${esc(it.batchId)}" data-stage="${esc(it.stage)}">Mark Failed</button>
+                  </div>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>`}
+      `;
+      c.innerHTML = html;
+    }
+
+    /* ============================================================
+       VIEW 11 — REPORTS
+       ============================================================ */
+    function renderReports(c) {
+      const all = db.batches.all();
+      const total = all.length;
+      const delivered = all.filter((b) => b.status === 'delivered').length;
+      const recycled = all.filter((b) => b.status === 'recycled').length;
+      const organicKg = all.filter((b) => b.wasteType === 'organic' || b.wasteType === 'mixed')
+        .reduce((s, b) => s + (b.weightKg || 0), 0);
+      const compostKg = all.reduce((s, b) => s + (b.deliveredKg || 0), 0);
+      const businessN = db.businesses.all().length;
+      const workerN = db.workers.all().length;
+      const farmN = db.farms.all().filter((f) => f.compostReceived > 0).length;
+
+      // bar chart: batches by stage
+      const stageCounts = {
+        collected: all.filter((b) => b.status === 'collected').length,
+        sorting: all.filter((b) => b.status === 'sorting').length,
+        composting: all.filter((b) => b.status === 'composting').length,
+        ready_for_delivery: all.filter((b) => b.status === 'ready_for_delivery').length,
+        delivered: all.filter((b) => b.status === 'delivered').length,
+        recycled: all.filter((b) => b.status === 'recycled').length,
+      };
+      const maxStage = Math.max(1, ...Object.values(stageCounts));
+
+      // waste by type
+      const byType = {
+        organic: all.filter((b) => b.wasteType === 'organic').reduce((s, b) => s + b.weightKg, 0),
+        mixed: all.filter((b) => b.wasteType === 'mixed').reduce((s, b) => s + b.weightKg, 0),
+        recyclable: all.filter((b) => b.wasteType === 'recyclable').reduce((s, b) => s + b.weightKg, 0),
+      };
+      const maxType = Math.max(1, ...Object.values(byType));
+
+      // top businesses by batches
+      const bizCounts = {};
+      for (const b of all) bizCounts[b.businessId] = (bizCounts[b.businessId] || 0) + 1;
+      const topBiz = Object.entries(bizCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+      const html = `
+        <div class="view-head">
+          <div>
+            <h2>Reports</h2>
+            <div class="desc">Operational summary · all data computed live from the store</div>
+          </div>
+          <button class="btn btn-primary" data-action="export-csv">${UI.iconSvg('download')} Export CSV</button>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi"><div class="ico">${UI.iconSvg('package')}</div><div class="lbl">Total Batches</div><div class="val">${total}</div></div>
+          <div class="kpi"><div class="ico">${UI.iconSvg('wheat')}</div><div class="lbl">Delivered to Farms</div><div class="val">${delivered}</div></div>
+          <div class="kpi"><div class="ico">${UI.iconSvg('recycle')}</div><div class="lbl">Recycled</div><div class="val">${recycled}</div></div>
+          <div class="kpi"><div class="ico">${UI.iconSvg('leaf')}</div><div class="lbl">Organic Processed</div><div class="val">${organicKg}<span style="font-size:1rem">kg</span></div></div>
+        </div>
+        <div class="kpi-grid" style="margin-top:-6px">
+          <div class="kpi"><div class="ico">${UI.iconSvg('sprout')}</div><div class="lbl">Compost Delivered</div><div class="val">${compostKg}<span style="font-size:1rem">kg</span></div></div>
+          <div class="kpi"><div class="ico">${UI.iconSvg('buildings')}</div><div class="lbl">Businesses Served</div><div class="val">${businessN}</div></div>
+          <div class="kpi"><div class="ico">${UI.iconSvg('users')}</div><div class="lbl">Active Workers</div><div class="val">${workerN}</div></div>
+          <div class="kpi"><div class="ico">${UI.iconSvg('mapPin')}</div><div class="lbl">Farms Supplied</div><div class="val">${farmN}</div></div>
+        </div>
+
+        <div class="grid-2" style="margin-top:18px">
+          <div class="card">
+            <div class="card-head"><h3>Batches by Stage</h3></div>
+            <div class="card-body">
+              ${Object.entries(stageCounts).map(([k, v]) => {
+                const pct = Math.round((v / maxStage) * 100);
+                const cls = k === 'delivered' || k === 'recycled' ? '' : k === 'composting' ? 'amber' : k === 'recycled' ? 'blue' : 'gray';
+                return `<div class="bar-row">
+                  <div class="bar-lbl">${esc(UI.statusLabel(k).label)}</div>
+                  <div class="bar-track"><div class="bar-fill ${cls}" style="width:${pct}%"></div></div>
+                  <div class="bar-val">${v}</div>
+                </div>`;
+              }).join('')}
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Waste Diverted by Type (kg)</h3></div>
+            <div class="card-body">
+              ${Object.entries(byType).map(([k, v]) => {
+                const pct = Math.round((v / maxType) * 100);
+                const cls = k === 'organic' ? '' : k === 'mixed' ? 'amber' : 'blue';
+                return `<div class="bar-row">
+                  <div class="bar-lbl">${esc(k)}</div>
+                  <div class="bar-track"><div class="bar-fill ${cls}" style="width:${pct}%"></div></div>
+                  <div class="bar-val">${v}</div>
+                </div>`;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <div class="card-head"><h3>Top Businesses by Batch Count</h3></div>
+          <div class="card-body">
+            <div class="table-wrap"><table class="tbl">
+              <thead><tr><th>#</th><th>Business</th><th>Type</th><th>Batches</th></tr></thead>
+              <tbody>
+                ${topBiz.length === 0 ? `<tr><td colspan="4">${empty('No batches yet.', 'buildings')}</td></tr>` :
+                  topBiz.map(([bid, n], i) => {
+                    const b = biz(bid);
+                    return `<tr>
+                      <td>${i + 1}</td>
+                      <td>${b ? esc(b.name) : '—'}</td>
+                      <td>${b ? statusBadge(b.type) : '—'}</td>
+                      <td><strong>${n}</strong></td>
+                    </tr>`;
+                  }).join('')}
+              </tbody>
+            </table></div>
+          </div>
+        </div>
+      `;
+      c.innerHTML = html;
+    }
+
+    /* ============================================================
+       BATCH DETAIL MODAL — central, used by multiple views
+       ============================================================ */
+    function openBatchModal(batchId) {
+      const b = db.batches.get(batchId);
+      if (!b) { UI.toast('Batch not found.', { type: 'error' }); return; }
+      const bz = biz(b.businessId);
+      const wk = worker(b.workerId);
+      const fr = farm(b.farmId);
+      const current = UI.batchCurrentStage(b);
+      const next = UI.nextStage(current);
+      const meta = UI.STAGE_META;
+      const isCompleted = b.status === 'delivered' || b.status === 'recycled';
+
+      // tracker steps
+      const tracker = UI.STAGE_ORDER.map((s) => {
+        const st = UI.stageStatus(b, s);
+        const cls = st === 'done' ? 'done' : st === 'in_progress' ? 'active' : '';
+        return `<div class="step ${cls}"><div class="dot">${meta[s].n}</div><div class="lbl">${esc(meta[s].short)}</div></div>`;
+      }).join('');
+
+      // journey timeline
+      const journey = (b.timeline || []).map((ev) => {
+        const m = meta[ev.stage] || { label: ev.stage, icon: 'info' };
+        return `<div class="journey-elem">
+          <div class="j-ico">${UI.iconSvg(m.icon || 'info')}</div>
+          <div class="j-meta">
+            <div class="j-stage">${esc(m.label)} <span class="badge ${ev.status === 'done' ? 'badge-green' : ev.status === 'in_progress' ? 'badge-amber' : 'badge-gray'}">${esc(ev.status)}</span></div>
+            <div class="j-time">${UI.fmtDate(ev.at)} · ${workerName(ev.workerId)}</div>
+            ${ev.note ? `<div class="j-note">${esc(ev.note)}</div>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+
+      // notifications sub-cards
+      const notifs = UI.STAGE_ORDER.map((s) => {
+        const st = UI.notifStatus(b, s);
+        const msg = UI.notifMessage(b, s);
+        return `<div class="notif">
+          <div class="row">
+            <div>
+              <span class="stage">${esc(meta[s].label)}</span>
+              <span style="margin-left:8px">${notifDot(st)} <span class="badge ${notifBadgeCls(st)}">${notifLabel(st)}</span></span>
+            </div>
+            <div class="controls">
+              <button class="btn btn-primary btn-sm" data-action="send-notif" data-id="${esc(b.id)}" data-stage="${esc(s)}">Send</button>
+              <button class="btn btn-ghost btn-sm" data-action="fail-notif" data-id="${esc(b.id)}" data-stage="${esc(s)}">Mark Failed</button>
+              ${st === 'failed' ? `<button class="btn btn-outline btn-sm" data-action="retry-notif" data-id="${esc(b.id)}" data-stage="${esc(s)}">Retry</button>` : ''}
+            </div>
+          </div>
+          <div class="msg-text">${esc(msg)}</div>
+          <label class="checkbox-row">
+            <input type="checkbox" data-role="auto-notify-stage" data-stage="${esc(s)}">
+            Auto-send this stage's message when stage is completed
+          </label>
+        </div>`;
+      }).join('');
+
+      // advance button label
+      let advanceLabel = '';
+      let advanceAction = 'advance-batch-modal';
+      if (!isCompleted) {
+        if (b.status === 'collected') advanceLabel = 'Confirm ' + meta.sorting.label;
+        else if (b.status === 'sorting') {
+          if (b.wasteType === 'recyclable') { advanceLabel = 'Send to Recycling Partner'; advanceAction = 'recycle-batch-modal'; }
+          else advanceLabel = 'Confirm ' + meta.composting.label;
+        }
+        else if (b.status === 'composting') advanceLabel = 'Confirm Compost Ready';
+        else if (b.status === 'ready_for_delivery') advanceLabel = 'Confirm Farm Delivery';
+      }
+
+      const head = `
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <span class="id-mono" style="font-size:1.2rem">${esc(b.id)}</span>
+          ${statusBadge(b.status)}
+          ${b.bookingId ? `<span class="muted" style="font-size:.82rem">from booking ${esc(b.bookingId)}</span>` : ''}
+        </div>
+        <div class="muted" style="font-size:.82rem;margin-top:4px">Created ${UI.fmtDate(b.createdAt)}</div>
+      `;
+
+      const info = `
+        <div class="kv">
+          <div class="k">Business</div><div class="v">${bz ? esc(bz.name) : '—'} <span class="muted">(${esc(bz ? bz.type : '—')})</span></div>
+          <div class="k">Worker</div><div class="v">${wk ? esc(wk.name) + ' · ' + esc(wk.role) : '—'}</div>
+          <div class="k">Waste Type</div><div class="v">${wasteBadge(b.wasteType)}</div>
+          <div class="k">Collected</div><div class="v">${UI.fmtKg(b.weightKg)}</div>
+          ${b.deliveredKg ? `<div class="k">Delivered</div><div class="v">${UI.fmtKg(b.deliveredKg)} to ${fr ? esc(fr.name) : '—'}</div>` : ''}
+        </div>
+      `;
+
+      const advanceSection = isCompleted
+        ? `<div class="banner"><span class="ico">${UI.iconSvg('checkCircle')}</span> This batch has been completed (${esc(b.status)}).</div>`
+        : `<div class="card card-pad" style="background:var(--ink-50);border:1px dashed var(--border)">
+            <h3 style="margin:0 0 8px">Advance to next stage</h3>
+            <p class="muted" style="margin:0 0 12px;font-size:.84rem">Clicking below will mark the current stage complete and start the next. If the auto-send checkbox is ticked for the current stage, the customer will be notified automatically.</p>
+            <button class="btn btn-primary" data-action="${advanceAction}" data-id="${esc(b.id)}">${UI.iconSvg('arrowRight')} ${esc(advanceLabel)}</button>
+          </div>`;
+
+      UI.openModal({
+        title: 'Batch Detail',
+        size: 'lg',
+        body: `
+          ${head}
+          <hr class="divider" />
+          ${info}
+          <hr class="divider" />
+          <div class="tracker">${tracker}</div>
+          <div class="sub-h">Journey</div>
+          <div class="journey">${journey || '<p class="muted">No events logged yet.</p>'}</div>
+          <div class="sub-h">Customer Notifications</div>
+          <div class="notif-grid">${notifs}</div>
+          <div class="sub-h" style="margin-top:18px">Stage Control</div>
+          ${advanceSection}
+        `,
+        footer: `<button class="btn btn-ghost" data-action="close-modal">Close</button>`,
+      });
+    }
+
+    /* ============================================================
+       ACTION HANDLER (event-delegated)
+       ============================================================ */
+    function handleAction(action, id, btn) {
+      switch (action) {
+        case 'goto':
+          setView(id);
+          break;
+        case 'close-modal':
+          UI.closeAllModals();
+          break;
+
+        /* overview quick actions */
+        case 'new-booking':
+          openBookingForm();
+          break;
+        case 'new-business':
+          openBusinessForm();
+          break;
+        case 'new-worker':
+          openWorkerForm();
+          break;
+
+        /* businesses */
+        case 'view-business':
+          openBusinessView(id);
+          break;
+        case 'edit-business':
+          openBusinessForm(id);
+          break;
+        case 'del-business':
+          delBusiness(id);
+          break;
+
+        /* bookings */
+        case 'assign-worker':
+          openAssignWorker(id);
+          break;
+        case 'convert-batch':
+          convertBookingToBatch(id);
+          break;
+        case 'del-booking':
+          delBooking(id);
+          break;
+
+        /* workers */
+        case 'view-worker':
+          openWorkerView(id);
+          break;
+        case 'edit-worker':
+          openWorkerForm(id);
+          break;
+        case 'del-worker':
+          delWorker(id);
+          break;
+
+        /* collections */
+        case 'reach-sorting':
+          confirmReachedSorting(id);
+          break;
+
+        /* batches */
+        case 'view-batch':
+          openBatchModal(id);
+          break;
+        case 'advance-batch':
+          openBatchModal(id);
+          break;
+        case 'advance-batch-modal':
+          advanceBatch(id);
+          break;
+        case 'recycle-batch-modal':
+          recycleBatch(id);
+          break;
+        case 'new-batch':
+          openBatchForm();
+          break;
+
+        /* sorting / composting / farm */
+        case 'complete-sorting':
+          completeSorting(id, autoNotifyFromBtn(btn));
+          break;
+        case 'send-recycling':
+          sendToRecycling(id, autoNotifyFromBtn(btn));
+          break;
+        case 'complete-composting':
+          completeComposting(id, autoNotifyFromBtn(btn));
+          break;
+        case 'assign-farm':
+          openFarmDeliveryForm(id);
+          break;
+
+        /* notifications */
+        case 'send-notif':
+          setNotif(id, btn.dataset.stage, 'sent', 'Message sent to customer');
+          break;
+        case 'retry-notif':
+          setNotif(id, btn.dataset.stage, 'sent', 'Retry successful — message sent');
+          break;
+        case 'resend-notif':
+          setNotif(id, btn.dataset.stage, 'sent', 'Message re-sent to customer');
+          break;
+        case 'fail-notif':
+          setNotif(id, btn.dataset.stage, 'failed', 'Notification marked as failed');
+          break;
+
+        /* reports */
+        case 'export-csv':
+          exportBatchesCSV();
+          break;
+
+        /* misc */
+        case 'copy-batch-id':
+          copyText(id).then((ok) => {
+            UI.toast(ok ? 'Batch ID copied to clipboard.' : 'Clipboard unavailable in this browser.', { title: 'Copied' });
+          });
+          break;
+
+        default:
+          // no-op
+          break;
+      }
+    }
+
+    function autoNotifyFromBtn(btn) {
+      // Look for a sibling checkbox with data-role=auto-notify in the same list-item
+      const item = btn.closest('.list-item');
+      if (!item) return false;
+      const cb = item.querySelector('input[data-role="auto-notify"]');
+      return cb ? cb.checked : false;
+    }
+
+    function autoNotifyFromModal(batchId, stage) {
+      const cb = document.querySelector(`input[data-role="auto-notify-stage"][data-stage="${CSS.escape(stage)}"]`);
+      return cb ? cb.checked : false;
+    }
+
+    /* ============================================================
+       NOTIFICATION ACTION
+       ============================================================ */
+    function setNotif(batchId, stage, status, toastMsg) {
+      db.batches.setNotification(batchId, stage, status);
+      UI.toast(toastMsg || 'Notification updated', { title: 'Customer Message' });
+      // If a modal is open showing this batch, refresh it; else re-render current view
+      if (document.querySelector('.modal-backdrop.open')) {
+        // Re-open the batch modal if it's the batch detail
+        const titleEl = document.querySelector('.modal-head h3');
+        if (titleEl && titleEl.textContent === 'Batch Detail') {
+          openBatchModal(batchId);
+        } else {
+          render();
+        }
+      } else {
+        render();
+      }
+    }
+
+    /* ============================================================
+       BATCH ADVANCEMENT (the core flow)
+       ============================================================ */
+    function markStageDone(batchId, stage, note) {
+      const b = db.batches.get(batchId);
+      if (!b) return;
+      const ev = (b.timeline || []).find((t) => t.stage === stage);
+      if (ev) {
+        db.batches.update(batchId, {
+          timeline: b.timeline.map((t) => t.stage === stage ? { ...t, status: 'done', note: note || t.note } : t),
+        });
+      } else {
+        // push a done event
+        db.batches.pushStage(batchId, { stage, status: 'done', workerId: b.workerId, note: note || `${stage} complete` });
+      }
+    }
+
+    function advanceBatch(batchId) {
+      const b = db.batches.get(batchId);
+      if (!b) return;
+      // The stage that is being COMPLETED by this advance action (per spec:
+      // "the JUST-completed stage" — i.e. the stage the customer should be told about).
+      // For a 'collected' batch, advancing means collection is finalised + sorting started.
+      // For 'sorting', advancing means sorting complete + composting started.
+      // For 'composting', advancing means composting done + ready_for_delivery.
+      const completingStage = b.status === 'collected' ? 'collection'
+                            : b.status === 'sorting' ? 'sorting'
+                            : b.status === 'composting' ? 'composting'
+                            : b.status === 'ready_for_delivery' ? 'farm_delivery'
+                            : null;
+      const autoNotify = completingStage ? autoNotifyFromModal(batchId, completingStage) : false;
+
+      // helper: send the just-completed stage's notification if autoNotify was checked
+      const maybeNotify = () => {
+        if (autoNotify && completingStage) {
+          db.batches.setNotification(batchId, completingStage, 'sent');
+        }
+      };
+
+      if (b.status === 'collected') {
+        // start sorting
+        markStageDone(batchId, 'collection');
+        db.batches.pushStage(batchId, { stage: 'sorting', status: 'in_progress', workerId: b.workerId, note: 'Sorting in progress at facility' });
+        db.batches.update(batchId, { status: 'sorting' });
+        maybeNotify();
+        UI.toast('Stage advanced — collection complete, sorting started.', { title: 'Stage advanced' });
+        if (!autoNotify) UI.toast('Customer not notified (auto-send unchecked for collection).', { title: 'Notifications', type: 'info' });
+      } else if (b.status === 'sorting') {
+        if (b.wasteType === 'recyclable') {
+          // should not get here — recyclable branch handled by recycleBatch
+          return recycleBatch(batchId);
+        }
+        // complete sorting, start composting
+        markStageDone(batchId, 'sorting');
+        db.batches.pushStage(batchId, { stage: 'composting', status: 'in_progress', workerId: b.workerId, note: 'Organic loaded into windrow for composting' });
+        db.batches.update(batchId, { status: 'composting' });
+        maybeNotify();
+        UI.toast('Stage advanced — sorting complete, composting started.', { title: 'Stage advanced' });
+        if (!autoNotify) UI.toast('Customer not notified (auto-send unchecked for sorting).', { title: 'Notifications', type: 'info' });
+      } else if (b.status === 'composting') {
+        // complete composting, ready for delivery
+        markStageDone(batchId, 'composting', 'Compost matured, ready for delivery');
+        db.batches.update(batchId, { status: 'ready_for_delivery' });
+        maybeNotify();
+        UI.toast('Stage advanced — compost ready for farm delivery.', { title: 'Stage advanced' });
+        if (!autoNotify) UI.toast('Customer not notified (auto-send unchecked for composting).', { title: 'Notifications', type: 'info' });
+      } else if (b.status === 'ready_for_delivery') {
+        // open farm delivery form (which always auto-sends farm_delivery notif)
+        UI.closeAllModals();
+        openFarmDeliveryForm(batchId);
+        return;
+      }
+
+      // refresh modal if open
+      openBatchModal(batchId);
+    }
+
+    function recycleBatch(batchId) {
+      const b = db.batches.get(batchId);
+      if (!b) return;
+      const autoNotify = autoNotifyFromModal(batchId, 'sorting');
+      markStageDone(batchId, 'sorting', 'Sent to certified recycling partner');
+      db.batches.update(batchId, { status: 'recycled' });
+      if (autoNotify) db.batches.setNotification(batchId, 'sorting', 'sent');
+      UI.toast('Batch sent to recycling partner — status: Recycled.', { title: 'Recycling branch' });
+      if (!autoNotify) UI.toast('Customer not notified (auto-send unchecked for sorting).', { title: 'Notifications', type: 'info' });
+      openBatchModal(batchId);
+    }
+
+    function confirmReachedSorting(batchId) {
+      const b = db.batches.get(batchId);
+      if (!b) return;
+      db.batches.pushStage(batchId, { stage: 'sorting', status: 'in_progress', workerId: b.workerId, note: 'Arrived at sorting facility (Balkhu)' });
+      db.batches.update(batchId, { status: 'sorting' });
+      db.batches.setNotification(batchId, 'sorting', 'not_sent');
+      UI.toast('Batch marked as arrived at sorting facility.', { title: 'Collection → Sorting' });
+      render();
+    }
+
+    function completeSorting(batchId, autoNotify) {
+      const b = db.batches.get(batchId);
+      if (!b) return;
+      if (b.wasteType === 'recyclable') return sendToRecycling(batchId, autoNotify);
+      markStageDone(batchId, 'sorting', 'Sorting complete — organic separated');
+      db.batches.pushStage(batchId, { stage: 'composting', status: 'in_progress', workerId: b.workerId, note: 'Organic loaded into windrow' });
+      db.batches.update(batchId, { status: 'composting' });
+      if (autoNotify) db.batches.setNotification(batchId, 'sorting', 'sent');
+      UI.toast('Sorting complete — composting started.', { title: 'Stage advanced' });
+      render();
+    }
+
+    function sendToRecycling(batchId, autoNotify) {
+      const b = db.batches.get(batchId);
+      if (!b) return;
+      markStageDone(batchId, 'sorting', 'Sent to certified recycling partner');
+      db.batches.update(batchId, { status: 'recycled' });
+      if (autoNotify) db.batches.setNotification(batchId, 'sorting', 'sent');
+      UI.toast('Batch sent to recycling partner — status: Recycled.', { title: 'Recycling branch' });
+      render();
+    }
+
+    function completeComposting(batchId, autoNotify) {
+      const b = db.batches.get(batchId);
+      if (!b) return;
+      markStageDone(batchId, 'composting', 'Compost matured, ready for delivery');
+      db.batches.update(batchId, { status: 'ready_for_delivery' });
+      if (autoNotify) db.batches.setNotification(batchId, 'composting', 'sent');
+      UI.toast('Compost ready — status: Ready for Delivery.', { title: 'Stage advanced' });
+      render();
+    }
+
+    /* ============================================================
+       BOOKING → BATCH CONVERSION
+       ============================================================ */
+    function convertBookingToBatch(bookingId) {
+      const bk = db.bookings.get(bookingId);
+      if (!bk) { UI.toast('Booking not found.', { type: 'error' }); return; }
+      if (bk.status !== 'scheduled' || !bk.workerId) {
+        UI.toast('Only scheduled bookings with an assigned worker can be converted.', { type: 'error' });
+        return;
+      }
+      const now = new Date().toISOString();
+      const batch = db.batches.add({
+        businessId: bk.businessId,
+        workerId: bk.workerId,
+        bookingId: bk.id,
+        wasteType: bk.wasteType,
+        weightKg: bk.quantityKg,
+        status: 'collected',
+        timeline: [
+          { stage: 'collection', status: 'done', at: now, workerId: bk.workerId, note: 'Collected per booking ' + bk.id },
+        ],
+        notifications: [
+          { stage: 'collection', status: 'sent', at: now },
+        ],
+      });
+      db.bookings.update(bk.id, { status: 'collected' });
+      // show success modal
+      UI.openModal({
+        title: 'Batch Created',
+        body: `
+          <div class="banner" style="margin-bottom:14px"><span class="ico">${UI.iconSvg('checkCircle')}</span> Booking ${esc(bk.id)} has been converted to a new batch.</div>
+          <div style="text-align:center;padding:12px 0">
+            <div class="muted" style="font-size:.78rem;text-transform:uppercase;letter-spacing:.05em">New Batch ID</div>
+            <div class="id-mono" id="newBatchId" style="font-size:1.6rem;margin:6px 0">${esc(batch.id)}</div>
+            <div class="muted" style="font-size:.84rem">${esc(bizName(bk.businessId))} · ${UI.fmtKg(bk.quantityKg)} · ${esc(bk.wasteType)}</div>
+          </div>
+        `,
+        footer: [
+          `<button class="btn btn-ghost" data-action="copy-batch-id" data-id="${esc(batch.id)}">${UI.iconSvg('check')} Copy ID</button>`,
+          `<button class="btn btn-primary" data-action="view-batch" data-id="${esc(batch.id)}">${UI.iconSvg('eye')} View Batch</button>`,
+        ].join(''),
+      });
+      // Render the underlying bookings table so the converted booking disappears
+      render();
+    }
+
+    /* ============================================================
+       FORM MODALS
+       ============================================================ */
+    function openBusinessForm(id) {
+      const b = id ? db.businesses.get(id) : null;
+      const types = ['hotel', 'cafe', 'restaurant', 'office', 'shop', 'other'];
+      const body = `
+        <form id="bizForm">
+          <div class="field">
+            <label>Name</label>
+            <input class="input" name="name" required value="${b ? esc(b.name) : ''}" placeholder="e.g. Hotel Annapurna Kitchen" />
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Type</label>
+              <select class="select" name="type">
+                ${types.map((t) => `<option value="${t}" ${b && b.type === t ? 'selected' : ''}>${t}</option>`).join('')}
+              </select>
+            </div>
+            <div class="field">
+              <label>Contact Person</label>
+              <input class="input" name="contactPerson" value="${b ? esc(b.contactPerson || '') : ''}" />
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Phone</label>
+              <input class="input" name="phone" value="${b ? esc(b.phone || '') : ''}" placeholder="01-xxxxxxx" />
+            </div>
+            <div class="field">
+              <label>Email</label>
+              <input class="input" name="email" type="email" value="${b ? esc(b.email || '') : ''}" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Address</label>
+            <input class="input" name="address" value="${b ? esc(b.address || '') : ''}" placeholder="Street, City" />
+          </div>
+        </form>
+      `;
+      UI.openModal({
+        title: b ? 'Edit Business' : 'Add Business',
+        body,
+        footer: `<button class="btn btn-ghost" id="bizCancel">Cancel</button><button class="btn btn-primary" id="bizSave">Save</button>`,
+      });
+      const root = document.querySelector('.modal-backdrop');
+      root.querySelector('#bizCancel').addEventListener('click', UI.closeAllModals);
+      root.querySelector('#bizSave').addEventListener('click', () => {
+        const f = root.querySelector('#bizForm');
+        const data = {
+          name: f.name.value.trim(),
+          type: f.type.value,
+          contactPerson: f.contactPerson.value.trim(),
+          phone: f.phone.value.trim(),
+          email: f.email.value.trim(),
+          address: f.address.value.trim(),
+        };
+        if (!data.name) { UI.toast('Name is required.', { type: 'error' }); return; }
+        if (b) { db.businesses.update(b.id, data); UI.toast('Business updated.'); }
+        else   { db.businesses.add(data); UI.toast('Business added.'); }
+        UI.closeAllModals();
+        render();
+      });
+    }
+
+    function openBusinessView(id) {
+      const b = db.businesses.get(id);
+      if (!b) { UI.toast('Business not found.', { type: 'error' }); return; }
+      const bks = db.bookings.byBusiness(id);
+      const bts = db.batches.byBusiness(id);
+      UI.openModal({
+        title: 'Business Detail',
+        size: 'lg',
+        body: `
+          <div class="kv">
+            <div class="k">ID</div><div class="v id-mono">${esc(b.id)}</div>
+            <div class="k">Name</div><div class="v">${esc(b.name)}</div>
+            <div class="k">Type</div><div class="v">${statusBadge(b.type)}</div>
+            <div class="k">Contact</div><div class="v">${esc(b.contactPerson || '—')}</div>
+            <div class="k">Phone</div><div class="v">${esc(b.phone || '—')}</div>
+            <div class="k">Email</div><div class="v">${esc(b.email || '—')}</div>
+            <div class="k">Address</div><div class="v">${esc(b.address || '—')}</div>
+            <div class="k">Created</div><div class="v">${UI.fmtDate(b.createdAt)}</div>
+          </div>
+          <div class="sub-h">Bookings (${bks.length})</div>
+          ${bks.length === 0 ? '<p class="muted">No bookings.</p>' :
+            `<div class="table-wrap"><table class="tbl"><thead><tr><th>ID</th><th>Type</th><th>Qty</th><th>Status</th></tr></thead><tbody>
+              ${bks.map((x) => `<tr><td class="mono">${esc(x.id)}</td><td>${wasteBadge(x.wasteType)}</td><td>${UI.fmtKg(x.quantityKg)}</td><td>${statusBadge(x.status)}</td></tr>`).join('')}
+            </tbody></table></div>`}
+          <div class="sub-h">Batches (${bts.length})</div>
+          ${bts.length === 0 ? '<p class="muted">No batches.</p>' :
+            `<div class="table-wrap"><table class="tbl"><thead><tr><th>ID</th><th>Stage</th><th>Weight</th></tr></thead><tbody>
+              ${bts.map((x) => `<tr><td class="mono">${esc(x.id)}</td><td>${statusBadge(x.status)}</td><td>${UI.fmtKg(x.weightKg)}</td></tr>`).join('')}
+            </tbody></table></div>`}
+        `,
+        footer: `<button class="btn btn-ghost" id="bizViewClose">Close</button>`,
+      });
+      document.querySelector('#bizViewClose').addEventListener('click', UI.closeAllModals);
+    }
+
+    function delBusiness(id) {
+      const b = db.businesses.get(id);
+      if (!b) return;
+      UI.confirmDialog({
+        title: 'Delete business?',
+        message: `This will permanently remove "${b.name}". Bookings and batches will remain but be orphaned.`,
+        confirmText: 'Delete',
+        danger: true,
+      }).then((ok) => {
+        if (!ok) return;
+        db.businesses.remove(id);
+        UI.toast('Business deleted.', { type: 'info' });
+        render();
+      });
+    }
+
+    function openBookingForm() {
+      const allBiz = db.businesses.all();
+      const types = ['organic', 'recyclable', 'mixed'];
+      const body = `
+        <form id="bkForm">
+          <div class="field">
+            <label>Business</label>
+            <select class="select" name="businessId" required>
+              <option value="">— Select business —</option>
+              ${allBiz.map((b) => `<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Waste Type</label>
+              <select class="select" name="wasteType">
+                ${types.map((t) => `<option value="${t}">${t}</option>`).join('')}
+              </select>
+            </div>
+            <div class="field">
+              <label>Quantity (kg)</label>
+              <input class="input" name="quantityKg" type="number" min="1" value="20" required />
+            </div>
+          </div>
+          <div class="field">
+            <label>Preferred Date</label>
+            <input class="input" name="preferredDate" type="datetime-local" required />
+          </div>
+          <div class="field">
+            <label>Pickup Address</label>
+            <input class="input" name="address" placeholder="Street, City" />
+          </div>
+          <div class="field">
+            <label>Notes</label>
+            <textarea class="textarea" name="notes" placeholder="Optional instructions"></textarea>
+          </div>
+        </form>
+      `;
+      UI.openModal({
+        title: 'New Booking',
+        body,
+        footer: `<button class="btn btn-ghost" id="bkCancel">Cancel</button><button class="btn btn-primary" id="bkSave">Create Booking</button>`,
+      });
+      const root = document.querySelector('.modal-backdrop');
+      // default preferred date to tomorrow 9am
+      const def = new Date(); def.setDate(def.getDate() + 1); def.setHours(9, 0, 0, 0);
+      const isoLocal = (d) => { const z = (n) => String(n).padStart(2, '0'); return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`; };
+      root.querySelector('[name=preferredDate]').value = isoLocal(def);
+      root.querySelector('#bkCancel').addEventListener('click', UI.closeAllModals);
+      root.querySelector('#bkSave').addEventListener('click', () => {
+        const f = root.querySelector('#bkForm');
+        if (!f.businessId.value) { UI.toast('Please select a business.', { type: 'error' }); return; }
+        const bz = biz(f.businessId.value);
+        const data = {
+          businessId: f.businessId.value,
+          wasteType: f.wasteType.value,
+          quantityKg: parseFloat(f.quantityKg.value) || 0,
+          preferredDate: new Date(f.preferredDate.value).toISOString(),
+          address: f.address.value.trim() || (bz ? bz.address : ''),
+          notes: f.notes.value.trim(),
+          status: 'pending',
+        };
+        db.bookings.add(data);
+        UI.toast('Booking created — status: Pending.');
+        UI.closeAllModals();
+        render();
+      });
+    }
+
+    function openAssignWorker(bookingId) {
+      const bk = db.bookings.get(bookingId);
+      if (!bk) return;
+      const collectors = db.workers.all().filter((w) => w.role === 'collector');
+      const body = `
+        <form id="awForm">
+          <div class="field">
+            <label>Booking</label>
+            <div class="id-mono">${esc(bk.id)}</div>
+          </div>
+          <div class="field">
+            <label>Assign Collector</label>
+            <select class="select" name="workerId" required>
+              <option value="">— Select collector —</option>
+              ${collectors.map((w) => `<option value="${esc(w.id)}">${esc(w.name)} · ${esc(w.areas || '')}</option>`).join('')}
+            </select>
+          </div>
+        </form>
+      `;
+      UI.openModal({
+        title: 'Assign Worker',
+        body,
+        footer: `<button class="btn btn-ghost" id="awCancel">Cancel</button><button class="btn btn-primary" id="awSave">Assign</button>`,
+      });
+      const root = document.querySelector('.modal-backdrop');
+      root.querySelector('#awCancel').addEventListener('click', UI.closeAllModals);
+      root.querySelector('#awSave').addEventListener('click', () => {
+        const f = root.querySelector('#awForm');
+        if (!f.workerId.value) { UI.toast('Please pick a collector.', { type: 'error' }); return; }
+        db.bookings.update(bk.id, { workerId: f.workerId.value, status: 'scheduled' });
+        UI.toast('Worker assigned — booking is now Scheduled.');
+        UI.closeAllModals();
+        render();
+      });
+    }
+
+    function delBooking(id) {
+      const bk = db.bookings.get(id);
+      if (!bk) return;
+      UI.confirmDialog({
+        title: 'Delete booking?',
+        message: `This will permanently remove booking ${bk.id}.`,
+        confirmText: 'Delete',
+        danger: true,
+      }).then((ok) => {
+        if (!ok) return;
+        db.bookings.remove(id);
+        UI.toast('Booking deleted.', { type: 'info' });
+        render();
+      });
+    }
+
+    function openWorkerForm(id) {
+      const w = id ? db.workers.get(id) : null;
+      const roles = ['collector', 'sorter', 'compost_operator', 'driver'];
+      const statuses = ['active', 'on_leave', 'inactive'];
+      const body = `
+        <form id="wkForm">
+          <div class="field">
+            <label>Name</label>
+            <input class="input" name="name" required value="${w ? esc(w.name) : ''}" placeholder="Full name" />
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Phone</label>
+              <input class="input" name="phone" value="${w ? esc(w.phone || '') : ''}" placeholder="98XXXXXXXX" />
+            </div>
+            <div class="field">
+              <label>Role</label>
+              <select class="select" name="role">
+                ${roles.map((r) => `<option value="${r}" ${w && w.role === r ? 'selected' : ''}>${r.replace(/_/g, ' ')}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Areas / Zone</label>
+              <input class="input" name="areas" value="${w ? esc(w.areas || '') : ''}" placeholder="e.g. Kathmandu Central" />
+            </div>
+            <div class="field">
+              <label>Status</label>
+              <select class="select" name="status">
+                ${statuses.map((s) => `<option value="${s}" ${w && (w.status || 'active') === s ? 'selected' : ''}>${s.replace(/_/g, ' ')}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+        </form>
+      `;
+      UI.openModal({
+        title: w ? 'Edit Worker' : 'Add Worker',
+        body,
+        footer: `<button class="btn btn-ghost" id="wkCancel">Cancel</button><button class="btn btn-primary" id="wkSave">Save</button>`,
+      });
+      const root = document.querySelector('.modal-backdrop');
+      root.querySelector('#wkCancel').addEventListener('click', UI.closeAllModals);
+      root.querySelector('#wkSave').addEventListener('click', () => {
+        const f = root.querySelector('#wkForm');
+        const data = {
+          name: f.name.value.trim(),
+          phone: f.phone.value.trim(),
+          role: f.role.value,
+          areas: f.areas.value.trim(),
+          status: f.status.value,
+        };
+        if (!data.name) { UI.toast('Name is required.', { type: 'error' }); return; }
+        if (w) { db.workers.update(w.id, data); UI.toast('Worker updated.'); }
+        else   { db.workers.add(data); UI.toast('Worker added.'); }
+        UI.closeAllModals();
+        render();
+      });
+    }
+
+    function openWorkerView(id) {
+      const w = db.workers.get(id);
+      if (!w) { UI.toast('Worker not found.', { type: 'error' }); return; }
+      const bts = db.batches.byWorker(id);
+      UI.openModal({
+        title: 'Worker Detail',
+        size: 'lg',
+        body: `
+          <div class="kv">
+            <div class="k">ID</div><div class="v id-mono">${esc(w.id)}</div>
+            <div class="k">Name</div><div class="v">${esc(w.name)}</div>
+            <div class="k">Role</div><div class="v">${roleBadge(w.role)}</div>
+            <div class="k">Phone</div><div class="v">${esc(w.phone || '—')}</div>
+            <div class="k">Areas</div><div class="v">${esc(w.areas || '—')}</div>
+            <div class="k">Status</div><div class="v">${statusBadge(w.status || 'active')}</div>
+            <div class="k">Joined</div><div class="v">${UI.fmtDate(w.createdAt)}</div>
+          </div>
+          <div class="sub-h">Assigned Batches (${bts.length})</div>
+          ${bts.length === 0 ? '<p class="muted">No batches assigned.</p>' :
+            `<div class="table-wrap"><table class="tbl"><thead><tr><th>ID</th><th>Business</th><th>Stage</th><th>Weight</th></tr></thead><tbody>
+              ${bts.map((x) => `<tr><td class="mono">${esc(x.id)}</td><td>${truncate(bizName(x.businessId), 24)}</td><td>${statusBadge(x.status)}</td><td>${UI.fmtKg(x.weightKg)}</td></tr>`).join('')}
+            </tbody></table></div>`}
+        `,
+        footer: `<button class="btn btn-ghost" id="wkViewClose">Close</button>`,
+      });
+      document.querySelector('#wkViewClose').addEventListener('click', UI.closeAllModals);
+    }
+
+    function delWorker(id) {
+      const w = db.workers.get(id);
+      if (!w) return;
+      UI.confirmDialog({
+        title: 'Delete worker?',
+        message: `This will permanently remove ${w.name}. Their batches will keep the workerId but no name will be shown.`,
+        confirmText: 'Delete',
+        danger: true,
+      }).then((ok) => {
+        if (!ok) return;
+        db.workers.remove(id);
+        UI.toast('Worker deleted.', { type: 'info' });
+        render();
+      });
+    }
+
+    function openBatchForm() {
+      const allBiz = db.businesses.all();
+      const collectors = db.workers.all().filter((w) => w.role === 'collector');
+      const types = ['organic', 'recyclable', 'mixed'];
+      const body = `
+        <form id="btForm">
+          <div class="field">
+            <label>Business</label>
+            <select class="select" name="businessId" required>
+              <option value="">— Select business —</option>
+              ${allBiz.map((b) => `<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Collector (Worker)</label>
+            <select class="select" name="workerId" required>
+              <option value="">— Select collector —</option>
+              ${collectors.map((w) => `<option value="${esc(w.id)}">${esc(w.name)} · ${esc(w.areas || '')}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Waste Type</label>
+              <select class="select" name="wasteType">
+                ${types.map((t) => `<option value="${t}">${t}</option>`).join('')}
+              </select>
+            </div>
+            <div class="field">
+              <label>Weight (kg)</label>
+              <input class="input" name="weightKg" type="number" min="1" value="25" required />
+            </div>
+          </div>
+          <div class="field">
+            <label>Note</label>
+            <input class="input" name="note" placeholder="Optional collection note" />
+          </div>
+        </form>
+      `;
+      UI.openModal({
+        title: 'New Batch',
+        body,
+        footer: `<button class="btn btn-ghost" id="btCancel">Cancel</button><button class="btn btn-primary" id="btSave">Create Batch</button>`,
+      });
+      const root = document.querySelector('.modal-backdrop');
+      root.querySelector('#btCancel').addEventListener('click', UI.closeAllModals);
+      root.querySelector('#btSave').addEventListener('click', () => {
+        const f = root.querySelector('#btForm');
+        if (!f.businessId.value || !f.workerId.value) {
+          UI.toast('Please select a business and a collector.', { type: 'error' });
+          return;
+        }
+        const now = new Date().toISOString();
+        const batch = db.batches.add({
+          businessId: f.businessId.value,
+          workerId: f.workerId.value,
+          wasteType: f.wasteType.value,
+          weightKg: parseFloat(f.weightKg.value) || 0,
+          status: 'collected',
+          timeline: [
+            { stage: 'collection', status: 'done', at: now, workerId: f.workerId.value, note: f.note.value.trim() || 'Collected from business' },
+          ],
+          notifications: [
+            { stage: 'collection', status: 'sent', at: now },
+          ],
+        });
+        UI.toast(`Batch ${batch.id} created — status: Collected.`, { title: 'Batch created' });
+        UI.closeAllModals();
+        render();
+      });
+    }
+
+    function openFarmDeliveryForm(batchId) {
+      const b = db.batches.get(batchId);
+      if (!b) { UI.toast('Batch not found.', { type: 'error' }); return; }
+      if (b.status !== 'ready_for_delivery') {
+        UI.toast('Only batches with status "Ready for Delivery" can be delivered.', { type: 'error' });
+        return;
+      }
+      const farms = db.farms.all();
+      const drivers = db.workers.all().filter((w) => w.role === 'driver');
+      const suggested = Math.round((b.weightKg || 0) * 0.6);
+      const body = `
+        <form id="fdForm">
+          <div class="field">
+            <label>Batch</label>
+            <div class="id-mono">${esc(b.id)} · ${UI.fmtKg(b.weightKg)} source</div>
+          </div>
+          <div class="field">
+            <label>Destination Farm</label>
+            <select class="select" name="farmId" required>
+              <option value="">— Select farm —</option>
+              ${farms.map((f) => `<option value="${esc(f.id)}">${esc(f.name)} · ${esc(f.location)}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Delivered (kg)</label>
+              <input class="input" name="deliveredKg" type="number" min="1" value="${suggested}" required />
+            </div>
+            <div class="field">
+              <label>Driver</label>
+              <select class="select" name="driverId" required>
+                <option value="">— Select driver —</option>
+                ${drivers.map((w) => `<option value="${esc(w.id)}">${esc(w.name)}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Note</label>
+            <input class="input" name="note" value="Matured compost delivered to farm" />
+          </div>
+        </form>
+      `;
+      UI.openModal({
+        title: 'Confirm Farm Delivery',
+        body,
+        footer: `<button class="btn btn-ghost" id="fdCancel">Cancel</button><button class="btn btn-primary" id="fdSave">Confirm Delivery</button>`,
+      });
+      const root = document.querySelector('.modal-backdrop');
+      root.querySelector('#fdCancel').addEventListener('click', UI.closeAllModals);
+      root.querySelector('#fdSave').addEventListener('click', () => {
+        const f = root.querySelector('#fdForm');
+        if (!f.farmId.value || !f.driverId.value) {
+          UI.toast('Please pick a farm and driver.', { type: 'error' }); return;
+        }
+        const deliveredKg = parseFloat(f.deliveredKg.value) || 0;
+        const fr = farm(f.farmId.value);
+        const now = new Date().toISOString();
+        // mark composting done (if not already), push farm_delivery done
+        const current = db.batches.get(batchId);
+        const tl = (current.timeline || []).map((t) => t.stage === 'composting' ? { ...t, status: 'done' } : t);
+        tl.push({ stage: 'farm_delivery', status: 'done', at: now, workerId: f.driverId.value, note: `Delivered ${deliveredKg}kg to ${fr ? fr.name : 'farm'}` });
+        db.batches.update(batchId, {
+          farmId: f.farmId.value,
+          deliveredKg,
+          workerId: f.driverId.value,
+          status: 'delivered',
+          timeline: tl,
+        });
+        // increment farm compost received
+        if (fr) db.farms.update(fr.id, { compostReceived: (fr.compostReceived || 0) + deliveredKg });
+        // auto-send farm_delivery notification (key milestone)
+        db.batches.setNotification(batchId, 'farm_delivery', 'sent');
+        UI.toast('Delivery confirmed — customer notified 🌱', { title: 'Farm Delivery' });
+        UI.closeAllModals();
+        render();
+      });
+    }
+
+    /* ============================================================
+       CSV EXPORT
+       ============================================================ */
+    function exportBatchesCSV() {
+      const rows = [['Batch ID', 'Business', 'Worker', 'Waste Type', 'Weight (kg)', 'Status', 'Created', 'Farm', 'Delivered (kg)', 'Notifications']];
+      for (const b of db.batches.all()) {
+        const notifSummary = (b.notifications || []).map((n) => `${n.stage}:${n.status}`).join('; ');
+        rows.push([
+          b.id,
+          (biz(b.businessId) || {}).name || '',
+          (worker(b.workerId) || {}).name || '',
+          b.wasteType,
+          b.weightKg,
+          b.status,
+          UI.fmtDate(b.createdAt),
+          (farm(b.farmId) || {}).name || '',
+          b.deliveredKg || 0,
+          notifSummary,
+        ]);
+      }
+      const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'batches.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      UI.toast('Exported batches.csv', { title: 'CSV Export' });
+    }
+
+    /* ============================================================
+       BOOT
+       ============================================================ */
+    let booted = false;
+    function boot() {
+      if (booted) return; booted = true;
+      if (session.get()) mountApp();
+      else mountGate();
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', boot);
+    } else {
+      boot();
+    }
+  })();
+  </script>
+</body>
+</html>

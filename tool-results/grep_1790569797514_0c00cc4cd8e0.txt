@@ -1,0 +1,252 @@
+/home/z/my-project/public/wms/track.html:117:    UI.mountPublic('track.html');
+/home/z/my-project/public/wms/track.html:127:        UI.clear(result);
+/home/z/my-project/public/wms/track.html:153:        UI.clear(result);
+/home/z/my-project/public/wms/track.html:166:      UI.clear(result);
+/home/z/my-project/public/wms/track.html:170:        '<strong>No batch found with ID ' + UI.escapeHtml(id) + '.</strong><br>' +
+/home/z/my-project/public/wms/track.html:178:      UI.clear(result);
+/home/z/my-project/public/wms/track.html:180:      var statusInfo = UI.statusLabel(b.status);
+/home/z/my-project/public/wms/track.html:189:            '<div class="id">' + UI.escapeHtml(b.id) + '</div>' +
+/home/z/my-project/public/wms/track.html:190:            '<div class="biz">' + UI.escapeHtml(biz ? biz.name : (b.businessName || 'Unknown business')) + '</div>' +
+/home/z/my-project/public/wms/track.html:191:            '<div class="sub">Created ' + UI.fmtDate(b.createdAt) + '</div>' +
+/home/z/my-project/public/wms/track.html:194:            '<span class="k">Status</span><span class="v"><span class="badge ' + statusInfo.cls + '">' + UI.escapeHtml(statusInfo.label) + '</span></span>' +
+/home/z/my-project/public/wms/track.html:195:            '<span class="k">Waste type</span><span class="v"><span class="badge badge-outline waste-badge">' + UI.escapeHtml(b.wasteType) + '</span></span>' +
+/home/z/my-project/public/wms/track.html:196:            '<span class="k">Weight</span><span class="v">' + UI.fmtKg(b.weightKg) + '</span>' +
+/home/z/my-project/public/wms/track.html:197:            (b.deliveredKg ? '<span class="k">Delivered</span><span class="v">' + UI.fmtKg(b.deliveredKg) + '</span>' : '') +
+/home/z/my-project/public/wms/track.html:198:            (farm ? '<span class="k">Farm</span><span class="v">' + UI.escapeHtml(farm.name) + '</span>' : '') +
+/home/z/my-project/public/wms/track.html:209:      UI.STAGE_ORDER.forEach(function (stage) {
+/home/z/my-project/public/wms/track.html:210:        var st = UI.stageStatus(b, stage);
+/home/z/my-project/public/wms/track.html:211:        var meta = UI.STAGE_META[stage];
+/home/z/my-project/public/wms/track.html:219:          '<div class="lbl">' + UI.escapeHtml(meta.short) + '</div>';
+/home/z/my-project/public/wms/track.html:225:        el.innerHTML = UI.iconSvg(el.getAttribute('data-icon'));
+/home/z/my-project/public/wms/track.html:239:          var meta = UI.STAGE_META[ev.stage] || { label: ev.stage, icon: 'info' };
+/home/z/my-project/public/wms/track.html:248:            '<div class="node">' + UI.iconSvg(meta.icon || 'check') + '</div>' +
+/home/z/my-project/public/wms/track.html:249:            '<div class="meta">' + UI.escapeHtml(UI.fmtDate(ev.at)) + '</div>' +
+/home/z/my-project/public/wms/track.html:250:            '<h4>' + UI.escapeHtml(meta.label) + ' · ' + UI.escapeHtml(ev.status.replace('_', ' ')) + '</h4>' +
+/home/z/my-project/public/wms/track.html:251:            '<div class="worker">Worker: ' + UI.escapeHtml(workerName) + '</div>' +
+/home/z/my-project/public/wms/track.html:252:            (ev.note ? '<div class="note">' + UI.escapeHtml(ev.note) + '</div>' : '');
+/home/z/my-project/public/wms/track.html:258:        el.innerHTML = UI.iconSvg(el.getAttribute('data-icon'));
+/home/z/my-project/public/wms/track.html:267:      UI.STAGE_ORDER.forEach(function (stage) {
+/home/z/my-project/public/wms/track.html:268:        var ns = UI.notifStatus(b, stage);
+/home/z/my-project/public/wms/track.html:269:        var meta = UI.STAGE_META[stage];
+/home/z/my-project/public/wms/track.html:276:          '<span class="stage">' + UI.escapeHtml(meta.label) + '</span>' +
+/home/z/my-project/public/wms/track.html:278:            '<span class="dot"></span>' + emoji + ' ' + UI.escapeHtml(statusLabel) +
+/home/z/my-project/public/wms/track.html:283:        el.innerHTML = UI.iconSvg(el.getAttribute('data-icon'));
+/home/z/my-project/public/wms/dashboard.html:77:    const esc = (s) => UI.escapeHtml(s == null ? '' : s);
+/home/z/my-project/public/wms/dashboard.html:84:      const { label, cls } = UI.statusLabel(status);
+/home/z/my-project/public/wms/dashboard.html:126:        for (const s of UI.STAGE_ORDER) {
+/home/z/my-project/public/wms/dashboard.html:127:          const st = UI.notifStatus(b, s);
+/home/z/my-project/public/wms/dashboard.html:135:      if (!tl.length) return UI.fmtDate(batch.createdAt);
+/home/z/my-project/public/wms/dashboard.html:136:      return UI.fmtDate(tl[tl.length - 1].at);
+/home/z/my-project/public/wms/dashboard.html:139:      return `<div class="empty"><div class="ico">${UI.iconSvg(icon || 'info')}</div><p>${esc(msg)}</p></div>`;
+/home/z/my-project/public/wms/dashboard.html:192:          UI.toast('Please enter a staff code.', { title: 'Sign-in failed', type: 'error' });
+/home/z/my-project/public/wms/dashboard.html:196:        UI.toast(`Welcome, ${name || 'Staff Member'}!`, { title: 'Signed in' });
+/home/z/my-project/public/wms/dashboard.html:201:        UI.toast('Logged in as Sarita Adhikari (Operations).', { title: 'Demo login' });
+/home/z/my-project/public/wms/dashboard.html:259:                <button class="dash-toggle" id="dashToggle" aria-label="Toggle menu">${UI.iconSvg('menu')}</button>
+/home/z/my-project/public/wms/dashboard.html:264:                <button class="btn btn-outline btn-sm" id="resetBtn" aria-label="Reset demo data">${UI.iconSvg('refresh')} Reset</button>
+/home/z/my-project/public/wms/dashboard.html:265:                <a class="btn btn-ghost btn-sm" href="/wms/index.html" aria-label="Public site">${UI.iconSvg('home')} Public Site</a>
+/home/z/my-project/public/wms/dashboard.html:284:          html += `<button class="nav-link" data-view="${it.v}"><span class="ico">${UI.iconSvg(it.i)}</span>${esc(it.l)}</button>`;
+/home/z/my-project/public/wms/dashboard.html:309:        <button class="btn btn-ghost btn-sm" id="logoutBtn" style="margin-top:8px;color:#cfe0d6">${UI.iconSvg('logout')} Logout</button>
+/home/z/my-project/public/wms/dashboard.html:326:        UI.toast('Demo data reset to seed state.', { title: 'Reset complete', type: 'info' });
+/home/z/my-project/public/wms/dashboard.html:331:        if (e.key === 'Escape') UI.closeAllModals();
+/home/z/my-project/public/wms/dashboard.html:374:      UI.clear(c);
+/home/z/my-project/public/wms/dashboard.html:414:            <div class="ico">${UI.iconSvg('package')}</div>
+/home/z/my-project/public/wms/dashboard.html:420:            <div class="ico">${UI.iconSvg('layers')}</div>
+/home/z/my-project/public/wms/dashboard.html:426:            <div class="ico">${UI.iconSvg('buildings')}</div>
+/home/z/my-project/public/wms/dashboard.html:432:            <div class="ico">${UI.iconSvg('users')}</div>
+/home/z/my-project/public/wms/dashboard.html:450:                      <div class="av">${UI.initials(bizName(b.businessId) || '?')}</div>
+/home/z/my-project/public/wms/dashboard.html:453:                        <div class="sub">${bizName(b.businessId)} · ${UI.fmtKg(b.weightKg)} · ${esc(UI.fmtTime(ev.at))}</div>
+/home/z/my-project/public/wms/dashboard.html:456:                        <button class="btn btn-ghost btn-sm" data-action="view-batch" data-id="${esc(b.id)}">${UI.iconSvg('eye')} View</button>
+/home/z/my-project/public/wms/dashboard.html:491:              <button class="btn btn-primary" data-action="new-booking">${UI.iconSvg('calendar')} New Booking</button>
+/home/z/my-project/public/wms/dashboard.html:492:              <button class="btn btn-outline" data-action="new-business">${UI.iconSvg('plus')} Add Business</button>
+/home/z/my-project/public/wms/dashboard.html:493:              <button class="btn btn-outline" data-action="new-worker">${UI.iconSvg('plus')} Add Worker</button>
+/home/z/my-project/public/wms/dashboard.html:494:              <button class="btn btn-ghost" data-action="goto" data-id="batches">${UI.iconSvg('package')} Go to Batches</button>
+/home/z/my-project/public/wms/dashboard.html:521:          <button class="btn btn-primary" data-action="new-business">${UI.iconSvg('plus')} Add Business</button>
+/home/z/my-project/public/wms/dashboard.html:525:            ${UI.iconSvg('search')}
+/home/z/my-project/public/wms/dashboard.html:549:                    <td>${UI.fmtDateShort(b.createdAt)}</td>
+/home/z/my-project/public/wms/dashboard.html:551:                      <button class="btn btn-ghost btn-sm" data-action="view-business" data-id="${esc(b.id)}" aria-label="View">${UI.iconSvg('eye')}</button>
+/home/z/my-project/public/wms/dashboard.html:552:                      <button class="btn btn-ghost btn-sm" data-action="edit-business" data-id="${esc(b.id)}" aria-label="Edit">${UI.iconSvg('edit')}</button>
+/home/z/my-project/public/wms/dashboard.html:553:                      <button class="btn btn-ghost btn-sm" data-action="del-business" data-id="${esc(b.id)}" aria-label="Delete">${UI.iconSvg('trash')}</button>
+/home/z/my-project/public/wms/dashboard.html:584:          <button class="btn btn-primary" data-action="new-booking">${UI.iconSvg('plus')} New Booking</button>
+/home/z/my-project/public/wms/dashboard.html:588:            ${UI.iconSvg('search')}
+/home/z/my-project/public/wms/dashboard.html:594:            ${statuses.map((s) => `<option value="${s}" ${f === s ? 'selected' : ''}>${UI.statusLabel(s).label}</option>`).join('')}
+/home/z/my-project/public/wms/dashboard.html:610:                    <td>${UI.fmtKg(b.quantityKg)}</td>
+/home/z/my-project/public/wms/dashboard.html:611:                    <td>${UI.fmtDateShort(b.preferredDate)}</td>
+/home/z/my-project/public/wms/dashboard.html:617:                      <button class="btn btn-ghost btn-sm" data-action="del-booking" data-id="${esc(b.id)}" aria-label="Delete">${UI.iconSvg('trash')}</button>
+/home/z/my-project/public/wms/dashboard.html:647:          <button class="btn btn-primary" data-action="new-worker">${UI.iconSvg('plus')} Add Worker</button>
+/home/z/my-project/public/wms/dashboard.html:651:            ${UI.iconSvg('search')}
+/home/z/my-project/public/wms/dashboard.html:664:                <div class="av">${UI.initials(w.name)}</div>
+/home/z/my-project/public/wms/dashboard.html:670:                  <button class="btn btn-ghost btn-sm" data-action="view-worker" data-id="${esc(w.id)}" aria-label="View">${UI.iconSvg('eye')}</button>
+/home/z/my-project/public/wms/dashboard.html:671:                  <button class="btn btn-ghost btn-sm" data-action="edit-worker" data-id="${esc(w.id)}" aria-label="Edit">${UI.iconSvg('edit')}</button>
+/home/z/my-project/public/wms/dashboard.html:672:                  <button class="btn btn-ghost btn-sm" data-action="del-worker" data-id="${esc(w.id)}" aria-label="Delete">${UI.iconSvg('trash')}</button>
+/home/z/my-project/public/wms/dashboard.html:687:        const cs = UI.stageStatus(b, 'collection');
+/home/z/my-project/public/wms/dashboard.html:688:        const ss = UI.stageStatus(b, 'sorting');
+/home/z/my-project/public/wms/dashboard.html:703:                <div class="av">${UI.iconSvg('truck')}</div>
+/home/z/my-project/public/wms/dashboard.html:706:                  <div class="sub">${bizName(b.businessId)} · ${UI.fmtKg(b.weightKg)} · Collector: ${workerName(b.workerId)} · Collected ${UI.fmtDate(ev.at)}</div>
+/home/z/my-project/public/wms/dashboard.html:739:          <button class="btn btn-primary" data-action="new-batch">${UI.iconSvg('plus')} New Batch</button>
+/home/z/my-project/public/wms/dashboard.html:743:            ${UI.iconSvg('search')}
+/home/z/my-project/public/wms/dashboard.html:749:            ${statuses.map((s) => `<option value="${s}" ${f === s ? 'selected' : ''}>${UI.statusLabel(s).label}</option>`).join('')}
+/home/z/my-project/public/wms/dashboard.html:766:                    <td>${UI.fmtKg(b.weightKg)}</td>
+/home/z/my-project/public/wms/dashboard.html:768:                    <td>${UI.fmtDateShort(lastUpdate(b))}</td>
+/home/z/my-project/public/wms/dashboard.html:769:                    <td><span class="badge ${sent > 0 ? 'badge-green' : 'badge-gray'}">${sent}/${UI.STAGE_ORDER.length}</span></td>
+/home/z/my-project/public/wms/dashboard.html:787:      const all = db.batches.all().filter((b) => UI.stageStatus(b, 'sorting') === 'in_progress');
+/home/z/my-project/public/wms/dashboard.html:801:                <div class="av">${UI.iconSvg('layers')}</div>
+/home/z/my-project/public/wms/dashboard.html:804:                  <div class="sub">${bizName(b.businessId)} · ${UI.fmtKg(b.weightKg)} · Arrived ${UI.fmtDate(ev.at)}</div>
+/home/z/my-project/public/wms/dashboard.html:809:                    ? `<button class="btn btn-primary btn-sm" data-action="send-recycling" data-id="${esc(b.id)}">${UI.iconSvg('recycle')} Send to Recycling Partner</button>`
+/home/z/my-project/public/wms/dashboard.html:810:                    : `<button class="btn btn-primary btn-sm" data-action="complete-sorting" data-id="${esc(b.id)}">${UI.iconSvg('sprout')} Confirm Sorting → Start Composting</button>`
+/home/z/my-project/public/wms/dashboard.html:837:                <div class="av">${UI.iconSvg('sprout')}</div>
+/home/z/my-project/public/wms/dashboard.html:840:                  <div class="sub">${bizName(b.businessId)} · ${UI.fmtKg(b.weightKg)} organic · Started ${UI.fmtDate(ev.at)}</div>
+/home/z/my-project/public/wms/dashboard.html:844:                  <button class="btn btn-primary btn-sm" data-action="complete-composting" data-id="${esc(b.id)}">${UI.iconSvg('wheat')} Confirm Compost Ready</button>
+/home/z/my-project/public/wms/dashboard.html:873:                <div class="av">${UI.iconSvg('wheat')}</div>
+/home/z/my-project/public/wms/dashboard.html:876:                  <div class="sub">${bizName(b.businessId)} · Source ${UI.fmtKg(b.weightKg)} · Suggested yield ~${suggested}kg · Ready ${UI.fmtDate(ev.at)}</div>
+/home/z/my-project/public/wms/dashboard.html:897:                  <td>${UI.fmtKg(b.deliveredKg)}</td>
+/home/z/my-project/public/wms/dashboard.html:899:                  <td>${UI.fmtDateShort(ev.at || b.createdAt)}</td>
+/home/z/my-project/public/wms/dashboard.html:917:        for (const s of UI.STAGE_ORDER) {
+/home/z/my-project/public/wms/dashboard.html:918:          const st = UI.notifStatus(b, s);
+/home/z/my-project/public/wms/dashboard.html:942:            ${UI.iconSvg('search')}
+/home/z/my-project/public/wms/dashboard.html:956:              const meta = UI.STAGE_META[it.stage];
+/home/z/my-project/public/wms/dashboard.html:957:              const msg = UI.notifMessage(it.batch, it.stage);
+/home/z/my-project/public/wms/dashboard.html:968:                  <span class="muted" style="font-size:.78rem">${it.at ? UI.fmtDate(it.at) : '— not yet sent —'}</span>
+/home/z/my-project/public/wms/dashboard.html:1028:          <button class="btn btn-primary" data-action="export-csv">${UI.iconSvg('download')} Export CSV</button>
+/home/z/my-project/public/wms/dashboard.html:1032:          <div class="kpi"><div class="ico">${UI.iconSvg('package')}</div><div class="lbl">Total Batches</div><div class="val">${total}</div></div>
+/home/z/my-project/public/wms/dashboard.html:1033:          <div class="kpi"><div class="ico">${UI.iconSvg('wheat')}</div><div class="lbl">Delivered to Farms</div><div class="val">${delivered}</div></div>
+/home/z/my-project/public/wms/dashboard.html:1034:          <div class="kpi"><div class="ico">${UI.iconSvg('recycle')}</div><div class="lbl">Recycled</div><div class="val">${recycled}</div></div>
+/home/z/my-project/public/wms/dashboard.html:1035:          <div class="kpi"><div class="ico">${UI.iconSvg('leaf')}</div><div class="lbl">Organic Processed</div><div class="val">${organicKg}<span style="font-size:1rem">kg</span></div></div>
+/home/z/my-project/public/wms/dashboard.html:1038:          <div class="kpi"><div class="ico">${UI.iconSvg('sprout')}</div><div class="lbl">Compost Delivered</div><div class="val">${compostKg}<span style="font-size:1rem">kg</span></div></div>
+/home/z/my-project/public/wms/dashboard.html:1039:          <div class="kpi"><div class="ico">${UI.iconSvg('buildings')}</div><div class="lbl">Businesses Served</div><div class="val">${businessN}</div></div>
+/home/z/my-project/public/wms/dashboard.html:1040:          <div class="kpi"><div class="ico">${UI.iconSvg('users')}</div><div class="lbl">Active Workers</div><div class="val">${workerN}</div></div>
+/home/z/my-project/public/wms/dashboard.html:1041:          <div class="kpi"><div class="ico">${UI.iconSvg('mapPin')}</div><div class="lbl">Farms Supplied</div><div class="val">${farmN}</div></div>
+/home/z/my-project/public/wms/dashboard.html:1052:                  <div class="bar-lbl">${esc(UI.statusLabel(k).label)}</div>
+/home/z/my-project/public/wms/dashboard.html:1104:      if (!b) { UI.toast('Batch not found.', { type: 'error' }); return; }
+/home/z/my-project/public/wms/dashboard.html:1108:      const current = UI.batchCurrentStage(b);
+/home/z/my-project/public/wms/dashboard.html:1109:      const next = UI.nextStage(current);
+/home/z/my-project/public/wms/dashboard.html:1110:      const meta = UI.STAGE_META;
+/home/z/my-project/public/wms/dashboard.html:1114:      const tracker = UI.STAGE_ORDER.map((s) => {
+/home/z/my-project/public/wms/dashboard.html:1115:        const st = UI.stageStatus(b, s);
+/home/z/my-project/public/wms/dashboard.html:1124:          <div class="j-ico">${UI.iconSvg(m.icon || 'info')}</div>
+/home/z/my-project/public/wms/dashboard.html:1127:            <div class="j-time">${UI.fmtDate(ev.at)} · ${workerName(ev.workerId)}</div>
+/home/z/my-project/public/wms/dashboard.html:1134:      const notifs = UI.STAGE_ORDER.map((s) => {
+/home/z/my-project/public/wms/dashboard.html:1135:        const st = UI.notifStatus(b, s);
+/home/z/my-project/public/wms/dashboard.html:1136:        const msg = UI.notifMessage(b, s);
+/home/z/my-project/public/wms/dashboard.html:1176:        <div class="muted" style="font-size:.82rem;margin-top:4px">Created ${UI.fmtDate(b.createdAt)}</div>
+/home/z/my-project/public/wms/dashboard.html:1184:          <div class="k">Collected</div><div class="v">${UI.fmtKg(b.weightKg)}</div>
+/home/z/my-project/public/wms/dashboard.html:1185:          ${b.deliveredKg ? `<div class="k">Delivered</div><div class="v">${UI.fmtKg(b.deliveredKg)} to ${fr ? esc(fr.name) : '—'}</div>` : ''}
+/home/z/my-project/public/wms/dashboard.html:1190:        ? `<div class="banner"><span class="ico">${UI.iconSvg('checkCircle')}</span> This batch has been completed (${esc(b.status)}).</div>`
+/home/z/my-project/public/wms/dashboard.html:1194:            <button class="btn btn-primary" data-action="${advanceAction}" data-id="${esc(b.id)}">${UI.iconSvg('arrowRight')} ${esc(advanceLabel)}</button>
+/home/z/my-project/public/wms/dashboard.html:1197:      UI.openModal({
+/home/z/my-project/public/wms/dashboard.html:1226:          UI.closeAllModals();
+/home/z/my-project/public/wms/dashboard.html:1331:            UI.toast(ok ? 'Batch ID copied to clipboard.' : 'Clipboard unavailable in this browser.', { title: 'Copied' });
+/home/z/my-project/public/wms/dashboard.html:1359:      UI.toast(toastMsg || 'Notification updated', { title: 'Customer Message' });
+/home/z/my-project/public/wms/dashboard.html:1419:        UI.toast('Stage advanced — collection complete, sorting started.', { title: 'Stage advanced' });
+/home/z/my-project/public/wms/dashboard.html:1420:        if (!autoNotify) UI.toast('Customer not notified (auto-send unchecked for collection).', { title: 'Notifications', type: 'info' });
+/home/z/my-project/public/wms/dashboard.html:1431:        UI.toast('Stage advanced — sorting complete, composting started.', { title: 'Stage advanced' });
+/home/z/my-project/public/wms/dashboard.html:1432:        if (!autoNotify) UI.toast('Customer not notified (auto-send unchecked for sorting).', { title: 'Notifications', type: 'info' });
+/home/z/my-project/public/wms/dashboard.html:1438:        UI.toast('Stage advanced — compost ready for farm delivery.', { title: 'Stage advanced' });
+/home/z/my-project/public/wms/dashboard.html:1439:        if (!autoNotify) UI.toast('Customer not notified (auto-send unchecked for composting).', { title: 'Notifications', type: 'info' });
+/home/z/my-project/public/wms/dashboard.html:1442:        UI.closeAllModals();
+/home/z/my-project/public/wms/dashboard.html:1458:      UI.toast('Batch sent to recycling partner — status: Recycled.', { title: 'Recycling branch' });
+/home/z/my-project/public/wms/dashboard.html:1459:      if (!autoNotify) UI.toast('Customer not notified (auto-send unchecked for sorting).', { title: 'Notifications', type: 'info' });
+/home/z/my-project/public/wms/dashboard.html:1469:      UI.toast('Batch marked as arrived at sorting facility.', { title: 'Collection → Sorting' });
+/home/z/my-project/public/wms/dashboard.html:1481:      UI.toast('Sorting complete — composting started.', { title: 'Stage advanced' });
+/home/z/my-project/public/wms/dashboard.html:1491:      UI.toast('Batch sent to recycling partner — status: Recycled.', { title: 'Recycling branch' });
+/home/z/my-project/public/wms/dashboard.html:1501:      UI.toast('Compost ready — status: Ready for Delivery.', { title: 'Stage advanced' });
+/home/z/my-project/public/wms/dashboard.html:1510:      if (!bk) { UI.toast('Booking not found.', { type: 'error' }); return; }
+/home/z/my-project/public/wms/dashboard.html:1512:        UI.toast('Only scheduled bookings with an assigned worker can be converted.', { type: 'error' });
+/home/z/my-project/public/wms/dashboard.html:1532:      UI.openModal({
+/home/z/my-project/public/wms/dashboard.html:1535:          <div class="banner" style="margin-bottom:14px"><span class="ico">${UI.iconSvg('checkCircle')}</span> Booking ${esc(bk.id)} has been converted to a new batch.</div>
+/home/z/my-project/public/wms/dashboard.html:1539:            <div class="muted" style="font-size:.84rem">${esc(bizName(bk.businessId))} · ${UI.fmtKg(bk.quantityKg)} · ${esc(bk.wasteType)}</div>
+/home/z/my-project/public/wms/dashboard.html:1543:          `<button class="btn btn-ghost" data-action="copy-batch-id" data-id="${esc(batch.id)}">${UI.iconSvg('check')} Copy ID</button>`,
+/home/z/my-project/public/wms/dashboard.html:1544:          `<button class="btn btn-primary" data-action="view-batch" data-id="${esc(batch.id)}">${UI.iconSvg('eye')} View Batch</button>`,
+/home/z/my-project/public/wms/dashboard.html:1591:      UI.openModal({
+/home/z/my-project/public/wms/dashboard.html:1597:      root.querySelector('#bizCancel').addEventListener('click', UI.closeAllModals);
+/home/z/my-project/public/wms/dashboard.html:1608:        if (!data.name) { UI.toast('Name is required.', { type: 'error' }); return; }
+/home/z/my-project/public/wms/dashboard.html:1609:        if (b) { db.businesses.update(b.id, data); UI.toast('Business updated.'); }
+/home/z/my-project/public/wms/dashboard.html:1610:        else   { db.businesses.add(data); UI.toast('Business added.'); }
+/home/z/my-project/public/wms/dashboard.html:1611:        UI.closeAllModals();
+/home/z/my-project/public/wms/dashboard.html:1618:      if (!b) { UI.toast('Business not found.', { type: 'error' }); return; }
+/home/z/my-project/public/wms/dashboard.html:1621:      UI.openModal({
+/home/z/my-project/public/wms/dashboard.html:1633:            <div class="k">Created</div><div class="v">${UI.fmtDate(b.createdAt)}</div>
+/home/z/my-project/public/wms/dashboard.html:1638:              ${bks.map((x) => `<tr><td class="mono">${esc(x.id)}</td><td>${wasteBadge(x.wasteType)}</td><td>${UI.fmtKg(x.quantityKg)}</td><td>${statusBadge(x.status)}</td></tr>`).join('')}
+/home/z/my-project/public/wms/dashboard.html:1643:              ${bts.map((x) => `<tr><td class="mono">${esc(x.id)}</td><td>${statusBadge(x.status)}</td><td>${UI.fmtKg(x.weightKg)}</td></tr>`).join('')}
+/home/z/my-project/public/wms/dashboard.html:1648:      document.querySelector('#bizViewClose').addEventListener('click', UI.closeAllModals);
+/home/z/my-project/public/wms/dashboard.html:1654:      UI.confirmDialog({
+/home/z/my-project/public/wms/dashboard.html:1662:        UI.toast('Business deleted.', { type: 'info' });
+/home/z/my-project/public/wms/dashboard.html:1705:      UI.openModal({
+/home/z/my-project/public/wms/dashboard.html:1715:      root.querySelector('#bkCancel').addEventListener('click', UI.closeAllModals);
+/home/z/my-project/public/wms/dashboard.html:1718:        if (!f.businessId.value) { UI.toast('Please select a business.', { type: 'error' }); return; }
+/home/z/my-project/public/wms/dashboard.html:1730:        UI.toast('Booking created — status: Pending.');
+/home/z/my-project/public/wms/dashboard.html:1731:        UI.closeAllModals();
+/home/z/my-project/public/wms/dashboard.html:1755:      UI.openModal({
+/home/z/my-project/public/wms/dashboard.html:1761:      root.querySelector('#awCancel').addEventListener('click', UI.closeAllModals);
+/home/z/my-project/public/wms/dashboard.html:1764:        if (!f.workerId.value) { UI.toast('Please pick a collector.', { type: 'error' }); return; }
+/home/z/my-project/public/wms/dashboard.html:1766:        UI.toast('Worker assigned — booking is now Scheduled.');
+/home/z/my-project/public/wms/dashboard.html:1767:        UI.closeAllModals();
+/home/z/my-project/public/wms/dashboard.html:1775:      UI.confirmDialog({
+/home/z/my-project/public/wms/dashboard.html:1783:        UI.toast('Booking deleted.', { type: 'info' });
+/home/z/my-project/public/wms/dashboard.html:1824:      UI.openModal({
+/home/z/my-project/public/wms/dashboard.html:1830:      root.querySelector('#wkCancel').addEventListener('click', UI.closeAllModals);
+/home/z/my-project/public/wms/dashboard.html:1840:        if (!data.name) { UI.toast('Name is required.', { type: 'error' }); return; }
+/home/z/my-project/public/wms/dashboard.html:1841:        if (w) { db.workers.update(w.id, data); UI.toast('Worker updated.'); }
+/home/z/my-project/public/wms/dashboard.html:1842:        else   { db.workers.add(data); UI.toast('Worker added.'); }
+/home/z/my-project/public/wms/dashboard.html:1843:        UI.closeAllModals();
+/home/z/my-project/public/wms/dashboard.html:1850:      if (!w) { UI.toast('Worker not found.', { type: 'error' }); return; }
+/home/z/my-project/public/wms/dashboard.html:1852:      UI.openModal({
+/home/z/my-project/public/wms/dashboard.html:1863:            <div class="k">Joined</div><div class="v">${UI.fmtDate(w.createdAt)}</div>
+/home/z/my-project/public/wms/dashboard.html:1868:              ${bts.map((x) => `<tr><td class="mono">${esc(x.id)}</td><td>${truncate(bizName(x.businessId), 24)}</td><td>${statusBadge(x.status)}</td><td>${UI.fmtKg(x.weightKg)}</td></tr>`).join('')}
+/home/z/my-project/public/wms/dashboard.html:1873:      document.querySelector('#wkViewClose').addEventListener('click', UI.closeAllModals);
+/home/z/my-project/public/wms/dashboard.html:1879:      UI.confirmDialog({
+/home/z/my-project/public/wms/dashboard.html:1887:        UI.toast('Worker deleted.', { type: 'info' });
+/home/z/my-project/public/wms/dashboard.html:1930:      UI.openModal({
+/home/z/my-project/public/wms/dashboard.html:1936:      root.querySelector('#btCancel').addEventListener('click', UI.closeAllModals);
+/home/z/my-project/public/wms/dashboard.html:1940:          UI.toast('Please select a business and a collector.', { type: 'error' });
+/home/z/my-project/public/wms/dashboard.html:1957:        UI.toast(`Batch ${batch.id} created — status: Collected.`, { title: 'Batch created' });
+/home/z/my-project/public/wms/dashboard.html:1958:        UI.closeAllModals();
+/home/z/my-project/public/wms/dashboard.html:1965:      if (!b) { UI.toast('Batch not found.', { type: 'error' }); return; }
+/home/z/my-project/public/wms/dashboard.html:1967:        UI.toast('Only batches with status "Ready for Delivery" can be delivered.', { type: 'error' });
+/home/z/my-project/public/wms/dashboard.html:1977:            <div class="id-mono">${esc(b.id)} · ${UI.fmtKg(b.weightKg)} source</div>
+/home/z/my-project/public/wms/dashboard.html:2005:      UI.openModal({
+/home/z/my-project/public/wms/dashboard.html:2011:      root.querySelector('#fdCancel').addEventListener('click', UI.closeAllModals);
+/home/z/my-project/public/wms/dashboard.html:2015:          UI.toast('Please pick a farm and driver.', { type: 'error' }); return;
+/home/z/my-project/public/wms/dashboard.html:2035:        UI.toast('Delivery confirmed — customer notified 🌱', { title: 'Farm Delivery' });
+/home/z/my-project/public/wms/dashboard.html:2036:        UI.closeAllModals();
+/home/z/my-project/public/wms/dashboard.html:2055:          UI.fmtDate(b.createdAt),
+/home/z/my-project/public/wms/dashboard.html:2071:      UI.toast('Exported batches.csv', { title: 'CSV Export' });
+/home/z/my-project/public/wms/worker.html:187:        el.innerHTML = UI.iconSvg(el.getAttribute('data-icon'));
+/home/z/my-project/public/wms/worker.html:217:      var cs = UI.batchCurrentStage(batch);
+/home/z/my-project/public/wms/worker.html:224:      UI.clear(sel);
+/home/z/my-project/public/wms/worker.html:234:      UI.clear(quick);
+/home/z/my-project/public/wms/worker.html:240:        btn.innerHTML = UI.escapeHtml(w.name) + ' <span class="role">' + UI.escapeHtml(roleLabel(w.role)) + '</span>';
+/home/z/my-project/public/wms/worker.html:253:        UI.toast('Please select a worker', { type: 'error' });
+/home/z/my-project/public/wms/worker.html:257:      UI.toast('Signed in as ' + w.name, { title: 'Welcome', type: 'success' });
+/home/z/my-project/public/wms/worker.html:291:      UI.clear(tasksWrap);
+/home/z/my-project/public/wms/worker.html:308:      var cs = UI.batchCurrentStage(b);
+/home/z/my-project/public/wms/worker.html:309:      var stageMeta = UI.STAGE_META[cs] || { short: cs };
+/home/z/my-project/public/wms/worker.html:310:      var statusInfo = UI.statusLabel(b.status);
+/home/z/my-project/public/wms/worker.html:320:        '<span class="batchid">' + UI.escapeHtml(b.id) + '</span>' +
+/home/z/my-project/public/wms/worker.html:321:        '<span class="badge ' + statusInfo.cls + '">' + UI.escapeHtml(statusInfo.label) + '</span>';
+/home/z/my-project/public/wms/worker.html:328:        '<div class="biz">' + UI.escapeHtml(biz ? biz.name : (b.businessName || 'Unknown business')) + '</div>' +
+/home/z/my-project/public/wms/worker.html:330:          '<span class="badge badge-outline" style="text-transform:capitalize">' + UI.escapeHtml(b.wasteType) + '</span>' +
+/home/z/my-project/public/wms/worker.html:331:          '<span>· ' + UI.fmtKg(b.weightKg) + '</span>' +
+/home/z/my-project/public/wms/worker.html:333:        '<div class="stage-tag">Current stage: ' + UI.escapeHtml(stageMeta.short) + '</div>';
+/home/z/my-project/public/wms/worker.html:343:        done.innerHTML = UI.iconSvg('check') + ' Completed';
+/home/z/my-project/public/wms/worker.html:364:        wait.innerHTML = UI.iconSvg('clock') + ' Waiting — not your stage';
+/home/z/my-project/public/wms/worker.html:396:      var next = UI.nextStage(stage);
+/home/z/my-project/public/wms/worker.html:407:      UI.toast('Stage confirmed — customer notified', { title: 'Done', type: 'success' });
+/home/z/my-project/public/wms/worker.html:414:        return '<option value="' + UI.escapeHtml(f.id) + '">' +
+/home/z/my-project/public/wms/worker.html:415:          UI.escapeHtml(f.name) + ' — ' + UI.escapeHtml(f.location) +
+/home/z/my-project/public/wms/worker.html:431:      var cancelBtn = UI.el('button', {
+/home/z/my-project/public/wms/worker.html:433:        onclick: UI.closeAllModals
+/home/z/my-project/public/wms/worker.html:436:      var confirmBtn = UI.el('button', {
+/home/z/my-project/public/wms/worker.html:441:          if (!farmId) { UI.toast('Please select a farm', { type: 'error' }); return; }
+/home/z/my-project/public/wms/worker.html:442:          if (!kg || kg <= 0) { UI.toast('Enter a valid weight in kg', { type: 'error' }); return; }
+/home/z/my-project/public/wms/worker.html:443:          UI.closeAllModals();
+/home/z/my-project/public/wms/worker.html:448:      UI.openModal({
+/home/z/my-project/public/wms/worker.html:492:      UI.toast('Compost delivered 🌱 — customer notified', { title: 'Delivered', type: 'success' });
+/home/z/my-project/public/wms/booking.html:179:    UI.mountPublic('booking.html');
+/home/z/my-project/public/wms/booking.html:181:      el.innerHTML = UI.iconSvg(el.getAttribute('data-icon'));
+/home/z/my-project/public/wms/booking.html:284:        UI.toast('Please complete the highlighted fields', { title: 'Missing details', type: 'error' });
+/home/z/my-project/public/wms/booking.html:304:      UI.clear(summary);
+/home/z/my-project/public/wms/booking.html:309:        ['Estimated weight', UI.fmtKg(data.quantityKg)],
+/home/z/my-project/public/wms/booking.html:310:        ['Preferred date', UI.fmtDateShort(data.preferredDate)],
+/home/z/my-project/public/wms/booking.html:316:        row.innerHTML = '<span class="k">' + UI.escapeHtml(r[0]) + '</span>' +
+
+[Showing results with pagination = limit: 250]

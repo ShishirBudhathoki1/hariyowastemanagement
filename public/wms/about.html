@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About Us — Hariyo Waste</title>
+  <link rel="stylesheet" href="/wms/css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .hero.smaller .hero-inner { padding: 60px 0 50px; }
+    .hero.smaller h1 { font-size: clamp(1.8rem, 3.8vw, 2.6rem); }
+    .mission-card {
+      background: linear-gradient(135deg, var(--green-700), var(--green-900));
+      color: #fff; border-radius: var(--r-lg); padding: 30px; height: 100%;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .mission-card .ico {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: rgba(255,255,255,.12); color: #fff;
+      display: grid; place-items: center; margin-bottom: 14px;
+    }
+    .mission-card .ico svg { width: 26px; height: 26px; }
+    .mission-card h3 { color: #fff; margin-bottom: 8px; }
+    .mission-card p { color: rgba(255,255,255,.88); margin: 0; }
+    .values-card { padding: 26px; height: 100%; }
+    .values-card .ico { width: 48px; height: 48px; border-radius: 12px; background: var(--green-50); color: var(--green-700); display: grid; place-items: center; margin-bottom: 14px; }
+    .values-card .ico svg { width: 24px; height: 24px; }
+    .values-card h3 { margin-bottom: 6px; font-size: 1.08rem; }
+    .values-card p { margin: 0; color: var(--ink-600); font-size: .92rem; }
+    .team-card { padding: 20px; text-align: center; height: 100%; }
+    .team-card .av {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--green-500), var(--green-700));
+      color: #fff; display: grid; place-items: center; margin: 0 auto 12px;
+      font-weight: 800; font-size: 1.3rem;
+    }
+    .team-card h4 { margin: 0 0 2px; font-size: 1rem; }
+    .team-card .role { font-size: .82rem; color: var(--green-700); font-weight: 700; }
+    .team-card .bio { font-size: .82rem; color: var(--ink-500); margin-top: 6px; }
+    .impact-row {
+      background: var(--green-50);
+      border: 1px solid var(--green-200);
+      border-radius: var(--r-lg);
+      padding: 32px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+      text-align: center;
+    }
+    .impact-row .n { font-size: 2rem; font-weight: 800; color: var(--green-800); line-height: 1; }
+    .impact-row .l { font-size: .86rem; color: var(--ink-600); margin-top: 6px; font-weight: 600; }
+    @media (max-width: 640px) { .impact-row { grid-template-columns: 1fr; gap: 18px; } }
+    .story-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 30px; align-items: start; }
+    @media (max-width: 820px) { .story-grid { grid-template-columns: 1fr; } }
+    .story-text p { color: var(--ink-600); font-size: 1rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <!-- HERO -->
+    <section class="hero smaller">
+      <div class="container hero-inner">
+        <span class="eyebrow"><span class="dot"></span> About Us</span>
+        <h1>We close the loop on waste in the <span class="hl">Kathmandu Valley</span></h1>
+        <p class="lead">Hariyo Waste is a Nepalese waste-management startup that buys segregated waste from businesses, recycles it responsibly, and turns organic waste into compost for local farms.</p>
+      </div>
+    </section>
+
+    <!-- STORY -->
+    <section class="section">
+      <div class="container">
+        <div class="story-grid">
+          <div class="story-text">
+            <span class="eyebrow"><span class="dot"></span> Our story</span>
+            <h2>Started with one simple observation</h2>
+            <p>Every day, hotels, restaurants and cafés across Kathmandu, Lalitpur and Bhaktapur throw away hundreds of kilograms of valuable organic and recyclable waste — while farms just outside the Valley pay for chemical fertilisers. The loop is broken.</p>
+            <p>Hariyo Waste — <em>"hariyo"</em> means "green" in Nepali — was founded in 2025 to close that loop. We work with businesses to segregate at source, collect on schedule, sort at our Balkhu facility, and turn organic waste into windrow compost at our Bhaktapur plant. The compost is then delivered to partner farms in Lele, Kirtipur and Sipadole.</p>
+            <p>Every pickup gets a Batch ID, so our customers can follow their waste from kitchen to compost. No black boxes — just clean, traceable, Nepali-grown compost.</p>
+          </div>
+          <div>
+            <div class="mission-card">
+              <div class="ico" data-icon="leaf"></div>
+              <h3>Our mission</h3>
+              <p>Make segregation at source the default for every Nepali business — and turn the resulting waste into value for farms, not landfills.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MISSION / VISION / VALUES -->
+    <section class="section" style="background: var(--ink-50);">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow"><span class="dot"></span> What drives us</span>
+          <h2>Mission, vision &amp; values</h2>
+          <p>Three principles that shape every collection, every batch and every delivery we make.</p>
+        </div>
+        <div class="grid grid-3">
+          <div class="card card-hover values-card">
+            <div class="ico" data-icon="sprout"></div>
+            <h3>Mission</h3>
+            <p>To divert as much segregated waste from Kathmandu Valley landfills as possible — and return it to the soil of Nepalese farms.</p>
+          </div>
+          <div class="card card-hover values-card">
+            <div class="ico" data-icon="eye"></div>
+            <h3>Vision</h3>
+            <p>A Valley where every business segregates, every batch is traceable, and every farm has access to affordable, locally-made compost.</p>
+          </div>
+          <div class="card card-hover values-card">
+            <div class="ico" data-icon="checkCircle"></div>
+            <h3>Values</h3>
+            <p>Segregation at source. Full transparency. Fair pay for field workers. Respect for the people and the soil of Nepal.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TEAM -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow"><span class="dot"></span> The team</span>
+          <h2>The people behind Hariyo</h2>
+          <p>A small team of operators, sorters, compost specialists and field workers — all based in the Kathmandu Valley.</p>
+        </div>
+        <div class="grid grid-4">
+          <div class="card card-hover team-card">
+            <div class="av">AS</div>
+            <h4>Aayush Shrestha</h4>
+            <div class="role">Founder &amp; CEO</div>
+            <div class="bio">Ex-hospitality ops. Started Hariyo after 8 years managing hotel kitchens in Thamel.</div>
+          </div>
+          <div class="card card-hover team-card">
+            <div class="av">PM</div>
+            <h4>Priya Maharjan</h4>
+            <div class="role">Operations Lead</div>
+            <div class="bio">Runs scheduling, field routes and our Balkhu sorting facility.</div>
+          </div>
+          <div class="card card-hover team-card">
+            <div class="av">KT</div>
+            <h4>Kamal Thapa</h4>
+            <div class="role">Compost Specialist</div>
+            <div class="bio">Leads our Bhaktapur composting plant — windrow cycles, moisture, maturation.</div>
+          </div>
+          <div class="card card-hover team-card">
+            <div class="av">DT</div>
+            <h4>Dipendra Tamang</h4>
+            <div class="role">Field Coordinator</div>
+            <div class="bio">Coordinates daily collections across Kathmandu, Lalitpur and Bhaktapur.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- IMPACT NUMBERS -->
+    <section class="section" style="background: var(--ink-50);">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow"><span class="dot"></span> Impact</span>
+          <h2>Numbers from our first months</h2>
+        </div>
+        <div class="impact-row">
+          <div>
+            <div class="n">24+</div>
+            <div class="l">Businesses served across the Valley</div>
+          </div>
+          <div>
+            <div class="n">1,240 kg</div>
+            <div class="l">Waste diverted from landfills</div>
+          </div>
+          <div>
+            <div class="n">3</div>
+            <div class="l">Farms receiving our compost</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER CTA -->
+    <section class="section">
+      <div class="container">
+        <div class="cta-panel" style="background: linear-gradient(135deg, var(--green-600), var(--green-800)); color:#fff; border-radius: var(--r-xl); padding: 40px; text-align: center;">
+          <h3 style="color:#fff;">Want to be part of the loop?</h3>
+          <p style="color: rgba(255,255,255,.88);">Book a collection, track a batch, or get in touch with our team — we'd love to hear from you.</p>
+          <div class="flex gap-3 justify-center flex-wrap">
+            <a href="booking.html" class="btn btn-primary btn-lg" style="background:#fff;color:var(--green-800);">Book a Collection</a>
+            <a href="contact.html" class="btn btn-outline btn-lg" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.6);">Talk to us</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/wms/js/data.js"></script>
+  <script src="/wms/js/utils.js"></script>
+  <script src="/wms/js/layout.js"></script>
+  <script>
+    UI.mountPublic('about.html');
+    document.querySelectorAll('[data-icon]').forEach(function (el) {
+      el.innerHTML = UI.iconSvg(el.getAttribute('data-icon'));
+    });
+  </script>
+</body>
+</html>

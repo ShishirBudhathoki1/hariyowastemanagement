@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Track Your Waste — Hariyo Waste</title>
+  <link rel="stylesheet" href="/wms/css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .hero.smaller .hero-inner { padding: 56px 0 44px; }
+    .hero.smaller h1 { font-size: clamp(1.7rem, 3.6vw, 2.4rem); }
+    .sample-row {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px;
+      align-items: center;
+    }
+    .sample-row .label {
+      font-size: .82rem; color: var(--ink-500); font-weight: 600;
+    }
+    .sample-row button {
+      background: var(--green-50); border: 1px solid var(--green-200);
+      color: var(--green-800); padding: 6px 12px; border-radius: var(--r-full);
+      font-size: .82rem; font-weight: 700; font-family: ui-monospace, Menlo, monospace;
+      cursor: pointer; transition: background .15s, transform .08s;
+    }
+    .sample-row button:hover { background: var(--green-100); }
+    .sample-row button:active { transform: translateY(1px); }
+
+    /* Track result rendering */
+    .batch-header { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: start; }
+    .batch-header .id-block .id {
+      font-family: ui-monospace, Menlo, monospace; font-size: 1.5rem; font-weight: 800;
+      color: var(--green-800); letter-spacing: .04em;
+    }
+    .batch-header .biz { font-weight: 600; color: var(--ink-800); margin-top: 4px; }
+    .batch-header .sub { font-size: .85rem; color: var(--ink-500); margin-top: 2px; }
+    .batch-header .meta-grid {
+      display: grid; grid-template-columns: auto auto; gap: 6px 18px; text-align: right;
+      font-size: .85rem;
+    }
+    .batch-header .meta-grid .k { color: var(--ink-500); }
+    .batch-header .meta-grid .v { color: var(--ink-800); font-weight: 700; }
+    @media (max-width: 560px) {
+      .batch-header { grid-template-columns: 1fr; }
+      .batch-header .meta-grid { text-align: left; }
+    }
+    .track-section { margin-top: 18px; }
+    .track-section h3 { font-size: 1.02rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .track-section h3 .ico { display: inline-flex; width: 22px; height: 22px; color: var(--green-700); }
+    .track-section h3 .ico svg { width: 18px; height: 18px; }
+    .waste-badge { text-transform: capitalize; }
+    .notif-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 8px 0; border-bottom: 1px dashed var(--border); font-size: .86rem;
+    }
+    .notif-row:last-child { border-bottom: 0; }
+    .notif-row .stage { font-weight: 600; color: var(--ink-700); }
+    .notif-row .status {
+      display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: .82rem;
+    }
+    .notif-row .status .dot {
+      width: 10px; height: 10px; border-radius: 50%; background: currentColor;
+    }
+    .notif-row .s-sent { color: var(--status-sent); }
+    .notif-row .s-notsent { color: var(--status-notsent); }
+    .notif-row .s-failed { color: var(--status-failed); }
+    .journey .j-step h4 { margin-top: 0; }
+    .journey .j-step .worker {
+      font-size: .78rem; color: var(--ink-500); margin-top: 2px;
+    }
+    .journey .j-step .note {
+      font-size: .86rem; color: var(--ink-600); margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <!-- HERO -->
+    <section class="hero smaller">
+      <div class="container hero-inner">
+        <span class="eyebrow"><span class="dot"></span> Track Your Waste</span>
+        <h1>Enter your Batch ID to <span class="hl">follow its journey</span></h1>
+        <p class="lead">Every collection generates a Batch ID like <code class="mono">WM-2026-004281</code>. Enter it below to see exactly where your waste is right now — from collection to compost delivery.</p>
+      </div>
+    </section>
+
+    <!-- TRACKER -->
+    <section class="section">
+      <div class="container container-narrow">
+        <div class="track-box">
+          <div class="track-input-row">
+            <input type="text" id="batch-input" class="input" placeholder="e.g. WM-2026-004281" maxlength="14" autocomplete="off" spellcheck="false" />
+            <button type="button" class="btn btn-primary btn-lg" id="track-btn">Track</button>
+          </div>
+          <div class="sample-row">
+            <span class="label">Try a sample:</span>
+            <button type="button" data-sample="WM-2026-004279">WM-2026-004279</button>
+            <button type="button" data-sample="WM-2026-004280">WM-2026-004280</button>
+            <button type="button" data-sample="WM-2026-004281">WM-2026-004281</button>
+            <button type="button" data-sample="WM-2026-004282">WM-2026-004282</button>
+          </div>
+        </div>
+
+        <div class="track-result" id="track-result">
+          <!-- placeholder before any lookup -->
+          <div class="card card-pad text-center muted" id="track-placeholder">
+            <p style="margin:0">Enter a Batch ID above (or try a sample) to see the full journey of your waste.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/wms/js/data.js"></script>
+  <script src="/wms/js/utils.js"></script>
+  <script src="/wms/js/layout.js"></script>
+  <script>
+    UI.mountPublic('track.html');
+
+    var input = document.getElementById('batch-input');
+    var btn = document.getElementById('track-btn');
+    var result = document.getElementById('track-result');
+
+    // Uppercase as user types
+    input.addEventListener('input', function () {
+      this.value = this.value.toUpperCase();
+      if (!this.value.trim()) {
+        UI.clear(result);
+        result.appendChild(placeholderNode());
+      }
+    });
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') doTrack();
+    });
+    btn.addEventListener('click', doTrack);
+
+    document.querySelectorAll('[data-sample]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        input.value = b.getAttribute('data-sample');
+        doTrack();
+      });
+    });
+
+    function placeholderNode() {
+      var d = document.createElement('div');
+      d.className = 'card card-pad text-center muted';
+      d.innerHTML = '<p style="margin:0">Enter a Batch ID above (or try a sample) to see the full journey of your waste.</p>';
+      return d;
+    }
+
+    function doTrack() {
+      var raw = input.value.trim().toUpperCase();
+      if (!raw) {
+        UI.clear(result);
+        result.appendChild(placeholderNode());
+        return;
+      }
+      var batch = WMS.db.batches.get(raw);
+      if (!batch) {
+        renderNotFound(raw);
+        return;
+      }
+      renderBatch(batch);
+    }
+
+    function renderNotFound(id) {
+      UI.clear(result);
+      var wrap = document.createElement('div');
+      wrap.className = 'notfound';
+      wrap.innerHTML =
+        '<strong>No batch found with ID ' + UI.escapeHtml(id) + '.</strong><br>' +
+        'Please check the ID and try again. Sample IDs: ' +
+        '<code class="mono">WM-2026-004279</code>, <code class="mono">WM-2026-004280</code>, ' +
+        '<code class="mono">WM-2026-004281</code>, <code class="mono">WM-2026-004282</code>.';
+      result.appendChild(wrap);
+    }
+
+    function renderBatch(b) {
+      UI.clear(result);
+      var biz = WMS.db.businesses.get(b.businessId);
+      var statusInfo = UI.statusLabel(b.status);
+
+      // ----- Header card -----
+      var head = document.createElement('div');
+      head.className = 'card card-pad';
+      var farm = b.farmId ? WMS.db.farms.get(b.farmId) : null;
+      head.innerHTML =
+        '<div class="batch-header">' +
+          '<div class="id-block">' +
+            '<div class="id">' + UI.escapeHtml(b.id) + '</div>' +
+            '<div class="biz">' + UI.escapeHtml(biz ? biz.name : (b.businessName || 'Unknown business')) + '</div>' +
+            '<div class="sub">Created ' + UI.fmtDate(b.createdAt) + '</div>' +
+          '</div>' +
+          '<div class="meta-grid">' +
+            '<span class="k">Status</span><span class="v"><span class="badge ' + statusInfo.cls + '">' + UI.escapeHtml(statusInfo.label) + '</span></span>' +
+            '<span class="k">Waste type</span><span class="v"><span class="badge badge-outline waste-badge">' + UI.escapeHtml(b.wasteType) + '</span></span>' +
+            '<span class="k">Weight</span><span class="v">' + UI.fmtKg(b.weightKg) + '</span>' +
+            (b.deliveredKg ? '<span class="k">Delivered</span><span class="v">' + UI.fmtKg(b.deliveredKg) + '</span>' : '') +
+            (farm ? '<span class="k">Farm</span><span class="v">' + UI.escapeHtml(farm.name) + '</span>' : '') +
+          '</div>' +
+        '</div>';
+      result.appendChild(head);
+
+      // ----- Horizontal tracker -----
+      var trackerWrap = document.createElement('div');
+      trackerWrap.className = 'card card-pad track-section';
+      trackerWrap.innerHTML = '<h3><span class="ico" data-icon="layers"></span> Batch journey</h3>';
+      var tracker = document.createElement('div');
+      tracker.className = 'tracker';
+      UI.STAGE_ORDER.forEach(function (stage) {
+        var st = UI.stageStatus(b, stage);
+        var meta = UI.STAGE_META[stage];
+        var cls = 'step';
+        if (st === 'done') cls += ' done';
+        else if (st === 'in_progress') cls += ' active';
+        var step = document.createElement('div');
+        step.className = cls;
+        step.innerHTML =
+          '<div class="dot">' + meta.n + '</div>' +
+          '<div class="lbl">' + UI.escapeHtml(meta.short) + '</div>';
+        tracker.appendChild(step);
+      });
+      trackerWrap.appendChild(tracker);
+      // fill icon
+      trackerWrap.querySelectorAll('[data-icon]').forEach(function (el) {
+        el.innerHTML = UI.iconSvg(el.getAttribute('data-icon'));
+      });
+      result.appendChild(trackerWrap);
+
+      // ----- Vertical journey timeline -----
+      var journeyWrap = document.createElement('div');
+      journeyWrap.className = 'card card-pad track-section';
+      journeyWrap.innerHTML = '<h3><span class="ico" data-icon="clock"></span> Timeline of events</h3>';
+      var journey = document.createElement('div');
+      journey.className = 'journey';
+      if (!b.timeline || !b.timeline.length) {
+        journey.innerHTML = '<p class="muted" style="margin:0">No events recorded yet.</p>';
+      } else {
+        b.timeline.forEach(function (ev) {
+          var meta = UI.STAGE_META[ev.stage] || { label: ev.stage, icon: 'info' };
+          var worker = ev.workerId ? WMS.db.workers.get(ev.workerId) : null;
+          var workerName = worker ? worker.name : 'Unassigned';
+          var step = document.createElement('div');
+          var stepCls = 'j-step';
+          if (ev.status === 'done') stepCls += ' done';
+          else if (ev.status === 'in_progress') stepCls += ' active';
+          step.className = stepCls;
+          step.innerHTML =
+            '<div class="node">' + UI.iconSvg(meta.icon || 'check') + '</div>' +
+            '<div class="meta">' + UI.escapeHtml(UI.fmtDate(ev.at)) + '</div>' +
+            '<h4>' + UI.escapeHtml(meta.label) + ' · ' + UI.escapeHtml(ev.status.replace('_', ' ')) + '</h4>' +
+            '<div class="worker">Worker: ' + UI.escapeHtml(workerName) + '</div>' +
+            (ev.note ? '<div class="note">' + UI.escapeHtml(ev.note) + '</div>' : '');
+          journey.appendChild(step);
+        });
+      }
+      journeyWrap.appendChild(journey);
+      journeyWrap.querySelectorAll('[data-icon]').forEach(function (el) {
+        el.innerHTML = UI.iconSvg(el.getAttribute('data-icon'));
+      });
+      result.appendChild(journeyWrap);
+
+      // ----- Notification status row -----
+      var notifWrap = document.createElement('div');
+      notifWrap.className = 'card card-pad track-section';
+      notifWrap.innerHTML = '<h3><span class="ico" data-icon="bell"></span> Customer notifications</h3>' +
+        '<p class="muted" style="margin:0 0 12px;font-size:.85rem">SMS updates sent to the business at each stage of the journey.</p>';
+      UI.STAGE_ORDER.forEach(function (stage) {
+        var ns = UI.notifStatus(b, stage);
+        var meta = UI.STAGE_META[stage];
+        var statusLabel = ns === 'sent' ? 'Sent' : (ns === 'failed' ? 'Failed' : 'Not sent');
+        var statusCls = ns === 'sent' ? 's-sent' : (ns === 'failed' ? 's-failed' : 's-notsent');
+        var emoji = ns === 'sent' ? '🟢' : (ns === 'failed' ? '🔴' : '⚪');
+        var row = document.createElement('div');
+        row.className = 'notif-row';
+        row.innerHTML =
+          '<span class="stage">' + UI.escapeHtml(meta.label) + '</span>' +
+          '<span class="status ' + statusCls + '">' +
+            '<span class="dot"></span>' + emoji + ' ' + UI.escapeHtml(statusLabel) +
+          '</span>';
+        notifWrap.appendChild(row);
+      });
+      notifWrap.querySelectorAll('[data-icon]').forEach(function (el) {
+        el.innerHTML = UI.iconSvg(el.getAttribute('data-icon'));
+      });
+      result.appendChild(notifWrap);
+    }
+  </script>
+</body>
+</html>

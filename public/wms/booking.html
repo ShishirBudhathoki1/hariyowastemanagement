@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Book a Collection — Hariyo Waste</title>
+  <link rel="stylesheet" href="/wms/css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .hero.smaller .hero-inner { padding: 56px 0 44px; }
+    .hero.smaller h1 { font-size: clamp(1.7rem, 3.6vw, 2.4rem); }
+    .radio-opt .text { display: flex; flex-direction: column; gap: 2px; }
+    .success-card { text-align: center; padding: 36px 28px; }
+    .success-card .check-ico {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--green-100); color: var(--green-700);
+      display: grid; place-items: center; margin: 0 auto 18px;
+    }
+    .success-card .check-ico svg { width: 32px; height: 32px; }
+    .success-card .booking-id {
+      display: inline-block;
+      font-family: ui-monospace, Menlo, monospace; font-size: 1.4rem; font-weight: 800;
+      color: var(--green-800); background: var(--green-50);
+      border: 1px solid var(--green-200); padding: 8px 16px; border-radius: var(--r-md);
+      margin: 8px 0 16px; letter-spacing: .04em;
+    }
+    .success-card .note { color: var(--ink-600); font-size: .92rem; max-width: 540px; margin: 0 auto 22px; }
+    .success-card .note code {
+      font-family: ui-monospace, Menlo, monospace; color: var(--green-800); font-weight: 700;
+      background: var(--green-50); padding: 1px 6px; border-radius: 4px; border: 1px solid var(--green-200);
+    }
+    .summary-list { text-align: left; max-width: 460px; margin: 18px auto 0; }
+    .summary-list .row { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px dashed var(--border); font-size: .9rem; }
+    .summary-list .row:last-child { border-bottom: 0; }
+    .summary-list .row .k { color: var(--ink-500); }
+    .summary-list .row .v { color: var(--ink-800); font-weight: 600; text-align: right; }
+  </style>
+</head>
+<body>
+  <main>
+    <!-- HERO -->
+    <section class="hero smaller">
+      <div class="container hero-inner">
+        <span class="eyebrow"><span class="dot"></span> Book a Collection</span>
+        <h1>Schedule your <span class="hl">segregated waste pickup</span></h1>
+        <p class="lead">Tell us about your business and the waste you've segregated. Our team will confirm a pickup slot within one business day — and you'll get a Batch ID once collected.</p>
+      </div>
+    </section>
+
+    <!-- BOOKING FORM / SUCCESS -->
+    <section class="section">
+      <div class="container container-narrow">
+
+        <!-- Form view -->
+        <div id="form-view">
+          <form class="card card-pad" id="booking-form" autocomplete="on" novalidate>
+            <h2 style="margin-top:0">Business details</h2>
+
+            <div class="field">
+              <label for="businessName">Business name <span style="color:var(--status-failed)">*</span></label>
+              <input class="input" type="text" id="businessName" name="businessName" list="biz-list" placeholder="e.g. Hotel Annapurna Kitchen" required />
+              <datalist id="biz-list"><!-- populated by JS --></datalist>
+              <div class="hint">If you've booked with us before, your business name will appear here.</div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="businessType">Business type <span style="color:var(--status-failed)">*</span></label>
+                <select class="select" id="businessType" name="businessType" required>
+                  <option value="">Select type…</option>
+                  <option value="restaurant">Restaurant</option>
+                  <option value="hotel">Hotel</option>
+                  <option value="cafe">Café</option>
+                  <option value="business">Business / Office</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="contactPerson">Contact person</label>
+                <input class="input" type="text" id="contactPerson" name="contactPerson" placeholder="e.g. Ramesh Shrestha" />
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="phone">Phone <span style="color:var(--status-failed)">*</span></label>
+                <input class="input" type="tel" id="phone" name="phone" placeholder="01-XXXXXXX or 98XXXXXXXX" required />
+              </div>
+              <div class="field">
+                <label for="email">Email <span class="muted">(optional)</span></label>
+                <input class="input" type="email" id="email" name="email" placeholder="you@business.example" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="address">Pickup address <span style="color:var(--status-failed)">*</span></label>
+              <textarea class="textarea" id="address" name="address" rows="2" placeholder="Street, area, landmark, city" required></textarea>
+            </div>
+
+            <h2>Waste details</h2>
+
+            <div class="field">
+              <label>Waste type <span style="color:var(--status-failed)">*</span></label>
+              <div class="radio-row">
+                <label class="radio-opt">
+                  <input type="radio" name="wasteType" value="organic" required />
+                  <span class="text">
+                    <span class="label">Organic / Kitchen</span>
+                    <span class="desc">Food scraps, vegetable peelings, tea &amp; coffee grounds — composted at our Bhaktapur plant.</span>
+                  </span>
+                </label>
+                <label class="radio-opt">
+                  <input type="radio" name="wasteType" value="recyclable" />
+                  <span class="text">
+                    <span class="label">Recyclable</span>
+                    <span class="desc">Clean plastic, paper, glass, metal — sorted and sent to certified recycling partners.</span>
+                  </span>
+                </label>
+                <label class="radio-opt">
+                  <input type="radio" name="wasteType" value="mixed" />
+                  <span class="text">
+                    <span class="label">Mixed</span>
+                    <span class="desc">Mixed organic + recyclable — our Balkhu team will segregate it for you.</span>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="quantityKg">Estimated quantity (kg) <span style="color:var(--status-failed)">*</span></label>
+                <input class="input" type="number" id="quantityKg" name="quantityKg" min="1" step="1" placeholder="e.g. 25" required />
+              </div>
+              <div class="field">
+                <label for="preferredDate">Preferred pickup date <span style="color:var(--status-failed)">*</span></label>
+                <input class="input" type="date" id="preferredDate" name="preferredDate" required />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="notes">Notes <span class="muted">(optional)</span></label>
+              <textarea class="textarea" id="notes" name="notes" rows="3" placeholder="Anything we should know? Access instructions, waste composition, packaging, etc."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Confirm Booking</button>
+            <p class="muted" style="text-align:center;font-size:.82rem;margin-top:10px;margin-bottom:0">
+              By confirming, you agree to segregate waste at source as indicated above.
+            </p>
+          </form>
+        </div>
+
+        <!-- Success view (hidden until submit) -->
+        <div id="success-view" class="hidden">
+          <div class="card success-card">
+            <div class="check-ico" data-icon="checkCircle"></div>
+            <h2 style="margin:0">Booking confirmed!</h2>
+            <div class="muted" style="font-size:.9rem">Your Booking ID is</div>
+            <div class="booking-id" id="success-booking-id">BK-5006</div>
+            <p class="note">
+              Our team will confirm your pickup. Once collected, you will receive a Batch ID like
+              <code>WM-2026-004283</code> to track your waste on the Track Waste page.
+            </p>
+            <div class="summary-list" id="summary-list"><!-- filled by JS --></div>
+            <div class="flex gap-3 justify-center flex-wrap mt-6">
+              <a href="track.html" class="btn btn-primary btn-lg">Track Waste</a>
+              <button type="button" class="btn btn-outline btn-lg" id="book-another">Book another collection</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <script src="/wms/js/data.js"></script>
+  <script src="/wms/js/utils.js"></script>
+  <script src="/wms/js/layout.js"></script>
+  <script>
+    UI.mountPublic('booking.html');
+    document.querySelectorAll('[data-icon]').forEach(function (el) {
+      el.innerHTML = UI.iconSvg(el.getAttribute('data-icon'));
+    });
+
+    // Populate business datalist from existing businesses
+    (function () {
+      var dl = document.getElementById('biz-list');
+      if (!dl) return;
+      WMS.db.businesses.all().slice(0, 6).forEach(function (b) {
+        var opt = document.createElement('option');
+        opt.value = b.name;
+        opt.textContent = b.type + ' · ' + (b.address || '');
+        dl.appendChild(opt);
+      });
+    })();
+
+    var form = document.getElementById('booking-form');
+    var formView = document.getElementById('form-view');
+    var successView = document.getElementById('success-view');
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!validateForm()) return;
+
+      var data = {
+        businessName: document.getElementById('businessName').value.trim(),
+        businessType: document.getElementById('businessType').value,
+        contactPerson: document.getElementById('contactPerson').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        wasteType: getRadioValue('wasteType'),
+        quantityKg: parseFloat(document.getElementById('quantityKg').value) || 0,
+        preferredDate: document.getElementById('preferredDate').value,
+        notes: document.getElementById('notes').value.trim(),
+      };
+
+      // Find or create business record
+      var existingBiz = WMS.db.businesses.all().find(function (b) {
+        return b.name.toLowerCase() === data.businessName.toLowerCase();
+      });
+      var businessId;
+      if (existingBiz) {
+        businessId = existingBiz.id;
+        // Patch any newly-provided fields
+        WMS.db.businesses.update(businessId, {
+          type: data.businessType,
+          address: data.address,
+          phone: data.phone,
+          email: data.email || existingBiz.email,
+          contactPerson: data.contactPerson || existingBiz.contactPerson,
+        });
+      } else {
+        var newBiz = WMS.db.businesses.add({
+          name: data.businessName,
+          type: data.businessType,
+          address: data.address,
+          phone: data.phone,
+          email: data.email,
+          contactPerson: data.contactPerson,
+        });
+        businessId = newBiz.id;
+      }
+
+      // Create booking — store businessName as a field too (for walk-in bookings)
+      var booking = WMS.db.bookings.add({
+        businessId: businessId,
+        businessName: data.businessName,
+        businessType: data.businessType,
+        contactPerson: data.contactPerson,
+        phone: data.phone,
+        email: data.email,
+        address: data.address,
+        wasteType: data.wasteType,
+        quantityKg: data.quantityKg,
+        preferredDate: data.preferredDate ? new Date(data.preferredDate).toISOString() : null,
+        notes: data.notes,
+        status: 'pending',
+      });
+
+      showSuccess(booking, data);
+    });
+
+    function validateForm() {
+      var required = ['businessName', 'businessType', 'phone', 'address', 'quantityKg', 'preferredDate'];
+      var missing = [];
+      required.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (!el.value || !el.value.trim()) missing.push(el);
+      });
+      // wasteType radio
+      if (!getRadioValue('wasteType')) {
+        missing.push(document.querySelector('input[name="wasteType"]'));
+      }
+      // quantityKg must be positive
+      var q = document.getElementById('quantityKg');
+      if (q.value && parseFloat(q.value) <= 0) missing.push(q);
+      // email format (if provided)
+      var email = document.getElementById('email');
+      if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+        missing.push(email);
+      }
+
+      if (missing.length) {
+        UI.toast('Please complete the highlighted fields', { title: 'Missing details', type: 'error' });
+        missing.forEach(function (el) {
+          el.focus();
+          el.style.borderColor = 'var(--status-failed)';
+          setTimeout(function () { el.style.borderColor = ''; }, 1800);
+        });
+        return false;
+      }
+      return true;
+    }
+
+    function getRadioValue(name) {
+      var checked = document.querySelector('input[name="' + name + '"]:checked');
+      return checked ? checked.value : null;
+    }
+
+    function showSuccess(booking, data) {
+      document.getElementById('success-booking-id').textContent = booking.id;
+
+      var summary = document.getElementById('summary-list');
+      UI.clear(summary);
+      var rows = [
+        ['Business', data.businessName],
+        ['Type', data.businessType],
+        ['Waste type', data.wasteType],
+        ['Estimated weight', UI.fmtKg(data.quantityKg)],
+        ['Preferred date', UI.fmtDateShort(data.preferredDate)],
+        ['Pickup address', data.address],
+      ];
+      rows.forEach(function (r) {
+        var row = document.createElement('div');
+        row.className = 'row';
+        row.innerHTML = '<span class="k">' + UI.escapeHtml(r[0]) + '</span>' +
+                       '<span class="v">' + UI.escapeHtml(String(r[1])) + '</span>';
+        summary.appendChild(row);
+      });
+
+      formView.classList.add('hidden');
+      successView.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      UI.toast('Booking confirmed · ' + booking.id, { title: 'Success', type: 'success' });
+    }
+
+    document.getElementById('book-another').addEventListener('click', function () {
+      form.reset();
+      successView.classList.add('hidden');
+      formView.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>

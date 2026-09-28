@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>How It Works — Hariyo Waste</title>
+  <link rel="stylesheet" href="/wms/css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .hero.smaller .hero-inner { padding: 60px 0 50px; }
+    .hero.smaller h1 { font-size: clamp(1.8rem, 3.8vw, 2.6rem); }
+    .accept-card { padding: 22px; text-align: center; height: 100%; }
+    .accept-card .ico {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: var(--green-50); color: var(--green-700);
+      display: grid; place-items: center; margin: 0 auto 12px;
+    }
+    .accept-card .ico svg { width: 26px; height: 26px; }
+    .accept-card h4 { margin: 0 0 4px; font-size: 1rem; }
+    .accept-card p { margin: 0; font-size: .82rem; color: var(--ink-600); }
+    .accept-card .examples {
+      margin-top: 10px; font-size: .76rem; color: var(--ink-500);
+      font-style: italic;
+    }
+    .batch-id-box {
+      background: linear-gradient(135deg, var(--green-700), var(--green-900));
+      color: #fff; border-radius: var(--r-lg); padding: 30px; text-align: center;
+    }
+    .batch-id-box .id {
+      display: inline-block; font-family: ui-monospace, Menlo, monospace;
+      font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 800; letter-spacing: .05em;
+      background: rgba(255,255,255,.12); padding: 10px 18px; border-radius: var(--r-md);
+      margin: 10px 0 14px;
+    }
+    .batch-id-box p { color: rgba(255,255,255,.85); margin: 0; }
+    .pricing-card {
+      background: var(--ink-50); border: 1px dashed var(--green-300);
+      border-radius: var(--r-lg); padding: 24px;
+    }
+    .pricing-card h3 { color: var(--green-800); margin-bottom: 8px; }
+    .pricing-card p { color: var(--ink-600); margin: 0; }
+    .pricing-card .ico { display: inline-flex; width: 22px; height: 22px; color: var(--green-700); }
+    .pricing-card .ico svg { width: 20px; height: 20px; }
+    .farm-card { padding: 22px; height: 100%; }
+    .farm-card .av {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--green-500), var(--green-700));
+      color: #fff; display: grid; place-items: center; margin-bottom: 12px;
+    }
+    .farm-card .av svg { width: 22px; height: 22px; }
+    .farm-card h4 { margin: 0 0 4px; font-size: 1rem; }
+    .farm-card .loc { font-size: .82rem; color: var(--ink-500); margin-bottom: 6px; }
+    .farm-card .kg {
+      font-size: .82rem; color: var(--green-800); font-weight: 700;
+    }
+    .cta-panel {
+      background: linear-gradient(135deg, var(--green-600), var(--green-800));
+      color: #fff; border-radius: var(--r-xl); padding: 40px; text-align: center;
+    }
+    .cta-panel h3 { color: #fff; }
+    .cta-panel p { color: rgba(255,255,255,.88); }
+    .cta-panel .btn-primary { background: #fff; color: var(--green-800); }
+    .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+    @media (max-width: 900px) { .grid-5 { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 560px) { .grid-5 { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 380px) { .grid-5 { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <!-- HERO -->
+    <section class="hero smaller">
+      <div class="container hero-inner">
+        <span class="eyebrow"><span class="dot"></span> Process</span>
+        <h1>From your kitchen to a <span class="hl">Nepalese farm</span></h1>
+        <p class="lead">Five steps, one Batch ID, full traceability. Here's exactly what happens to your segregated waste after we collect it.</p>
+      </div>
+    </section>
+
+    <!-- STEP-BY-STEP JOURNEY -->
+    <section class="section">
+      <div class="container container-narrow">
+        <div class="section-head">
+          <span class="eyebrow"><span class="dot"></span> The journey</span>
+          <h2>The five-step path of a batch</h2>
+          <p>Every batch moves through these five steps. Customers receive an SMS update at each stage.</p>
+        </div>
+
+        <div class="journey">
+          <div class="j-step done">
+            <div class="node" data-icon="check"></div>
+            <div class="meta">Step 1 · At your business</div>
+            <h4>1. Business segregates waste</h4>
+            <p style="color:var(--ink-600);margin:0">Your staff separate organic (food scraps, peelings) from recyclable (plastic, paper, glass, metal) at source. Clean separation at source is what makes everything downstream possible.</p>
+          </div>
+          <div class="j-step done">
+            <div class="node" data-icon="check"></div>
+            <div class="meta">Step 2 · Pickup at your door</div>
+            <h4>2. Field worker collects (Batch ID generated)</h4>
+            <p style="color:var(--ink-600);margin:0">Our collector arrives on schedule, weighs the segregated waste and generates a unique Batch ID like <code class="mono">WM-2026-004283</code>. You receive an SMS with this ID.</p>
+          </div>
+          <div class="j-step done">
+            <div class="node" data-icon="check"></div>
+            <div class="meta">Step 3 · Sorting Facility — Balkhu</div>
+            <h4>3. Sorting facility segregation</h4>
+            <p style="color:var(--ink-600);margin:0">At our Balkhu facility, trained sorters separate the waste into clean organic and recyclable streams. Contamination is removed; recyclables are baled by material type.</p>
+          </div>
+          <div class="j-step active">
+            <div class="node" data-icon="sprout"></div>
+            <div class="meta">Step 4 · Compost Plant — Bhaktapur</div>
+            <h4>4. Composting / recycling</h4>
+            <p style="color:var(--ink-600);margin:0">Organic waste is loaded into windrows at our Bhaktapur plant for a 14-day composting cycle. Recyclable streams are sent to certified recycling partners across Nepal.</p>
+          </div>
+          <div class="j-step">
+            <div class="node" data-icon="wheat"></div>
+            <div class="meta">Step 5 · Partner farm</div>
+            <h4>5. Compost delivered to farm</h4>
+            <p style="color:var(--ink-600);margin:0">Matured compost is weighed and delivered to a partner farm. You receive a final SMS confirming how much compost was delivered and to which farm.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHAT WE ACCEPT -->
+    <section class="section" style="background: var(--ink-50);">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow"><span class="dot"></span> What we accept</span>
+          <h2>Segregated waste we'll happily collect</h2>
+          <p>Please segregate at source. Mixed batches go through our sorting facility at no extra cost, but segregation at source keeps the loop clean.</p>
+        </div>
+        <div class="grid-5">
+          <div class="card card-hover accept-card">
+            <div class="ico" data-icon="sprout"></div>
+            <h4>Organic / Kitchen</h4>
+            <p>Food scraps &amp; peelings.</p>
+            <div class="examples">Veg, fruit, tea, coffee grounds</div>
+          </div>
+          <div class="card card-hover accept-card">
+            <div class="ico" data-icon="package"></div>
+            <h4>Plastic</h4>
+            <p>Clean, dry plastics.</p>
+            <div class="examples">Bottles, containers, film</div>
+          </div>
+          <div class="card card-hover accept-card">
+            <div class="ico" data-icon="layers"></div>
+            <h4>Paper</h4>
+            <p>Cardboard &amp; paper.</p>
+            <div class="examples">Boxes, newspaper, office paper</div>
+          </div>
+          <div class="card card-hover accept-card">
+            <div class="ico" data-icon="recycle"></div>
+            <h4>Glass</h4>
+            <p>Bottles &amp; jars.</p>
+            <div class="examples">Beverage bottles, food jars</div>
+          </div>
+          <div class="card card-hover accept-card">
+            <div class="ico" data-icon="buildings"></div>
+            <h4>Metal</h4>
+            <p>Cans &amp; scrap.</p>
+            <div class="examples">Cans, foil, kitchen scrap</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BATCH ID EXPLANATION -->
+    <section class="section">
+      <div class="container container-narrow">
+        <div class="section-head">
+          <span class="eyebrow"><span class="dot"></span> Tracking</span>
+          <h2>One Batch ID, full transparency</h2>
+          <p>Every collection is assigned a unique Batch ID. Use it on our Track Waste page to follow your waste's journey — from your kitchen to a Nepalese farm.</p>
+        </div>
+        <div class="batch-id-box">
+          <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;opacity:.8;">Example batch id</div>
+          <div class="id">WM-2026-004281</div>
+          <p>Format: <strong>WM-YYYY-NNNNNN</strong> — prefix, year of collection, sequential number.</p>
+        </div>
+        <div class="text-center mt-6">
+          <a href="track.html" class="btn btn-primary btn-lg">Try tracking a batch</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section class="section" style="background: var(--ink-50);">
+      <div class="container container-narrow">
+        <div class="pricing-card">
+          <div class="flex items-center gap-3" style="margin-bottom: 4px;">
+            <span class="ico" data-icon="info"></span>
+            <h3 style="margin:0;">We buy segregated waste</h3>
+          </div>
+          <p>Hariyo Waste doesn't charge for collection — we <strong>pay you</strong> for clean, segregated recyclable streams. Organic waste is collected free of charge and composted at our Bhaktapur plant. Payouts are settled monthly based on weight and material type. Contact us for current rates for plastic, paper, glass and metal.</p>
+          <div class="mt-4 flex gap-3 flex-wrap">
+            <a href="contact.html" class="btn btn-outline btn-sm">Ask about rates</a>
+            <a href="booking.html" class="btn btn-primary btn-sm">Book a collection</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FARMS (anchor target #farms) -->
+    <section class="section" id="farms">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow"><span class="dot"></span> Partner farms</span>
+          <h2>Where the compost goes</h2>
+          <p>Our matured compost is delivered to three partner farms across the Valley and surrounding hills.</p>
+        </div>
+        <div class="grid grid-3" id="farms-grid">
+          <!-- Filled by JS from WMS.db.farms.all() -->
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section" style="background: var(--ink-50);">
+      <div class="container">
+        <div class="cta-panel">
+          <h3>Ready to start segregating?</h3>
+          <p>Book your first collection today — we'll confirm a pickup slot within one business day.</p>
+          <div class="flex gap-3 justify-center flex-wrap">
+            <a href="booking.html" class="btn btn-primary btn-lg">Book a Collection</a>
+            <a href="track.html" class="btn btn-outline btn-lg" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.6);">Track a batch</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/wms/js/data.js"></script>
+  <script src="/wms/js/utils.js"></script>
+  <script src="/wms/js/layout.js"></script>
+  <script>
+    UI.mountPublic('how-it-works.html');
+    document.querySelectorAll('[data-icon]').forEach(function (el) {
+      el.innerHTML = UI.iconSvg(el.getAttribute('data-icon'));
+    });
+
+    // Render partner farms from data
+    var farmsGrid = document.getElementById('farms-grid');
+    if (farmsGrid) {
+      UI.clear(farmsGrid);
+      WMS.db.farms.all().forEach(function (f) {
+        var card = document.createElement('div');
+        card.className = 'card card-hover farm-card';
+        card.innerHTML =
+          '<div class="av" data-icon="wheat"></div>' +
+          '<h4>' + UI.escapeHtml(f.name) + '</h4>' +
+          '<div class="loc">' + UI.escapeHtml(f.location) + '</div>' +
+          '<div class="kg">Owner: ' + UI.escapeHtml(f.owner) + ' · ' + UI.fmtKg(f.compostReceived) + ' received</div>';
+        farmsGrid.appendChild(card);
+      });
+      // Fill newly added icons inside farms grid
+      farmsGrid.querySelectorAll('[data-icon]').forEach(function (el) {
+        el.innerHTML = UI.iconSvg(el.getAttribute('data-icon'));
+      });
+    }
+  </script>
+</body>
+</html>

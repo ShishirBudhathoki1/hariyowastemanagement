@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Field Worker App — Hariyo Waste</title>
+  <link rel="stylesheet" href="/wms/css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { background: var(--bg-soft); }
+
+    /* ---- Sticky worker top bar ---- */
+    .worker-top {
+      position: sticky; top: 0; z-index: 20;
+      background: var(--ink-900); color: #fff;
+      padding: 12px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+    .worker-top .brand-name {
+      font-weight: 800; font-size: 1rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .worker-top .brand-name .mark {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--green-500), var(--green-700));
+      display: grid; place-items: center; color: #fff; font-weight: 900; font-size: .9rem;
+    }
+    .worker-top .worker-info {
+      display: flex; align-items: center; gap: 8px; font-size: .82rem; color: #cfe0d6;
+      margin-left: auto;
+    }
+    .worker-top .worker-info .name { font-weight: 700; color: #fff; }
+    .worker-top .role-badge {
+      background: var(--green-600); color: #fff;
+      padding: 3px 8px; border-radius: var(--r-full);
+      font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+    }
+    .worker-top .logout-btn {
+      background: rgba(255,255,255,.1); color: #fff; border: 1px solid rgba(255,255,255,.15);
+      padding: 7px 10px; border-radius: var(--r-sm); font-size: .8rem; font-weight: 600;
+      display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+      min-height: 34px; min-width: 34px;
+    }
+    .worker-top .logout-btn:hover { background: rgba(255,255,255,.18); }
+    .worker-top .logout-btn svg { width: 16px; height: 16px; }
+
+    /* ---- App body ---- */
+    .worker-main { padding: 16px; }
+    .kpi-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+    .kpi-mini {
+      background: #fff; border: 1px solid var(--border); border-radius: var(--r-md);
+      padding: 12px 14px; box-shadow: var(--shadow-xs);
+    }
+    .kpi-mini .v { font-size: 1.55rem; font-weight: 800; color: var(--green-800); line-height: 1; }
+    .kpi-mini .l {
+      font-size: .7rem; color: var(--ink-500); font-weight: 700;
+      text-transform: uppercase; letter-spacing: .04em; margin-top: 4px;
+    }
+    .section-label {
+      font-size: .76rem; color: var(--ink-500); font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em;
+      margin: 8px 0 12px;
+    }
+
+    /* ---- Task cards ---- */
+    .wtask .head .batchid { font-size: .92rem; }
+    .wtask .stage-tag {
+      font-size: .76rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+      color: var(--ink-500);
+    }
+    .wtask .lines .biz { font-weight: 700; color: var(--ink-800); }
+    .wtask .lines .meta-line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .wtask .cta .waiting {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 12px; background: var(--ink-100); border-radius: var(--r-sm);
+      color: var(--ink-500); font-size: .8rem; font-weight: 600;
+    }
+    .wtask .cta .waiting svg { width: 14px; height: 14px; }
+    .wtask .cta .completed {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 12px; background: var(--green-50); border: 1px solid var(--green-200);
+      border-radius: var(--r-sm);
+      color: var(--green-700); font-size: .8rem; font-weight: 700;
+    }
+    .wtask .cta .completed svg { width: 14px; height: 14px; }
+    .wtask .cta .btn-block { padding: 12px; font-size: .92rem; min-height: 44px; }
+
+    /* ---- Empty state ---- */
+    .empty-worker {
+      text-align: center; padding: 40px 20px; color: var(--ink-500);
+      background: #fff; border: 1px dashed var(--border); border-radius: var(--r-md);
+    }
+
+    /* ---- Gate quick-login buttons ---- */
+    .quick-row { display: flex; flex-direction: column; gap: 8px; }
+    .quick-row button {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      background: var(--green-50); border: 1px solid var(--green-200);
+      padding: 12px 14px; border-radius: var(--r-sm);
+      color: var(--green-900); font-weight: 700; font-size: .9rem;
+      cursor: pointer; transition: background .15s, transform .08s;
+      min-height: 44px;
+    }
+    .quick-row button:hover { background: var(--green-100); }
+    .quick-row button:active { transform: translateY(1px); }
+    .quick-row button .role {
+      font-size: .72rem; color: var(--green-700); font-weight: 600;
+      background: #fff; padding: 2px 8px; border-radius: var(--r-full); border: 1px solid var(--green-200);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =================== LOGIN GATE =================== -->
+  <div id="gate" class="gate">
+    <div class="gate-card">
+      <div class="brand">
+        <span class="mark">H</span>
+        <span>Hariyo Field<small>Worker Mobile App</small></span>
+      </div>
+      <h1>Field Login</h1>
+      <p class="sub">Sign in to view your assigned batches and pending actions.</p>
+
+      <div class="field">
+        <label for="worker-select">Select your worker profile</label>
+        <select class="select" id="worker-select"></select>
+      </div>
+      <button type="button" class="btn btn-primary btn-lg btn-block" id="login-btn">Sign in</button>
+
+      <div class="quick">
+        <p>Quick login</p>
+        <div class="quick-row" id="quick-row"></div>
+      </div>
+      <p class="muted" style="font-size:.76rem;text-align:center;margin-top:14px;margin-bottom:0">
+        Tip: log in as <strong>Sita Karki</strong> (sorter), <strong>Kamal Thapa</strong> (compost operator) or <strong>Rojina Maharjan</strong> (driver) to see pending stage actions.
+      </p>
+    </div>
+  </div>
+
+  <!-- =================== APP SHELL =================== -->
+  <div id="app" class="wphone hidden">
+    <header class="worker-top">
+      <div class="brand-name">
+        <span class="mark">H</span>
+        <span>Hariyo Field</span>
+      </div>
+      <div class="worker-info">
+        <span class="name" id="worker-name">—</span>
+        <span class="role-badge" id="worker-role">—</span>
+      </div>
+      <button type="button" class="logout-btn" id="logout-btn" aria-label="Log out" data-icon="logout"></button>
+    </header>
+
+    <main class="worker-main">
+      <div class="kpi-row">
+        <div class="kpi-mini">
+          <div class="v" id="kpi-assigned">0</div>
+          <div class="l">My Assigned Batches</div>
+        </div>
+        <div class="kpi-mini">
+          <div class="v" id="kpi-pending">0</div>
+          <div class="l">Pending Action</div>
+        </div>
+      </div>
+      <div class="section-label">All Batches</div>
+      <div id="tasks"></div>
+    </main>
+  </div>
+
+  <script src="/wms/js/data.js"></script>
+  <script src="/wms/js/utils.js"></script>
+  <script>
+    /* =====================================================
+       Hariyo Field Worker App
+       - Login via gate (select or quick login)
+       - Confirm stage actions advance the batch journey
+       - Confirm Delivery opens a modal (farm + delivered kg)
+       All state changes go through WMS.db.* (auto-saved).
+       ===================================================== */
+
+    // ----- Helpers -----
+    function fillIcons(root) {
+      (root || document).querySelectorAll('[data-icon]').forEach(function (el) {
+        el.innerHTML = UI.iconSvg(el.getAttribute('data-icon'));
+      });
+    }
+
+    function stageToRole(stage) {
+      return ({
+        collection: 'collector',
+        sorting: 'sorter',
+        composting: 'compost_operator',
+        farm_delivery: 'driver'
+      })[stage] || null;
+    }
+
+    function currentWorker() {
+      var sess = WMS.session.get();
+      if (!sess || sess.role !== 'worker' || !sess.workerId) return null;
+      return WMS.db.workers.get(sess.workerId);
+    }
+
+    function roleLabel(role) {
+      return ({
+        collector: 'Collector',
+        sorter: 'Sorter',
+        compost_operator: 'Compost Op.',
+        driver: 'Driver'
+      })[role] || role;
+    }
+
+    function isPendingAction(batch, role) {
+      if (batch.status === 'delivered' || batch.status === 'recycled') return false;
+      var cs = UI.batchCurrentStage(batch);
+      return stageToRole(cs) === role;
+    }
+
+    // ----- Gate setup -----
+    function setupGate() {
+      var sel = document.getElementById('worker-select');
+      UI.clear(sel);
+      WMS.db.workers.all().forEach(function (w) {
+        var opt = document.createElement('option');
+        opt.value = w.id;
+        opt.textContent = w.name + ' · ' + roleLabel(w.role);
+        sel.appendChild(opt);
+      });
+
+      // Quick login: Dipendra / Maya / Hari
+      var quick = document.getElementById('quick-row');
+      UI.clear(quick);
+      ['WK-201', 'WK-202', 'WK-203'].forEach(function (id) {
+        var w = WMS.db.workers.get(id);
+        if (!w) return;
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.innerHTML = UI.escapeHtml(w.name) + ' <span class="role">' + UI.escapeHtml(roleLabel(w.role)) + '</span>';
+        btn.addEventListener('click', function () { login(id); });
+        quick.appendChild(btn);
+      });
+    }
+
+    function login(workerId) {
+      var w = WMS.db.workers.get(workerId);
+      if (!w) {
+        UI.toast('Please select a worker', { type: 'error' });
+        return;
+      }
+      WMS.session.set({ role: 'worker', workerId: w.id, name: w.name });
+      UI.toast('Signed in as ' + w.name, { title: 'Welcome', type: 'success' });
+      renderApp();
+    }
+
+    function logout() {
+      WMS.session.clear();
+      document.getElementById('app').classList.add('hidden');
+      document.getElementById('gate').classList.remove('hidden');
+      setupGate();
+      window.scrollTo(0, 0);
+    }
+
+    function renderApp() {
+      var w = currentWorker();
+      if (!w) { logout(); return; }
+      document.getElementById('gate').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+      document.getElementById('worker-name').textContent = w.name;
+      document.getElementById('worker-role').textContent = roleLabel(w.role);
+      renderTasks();
+    }
+
+    // ----- Task list + KPIs -----
+    function renderTasks() {
+      var w = currentWorker();
+      if (!w) return;
+
+      var batches = WMS.db.batches.all();
+      var assigned = batches.filter(function (b) { return b.workerId === w.id; });
+      var pending = batches.filter(function (b) { return isPendingAction(b, w.role); });
+      document.getElementById('kpi-assigned').textContent = assigned.length;
+      document.getElementById('kpi-pending').textContent = pending.length;
+
+      var tasksWrap = document.getElementById('tasks');
+      UI.clear(tasksWrap);
+
+      if (!batches.length) {
+        var empty = document.createElement('div');
+        empty.className = 'empty-worker';
+        empty.innerHTML = '<p style="margin:0">No batches in the system yet.</p>';
+        tasksWrap.appendChild(empty);
+        return;
+      }
+
+      batches.forEach(function (b) {
+        tasksWrap.appendChild(renderTaskCard(b, w));
+      });
+    }
+
+    function renderTaskCard(b, w) {
+      var biz = WMS.db.businesses.get(b.businessId);
+      var cs = UI.batchCurrentStage(b);
+      var stageMeta = UI.STAGE_META[cs] || { short: cs };
+      var statusInfo = UI.statusLabel(b.status);
+      var expectedRole = stageToRole(cs);
+
+      var card = document.createElement('div');
+      card.className = 'wtask';
+
+      // head
+      var head = document.createElement('div');
+      head.className = 'head';
+      head.innerHTML =
+        '<span class="batchid">' + UI.escapeHtml(b.id) + '</span>' +
+        '<span class="badge ' + statusInfo.cls + '">' + UI.escapeHtml(statusInfo.label) + '</span>';
+      card.appendChild(head);
+
+      // lines
+      var lines = document.createElement('div');
+      lines.className = 'lines';
+      lines.innerHTML =
+        '<div class="biz">' + UI.escapeHtml(biz ? biz.name : (b.businessName || 'Unknown business')) + '</div>' +
+        '<div class="meta-line">' +
+          '<span class="badge badge-outline" style="text-transform:capitalize">' + UI.escapeHtml(b.wasteType) + '</span>' +
+          '<span>· ' + UI.fmtKg(b.weightKg) + '</span>' +
+        '</div>' +
+        '<div class="stage-tag">Current stage: ' + UI.escapeHtml(stageMeta.short) + '</div>';
+      card.appendChild(lines);
+
+      // cta
+      var cta = document.createElement('div');
+      cta.className = 'cta';
+
+      if (b.status === 'delivered' || b.status === 'recycled') {
+        var done = document.createElement('span');
+        done.className = 'completed';
+        done.innerHTML = UI.iconSvg('check') + ' Completed';
+        cta.appendChild(done);
+      } else if (expectedRole === w.role) {
+        var actionLabel = ({
+          collection: 'Confirm Collection',
+          sorting: 'Confirm Sorting',
+          composting: 'Confirm Composting',
+          farm_delivery: 'Confirm Delivery'
+        })[cs] || 'Confirm';
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn btn-primary btn-block';
+        btn.textContent = actionLabel;
+        btn.addEventListener('click', function () {
+          if (cs === 'farm_delivery') openDeliveryModal(b.id, w.id);
+          else confirmStage(b.id, cs, w.id);
+        });
+        cta.appendChild(btn);
+      } else {
+        var wait = document.createElement('span');
+        wait.className = 'waiting';
+        wait.innerHTML = UI.iconSvg('clock') + ' Waiting — not your stage';
+        cta.appendChild(wait);
+      }
+      card.appendChild(cta);
+      return card;
+    }
+
+    // ----- Stage confirm flow -----
+    function confirmStage(batchId, stage, workerId) {
+      var b = WMS.db.batches.get(batchId);
+      if (!b) return;
+      var worker = WMS.db.workers.get(workerId);
+      var workerName = worker ? worker.name : 'Unknown';
+
+      // 1. Mark current stage event as done (find existing event with stage, set status='done'; if no event, push one)
+      var evIndex = b.timeline.findIndex(function (t) { return t.stage === stage; });
+      if (evIndex >= 0) {
+        b.timeline[evIndex].status = 'done';
+        b.timeline[evIndex].at = new Date().toISOString();
+        b.timeline[evIndex].workerId = workerId;
+        WMS.db.batches.update(batchId, { timeline: b.timeline });
+      } else {
+        WMS.db.batches.pushStage(batchId, {
+          stage: stage, status: 'done', workerId: workerId,
+          note: stage + ' confirmed by ' + workerName
+        });
+      }
+
+      // 2. Auto-send customer notification for that stage
+      WMS.db.batches.setNotification(batchId, stage, 'sent');
+
+      // 3. Advance batch: push next stage's event as in_progress, update status
+      var next = UI.nextStage(stage);
+      if (next) {
+        WMS.db.batches.pushStage(batchId, {
+          stage: next, status: 'in_progress', workerId: workerId,
+          note: next + ' initiated'
+        });
+        var nextStatus = (next === 'farm_delivery') ? 'ready_for_delivery' : next;
+        WMS.db.batches.update(batchId, { status: nextStatus });
+      }
+
+      // 4. Toast & re-render
+      UI.toast('Stage confirmed — customer notified', { title: 'Done', type: 'success' });
+      renderTasks();
+    }
+
+    function openDeliveryModal(batchId, workerId) {
+      var farms = WMS.db.farms.all();
+      var farmOptions = farms.map(function (f) {
+        return '<option value="' + UI.escapeHtml(f.id) + '">' +
+          UI.escapeHtml(f.name) + ' — ' + UI.escapeHtml(f.location) +
+          '</option>';
+      }).join('');
+
+      var bodyHTML =
+        '<div class="field">' +
+          '<label for="dlv-farm">Deliver to farm <span style="color:var(--status-failed)">*</span></label>' +
+          '<select id="dlv-farm" class="select">' + farmOptions + '</select>' +
+          '<div class="hint">Choose the partner farm receiving this compost.</div>' +
+        '</div>' +
+        '<div class="field">' +
+          '<label for="dlv-kg">Delivered compost (kg) <span style="color:var(--status-failed)">*</span></label>' +
+          '<input id="dlv-kg" type="number" min="1" step="1" class="input" placeholder="e.g. 28" />' +
+          '<div class="hint">Enter the actual weight of matured compost delivered.</div>' +
+        '</div>';
+
+      var cancelBtn = UI.el('button', {
+        class: 'btn btn-ghost',
+        onclick: UI.closeAllModals
+      }, 'Cancel');
+
+      var confirmBtn = UI.el('button', {
+        class: 'btn btn-primary',
+        onclick: function () {
+          var farmId = document.getElementById('dlv-farm').value;
+          var kg = parseFloat(document.getElementById('dlv-kg').value);
+          if (!farmId) { UI.toast('Please select a farm', { type: 'error' }); return; }
+          if (!kg || kg <= 0) { UI.toast('Enter a valid weight in kg', { type: 'error' }); return; }
+          UI.closeAllModals();
+          confirmDelivery(batchId, workerId, farmId, kg);
+        }
+      }, 'Confirm Delivery');
+
+      UI.openModal({
+        title: 'Confirm Farm Delivery',
+        body: bodyHTML,
+        footer: [cancelBtn, confirmBtn]
+      });
+    }
+
+    function confirmDelivery(batchId, workerId, farmId, deliveredKg) {
+      var b = WMS.db.batches.get(batchId);
+      if (!b) return;
+      var farm = WMS.db.farms.get(farmId);
+      var note = deliveredKg + 'kg matured compost delivered to ' + (farm ? farm.name : farmId);
+
+      // Push/update farm_delivery done event with note
+      var evIndex = b.timeline.findIndex(function (t) { return t.stage === 'farm_delivery'; });
+      if (evIndex >= 0) {
+        b.timeline[evIndex].status = 'done';
+        b.timeline[evIndex].at = new Date().toISOString();
+        b.timeline[evIndex].workerId = workerId;
+        b.timeline[evIndex].note = note;
+        WMS.db.batches.update(batchId, { timeline: b.timeline });
+      } else {
+        WMS.db.batches.pushStage(batchId, {
+          stage: 'farm_delivery', status: 'done', workerId: workerId, note: note
+        });
+      }
+
+      // Set notification sent
+      WMS.db.batches.setNotification(batchId, 'farm_delivery', 'sent');
+
+      // Update batch fields
+      WMS.db.batches.update(batchId, {
+        status: 'delivered',
+        farmId: farmId,
+        deliveredKg: Number(deliveredKg) || 0
+      });
+
+      // Increment farm compostReceived
+      if (farm) {
+        WMS.db.farms.update(farmId, {
+          compostReceived: (farm.compostReceived || 0) + Number(deliveredKg)
+        });
+      }
+
+      UI.toast('Compost delivered 🌱 — customer notified', { title: 'Delivered', type: 'success' });
+      renderTasks();
+    }
+
+    // ----- Wire up + initial render -----
+    document.getElementById('logout-btn').addEventListener('click', logout);
+    document.getElementById('login-btn').addEventListener('click', function () {
+      login(document.getElementById('worker-select').value);
+    });
+
+    setupGate();
+    fillIcons(document);
+
+    // If a valid worker session exists, render app; otherwise show gate
+    if (currentWorker()) {
+      renderApp();
+    } else {
+      document.getElementById('gate').classList.remove('hidden');
+      document.getElementById('app').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>

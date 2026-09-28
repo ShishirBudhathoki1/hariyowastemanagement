@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hariyo Waste — Segregated Waste Collection in Kathmandu Valley</title>
+  <link rel="stylesheet" href="/wms/css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* Page-only tweaks */
+    .feature { position: relative; }
+    .feature .feature-num {
+      position: absolute; top: 18px; right: 22px;
+      font-size: 2.6rem; font-weight: 900; line-height: 1;
+      color: var(--green-100);
+    }
+    .impact-band {
+      background:
+        radial-gradient(700px 280px at 8% 0%, rgba(255,255,255,.08), transparent 60%),
+        linear-gradient(135deg, var(--green-700), var(--green-900));
+      color: #fff; padding: 64px 0;
+    }
+    .impact-band .impact-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; text-align: center;
+    }
+    .impact-band .impact-num {
+      font-size: clamp(2.3rem, 4.5vw, 3.2rem); font-weight: 800; line-height: 1;
+      color: #fff;
+    }
+    .impact-band .impact-lbl {
+      font-size: .92rem; opacity: .85; margin-top: 10px; font-weight: 600;
+    }
+    .impact-band .impact-sub {
+      font-size: .76rem; opacity: .65; margin-top: 4px;
+    }
+    @media (max-width: 700px) {
+      .impact-band .impact-grid { grid-template-columns: 1fr; gap: 28px; }
+    }
+    .quote-card {
+      background: linear-gradient(135deg, #ffffff 0%, var(--green-50) 100%);
+      border: 1px solid var(--green-200);
+      border-radius: var(--r-xl);
+      padding: 40px;
+      position: relative; overflow: hidden;
+    }
+    .quote-card .quote-mark {
+      position: absolute; top: 8px; left: 22px;
+      font-size: 5rem; line-height: 1; color: var(--green-200);
+      font-family: Georgia, serif;
+    }
+    .quote-card .quote-text {
+      font-size: 1.18rem; color: var(--ink-800); font-style: italic;
+      line-height: 1.55; margin: 0 0 18px;
+      position: relative; padding-left: 30px;
+    }
+    .quote-card .quote-author { font-weight: 700; color: var(--ink-700); padding-left: 30px; }
+    .quote-card .quote-author small {
+      display: block; font-weight: 500; color: var(--ink-500); font-size: .84rem; margin-top: 2px;
+    }
+    .tracker-desc {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 26px;
+    }
+    @media (max-width: 700px) { .tracker-desc { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 460px) { .tracker-desc { grid-template-columns: 1fr; } }
+    .tracker-desc .item { padding: 14px; border-radius: var(--r-md); background: var(--ink-50); border: 1px solid var(--border); }
+    .tracker-desc .item h4 { margin: 0 0 4px; font-size: .95rem; color: var(--ink-800); }
+    .tracker-desc .item p { margin: 0; font-size: .82rem; color: var(--ink-600); }
+    .mini-card { background: #fff; border: 1px solid var(--border); border-radius: var(--r-md); padding: 16px; box-shadow: var(--shadow-xs); height: 100%; }
+    .mini-card .ico { width: 40px; height: 40px; border-radius: 10px; background: var(--green-50); color: var(--green-700); display: grid; place-items: center; margin-bottom: 10px; }
+    .mini-card .ico svg { width: 22px; height: 22px; }
+    .mini-card h4 { margin: 0 0 4px; font-size: 1rem; }
+    .mini-card p { margin: 0; font-size: .85rem; color: var(--ink-600); }
+    .cta-panel {
+      background: linear-gradient(135deg, var(--green-600), var(--green-800));
+      color: #fff; border-radius: var(--r-xl); padding: 36px; text-align: center;
+    }
+    .cta-panel h3 { color: #fff; margin-bottom: 8px; }
+    .cta-panel p { color: rgba(255,255,255,.88); margin-bottom: 22px; }
+    .cta-panel .btn-primary { background: #fff; color: var(--green-800); }
+    .cta-panel .btn-primary:hover { background: var(--green-50); color: var(--green-900); }
+    .cta-panel .btn-outline { background: transparent; color: #fff; border-color: rgba(255,255,255,.6); }
+    .cta-panel .btn-outline:hover { background: rgba(255,255,255,.12); color: #fff; border-color: #fff; }
+  </style>
+</head>
+<body>
+  <main>
+    <!-- ============================ HERO ============================ -->
+    <section class="hero">
+      <div class="container hero-inner">
+        <span class="eyebrow"><span class="dot"></span> Segregated Waste · Kathmandu Valley</span>
+        <h1>Turning kitchen &amp; recyclable waste into <span class="hl">farm-ready compost</span></h1>
+        <p class="lead">Hariyo Waste helps hotels, restaurants, cafés and businesses across Kathmandu, Lalitpur and Bhaktapur segregate waste at source — then collects, sorts and turns it into nutrient-rich compost for Nepalese farms.</p>
+        <div class="hero-actions">
+          <a href="booking.html" class="btn btn-primary btn-lg">Book a Collection</a>
+          <a href="track.html" class="btn btn-outline btn-lg">Track Your Waste</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><div class="num">24+</div><div class="lbl">Businesses served</div></div>
+          <div class="stat"><div class="num">1,240 kg</div><div class="lbl">Waste diverted</div></div>
+          <div class="stat"><div class="num">3</div><div class="lbl">Farms supplied</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== HOW IT WORKS (preview) ==================== -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow"><span class="dot"></span> How it works</span>
+          <h2>From your kitchen to a farm — in three steps</h2>
+          <p>Segregation at source is the heart of our model. We keep it simple, traceable and rewarding for every business we serve.</p>
+        </div>
+        <div class="grid grid-3">
+          <div class="card card-hover feature">
+            <span class="feature-num">01</span>
+            <div class="ico" data-icon="truck"></div>
+            <h3>Collect</h3>
+            <p>Our field workers collect segregated waste from your business on a schedule that suits you. Every pickup generates a Batch ID for full traceability.</p>
+          </div>
+          <div class="card card-hover feature">
+            <span class="feature-num">02</span>
+            <div class="ico" data-icon="layers"></div>
+            <h3>Segregate</h3>
+            <p>At our Balkhu sorting facility, waste is split into organic and recyclable streams — clean separation is what makes real recycling possible.</p>
+          </div>
+          <div class="card card-hover feature">
+            <span class="feature-num">03</span>
+            <div class="ico" data-icon="sprout"></div>
+            <h3>Compost</h3>
+            <p>Organic waste is composted at our Bhaktapur plant and delivered to partner farms. Recyclables go to certified recycling partners.</p>
+          </div>
+        </div>
+        <div class="text-center mt-8">
+          <a href="how-it-works.html" class="btn btn-outline btn-lg">See the full journey</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SERVICES / WHY US ==================== -->
+    <section class="section" style="background: var(--ink-50);">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow"><span class="dot"></span> Why Hariyo</span>
+          <h2>Built for Nepalese kitchens, businesses and farms</h2>
+          <p>From Durbar Marg to Thamel, Jhamsikhel to Suryabinayak — we work with hospitality and businesses of every size.</p>
+        </div>
+        <div class="grid grid-4">
+          <div class="mini-card">
+            <div class="ico" data-icon="buildings"></div>
+            <h4>Hospitality Bulk Pickup</h4>
+            <p>Daily or scheduled collections for hotels, restaurants, cafés and offices across the Valley.</p>
+          </div>
+          <div class="mini-card">
+            <div class="ico" data-icon="eye"></div>
+            <h4>Transparent Tracking</h4>
+            <p>Every pickup gets a Batch ID. Follow your waste from collection to compost on our public Track page.</p>
+          </div>
+          <div class="mini-card">
+            <div class="ico" data-icon="recycle"></div>
+            <h4>Certified Recycling Partners</h4>
+            <p>Recyclable streams go to vetted partners — Nepal Recyclers, Himalayan Glass Works and more.</p>
+          </div>
+          <div class="mini-card">
+            <div class="ico" data-icon="sprout"></div>
+            <h4>Closing the Loop</h4>
+            <p>Matured compost is delivered to Sundar Krishi, Green Valley and Hilltop Organic farms.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== IMPACT BAND ==================== -->
+    <section class="impact-band">
+      <div class="container">
+        <div class="section-head" style="color:#fff;">
+          <span class="eyebrow" style="background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.25); color:#fff;">
+            <span class="dot" style="background:#fff; box-shadow:0 0 0 4px rgba(255,255,255,.18);"></span> Impact so far
+          </span>
+          <h2 style="color:#fff;">Small actions, measurable change</h2>
+          <p style="color: rgba(255,255,255,.85);">Real numbers from our first months of operations across the Kathmandu Valley.</p>
+        </div>
+        <div class="impact-grid">
+          <div>
+            <div class="impact-num">1,240 kg</div>
+            <div class="impact-lbl">Waste diverted</div>
+            <div class="impact-sub">From kitchens &amp; businesses in the Valley</div>
+          </div>
+          <div>
+            <div class="impact-num">320 kg</div>
+            <div class="impact-lbl">Compost delivered</div>
+            <div class="impact-sub">To partner farms in Bhaktapur, Kirtipur &amp; Lele</div>
+          </div>
+          <div>
+            <div class="impact-num">3</div>
+            <div class="impact-lbl">Farms served</div>
+            <div class="impact-sub">Sundar, Green Valley &amp; Hilltop Organic</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PROCESS TIMELINE ==================== -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow"><span class="dot"></span> The journey</span>
+          <h2>A four-stage path, fully traceable</h2>
+          <p>Each batch of waste moves through four clearly defined stages. Customers get an SMS update at every step.</p>
+        </div>
+
+        <div class="tracker">
+          <div class="step done"><div class="dot">1</div><div class="lbl">Collection</div></div>
+          <div class="step done"><div class="dot">2</div><div class="lbl">Sorting</div></div>
+          <div class="step done"><div class="dot">3</div><div class="lbl">Composting</div></div>
+          <div class="step done"><div class="dot">4</div><div class="lbl">Farm Delivery</div></div>
+        </div>
+
+        <div class="tracker-desc">
+          <div class="item">
+            <h4>1 · Collection</h4>
+            <p>Field worker arrives on schedule, weighs and loads segregated waste, opens a Batch ID.</p>
+          </div>
+          <div class="item">
+            <h4>2 · Sorting</h4>
+            <p>At our Balkhu facility, organic is separated from recyclable streams for clean downstream processing.</p>
+          </div>
+          <div class="item">
+            <h4>3 · Composting</h4>
+            <p>Organic waste is windrow-composted at our Bhaktapur plant over a 14-day cycle.</p>
+          </div>
+          <div class="item">
+            <h4>4 · Farm Delivery</h4>
+            <p>Matured compost is weighed and delivered to a partner farm. Recyclables go to certified partners.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TESTIMONIAL + CTA ==================== -->
+    <section class="section" style="background: var(--ink-50);">
+      <div class="container">
+        <div class="grid grid-2" style="align-items: stretch;">
+          <div class="quote-card">
+            <span class="quote-mark">&ldquo;</span>
+            <p class="quote-text">Hariyo Waste made segregation simple for our kitchen. Our staff know exactly what goes where, and our customers love that we close the loop on waste — every batch comes back as compost for a Nepalese farm.</p>
+            <div class="quote-author">
+              Ramesh Shrestha
+              <small>Kitchen Manager · Hotel Annapurna, Durbar Marg</small>
+            </div>
+          </div>
+          <div class="cta-panel">
+            <h3>Ready to close the loop on your waste?</h3>
+            <p>Book your first segregated waste collection today. Our team will confirm your pickup within one business day — and you'll get a Batch ID to track every kilogram of the way.</p>
+            <div class="flex gap-3 justify-center flex-wrap">
+              <a href="booking.html" class="btn btn-primary btn-lg">Book your first collection</a>
+              <a href="track.html" class="btn btn-outline btn-lg">Track a batch</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/wms/js/data.js"></script>
+  <script src="/wms/js/utils.js"></script>
+  <script src="/wms/js/layout.js"></script>
+  <script>
+    UI.mountPublic('index.html');
+    // Fill [data-icon] placeholders with SVG icons
+    document.querySelectorAll('[data-icon]').forEach(function (el) {
+      el.innerHTML = UI.iconSvg(el.getAttribute('data-icon'));
+    });
+  </script>
+</body>
+</html>
