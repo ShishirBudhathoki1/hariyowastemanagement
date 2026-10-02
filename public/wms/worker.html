@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Field Worker App — Hariyo Waste</title>
-  <link rel="stylesheet" href="/wms/css/styles.css" />
+  <title>Field Worker App, Hariyo Waste</title>
+  <link rel="stylesheet" href="css/styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -148,8 +148,8 @@
         <span>Hariyo Field</span>
       </div>
       <div class="worker-info">
-        <span class="name" id="worker-name">—</span>
-        <span class="role-badge" id="worker-role">—</span>
+        <span class="name" id="worker-name"> </span>
+        <span class="role-badge" id="worker-role"> </span>
       </div>
       <button type="button" class="logout-btn" id="logout-btn" aria-label="Log out" data-icon="logout"></button>
     </header>
@@ -170,8 +170,8 @@
     </main>
   </div>
 
-  <script src="/wms/js/data.js"></script>
-  <script src="/wms/js/utils.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/utils.js"></script>
   <script>
     /* =====================================================
        Hariyo Field Worker App
@@ -357,7 +357,7 @@
       } else {
         var wait = document.createElement('span');
         wait.className = 'waiting';
-        wait.innerHTML = UI.iconSvg('clock') + ' Waiting — not your stage';
+        wait.innerHTML = UI.iconSvg('clock') + ' Waiting, not your stage';
         cta.appendChild(wait);
       }
       card.appendChild(cta);
@@ -400,7 +400,7 @@
       }
 
       // 4. Toast & re-render
-      UI.toast('Stage confirmed — customer notified', { title: 'Done', type: 'success' });
+      UI.toast('Stage confirmed, customer notified', { title: 'Done', type: 'success' });
       renderTasks();
     }
 
@@ -408,7 +408,7 @@
       var farms = WMS.db.farms.all();
       var farmOptions = farms.map(function (f) {
         return '<option value="' + UI.escapeHtml(f.id) + '">' +
-          UI.escapeHtml(f.name) + ' — ' + UI.escapeHtml(f.location) +
+          UI.escapeHtml(f.name) + ', ' + UI.escapeHtml(f.location) +
           '</option>';
       }).join('');
 
@@ -485,7 +485,7 @@
         });
       }
 
-      UI.toast('Compost delivered 🌱 — customer notified', { title: 'Delivered', type: 'success' });
+      UI.toast('Compost delivered 🌱, customer notified', { title: 'Delivered', type: 'success' });
       renderTasks();
     }
 

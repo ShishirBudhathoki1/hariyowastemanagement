@@ -1,5 +1,5 @@
 /* =====================================================================
-   Hariyo Waste — Shared Utilities
+   Hariyo Waste, Shared Utilities
    Icons (inline SVG), formatting, toasts, batch journey helpers
    ===================================================================== */
 
@@ -53,24 +53,24 @@
 
   /* ---------- Formatting ---------- */
   function fmtDate(d) {
-    if (!d) return '—';
+    if (!d) return ' ';
     const dt = (d instanceof Date) ? d : new Date(d);
-    if (isNaN(dt)) return '—';
+    if (isNaN(dt)) return ' ';
     return dt.toLocaleString('en-GB', {
       day: '2-digit', month: 'short', year: 'numeric',
       hour: '2-digit', minute: '2-digit'
     });
   }
   function fmtDateShort(d) {
-    if (!d) return '—';
+    if (!d) return ' ';
     const dt = (d instanceof Date) ? d : new Date(d);
-    if (isNaN(dt)) return '—';
+    if (isNaN(dt)) return ' ';
     return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   }
   function fmtTime(d) {
-    if (!d) return '—';
+    if (!d) return ' ';
     const dt = (d instanceof Date) ? d : new Date(d);
-    if (isNaN(dt)) return '—';
+    if (isNaN(dt)) return ' ';
     return dt.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
   }
   function fmtKg(n) { return `${(n || 0)} kg`; }
@@ -173,7 +173,7 @@
   const NOTIF_TEMPLATES = {
     collection: (b) => `Namaste! Your segregated waste (${b.weightKg}kg) has been collected by our field team. Batch ID: ${b.id}. Thank you for choosing Hariyo Waste.`,
     sorting: (b) => `Update on ${b.id}: Your waste has reached our sorting facility and is being segregated into organic and recyclable streams.`,
-    composting: (b) => `Update on ${b.id}: Your organic waste is now being processed into nutrient-rich compost at our Bhaktapur facility.`,
+    composting: (b) => `Update on ${b.id}: Your organic waste is now being processed into nutrient-rich compost at our Itahari facility.`,
     farm_delivery: (b) => `🌱 Great news! The compost from your batch ${b.id} (${b.deliveredKg}kg) has been delivered to a partner farm. Thank you for closing the loop!`,
     recycled: (b) => `Update on ${b.id}: Your recyclable waste has been sent to our certified recycling partner. Thank you for keeping Nepal clean!`,
   };

@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Staff Dashboard — Hariyo Waste</title>
-  <link rel="stylesheet" href="/wms/css/styles.css" />
+  <title>Staff Dashboard, Hariyo Waste</title>
+  <link rel="stylesheet" href="css/styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -54,8 +54,8 @@
 </head>
 <body>
   <div id="root"></div>
-  <script src="/wms/js/data.js"></script>
-  <script src="/wms/js/utils.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/utils.js"></script>
   <script>
   (function () {
     'use strict';
@@ -100,11 +100,11 @@
     function workerName(id) {
       if (!id) return '<span class="muted">Unassigned</span>';
       const w = worker(id);
-      return w ? esc(w.name) : '<span class="muted">—</span>';
+      return w ? esc(w.name) : '<span class="muted"> </span>';
     }
     function bizName(id) {
       const b = biz(id);
-      return b ? esc(b.name) : '<span class="muted">—</span>';
+      return b ? esc(b.name) : '<span class="muted"> </span>';
     }
     function truncate(s, n) {
       s = String(s || '');
@@ -173,13 +173,13 @@
               <div class="field">
                 <label for="g-code">Staff code</label>
                 <input class="input" id="g-code" type="password" placeholder="hariyo" autocomplete="current-password" />
-                <div class="hint">Demo code: <code>hariyo</code> (or any non-empty value).</div>
+                <div class="hint">Demo code: <code>hariyo</code> (or any nonempty value).</div>
               </div>
               <button type="submit" class="btn btn-primary btn-block">Sign in</button>
             </form>
             <div class="quick">
               <p>Need a quick tour? Use demo login:</p>
-              <button class="btn btn-outline btn-block" id="demoLogin">Demo login — Sarita (Operations)</button>
+              <button class="btn btn-outline btn-block" id="demoLogin">Demo login, Sarita (Operations)</button>
             </div>
           </div>
         </div>
@@ -260,9 +260,9 @@
                 <h1 id="viewTitle">Overview</h1>
               </div>
               <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-                <span class="badge badge-green"><span class="dot"></span> Live · Kathmandu Valley</span>
+                <span class="badge badge-green"><span class="dot"></span> Live · Itahari </span>
                 <button class="btn btn-outline btn-sm" id="resetBtn" aria-label="Reset demo data">${UI.iconSvg('refresh')} Reset</button>
-                <a class="btn btn-ghost btn-sm" href="/wms/index.html" aria-label="Public site">${UI.iconSvg('home')} Public Site</a>
+                <a class="btn btn-ghost btn-sm" href="index.html" aria-label="Public site">${UI.iconSvg('home')} Public Site</a>
               </div>
             </header>
             <main class="dash-content" id="dashContent"></main>
@@ -330,7 +330,7 @@
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') UI.closeAllModals();
       });
-      // Delegated click for action buttons — bound to document so it catches
+      // Delegated click for action buttons, bound to document so it catches
       // clicks inside BOTH the dashboard content AND open modals.
       document.addEventListener('click', (e) => {
         const btn = e.target.closest('[data-action]');
@@ -389,7 +389,7 @@
     }
 
     /* ============================================================
-       VIEW 1 — OVERVIEW
+       VIEW 1, OVERVIEW
        ============================================================ */
     function renderOverview(c) {
       const allBatches = db.batches.all();
@@ -500,7 +500,7 @@
     }
 
     /* ============================================================
-       VIEW 2 — BUSINESSES
+       VIEW 2, BUSINESSES
        ============================================================ */
     function renderBusinesses(c) {
       const all = db.businesses.all();
@@ -543,9 +543,9 @@
                     <td><span class="mono">${esc(b.id)}</span></td>
                     <td>${esc(b.name)}</td>
                     <td>${statusBadge(b.type)}</td>
-                    <td>${esc(b.contactPerson || '—')}</td>
-                    <td>${esc(b.phone || '—')}</td>
-                    <td>${truncate(b.address || '—', 28)}</td>
+                    <td>${esc(b.contactPerson || ' ')}</td>
+                    <td>${esc(b.phone || ' ')}</td>
+                    <td>${truncate(b.address || ' ', 28)}</td>
                     <td>${UI.fmtDateShort(b.createdAt)}</td>
                     <td>
                       <button class="btn btn-ghost btn-sm" data-action="view-business" data-id="${esc(b.id)}" aria-label="View">${UI.iconSvg('eye')}</button>
@@ -562,7 +562,7 @@
     }
 
     /* ============================================================
-       VIEW 3 — BOOKINGS
+       VIEW 3, BOOKINGS
        ============================================================ */
     function renderBookings(c) {
       const all = db.bookings.all();
@@ -605,7 +605,7 @@
                   const bz = biz(b.businessId);
                   return `<tr>
                     <td><span class="mono">${esc(b.id)}</span></td>
-                    <td>${bz ? esc(bz.name) : '—'}</td>
+                    <td>${bz ? esc(bz.name) : ' '}</td>
                     <td>${wasteBadge(b.wasteType)}</td>
                     <td>${UI.fmtKg(b.quantityKg)}</td>
                     <td>${UI.fmtDateShort(b.preferredDate)}</td>
@@ -626,7 +626,7 @@
     }
 
     /* ============================================================
-       VIEW 4 — WORKERS
+       VIEW 4, WORKERS
        ============================================================ */
     function renderWorkers(c) {
       const all = db.workers.all();
@@ -664,7 +664,7 @@
                 <div class="av">${UI.initials(w.name)}</div>
                 <div class="meta">
                   <div class="top"><span class="title">${esc(w.name)}</span> ${roleBadge(w.role)} ${statusBadge(w.status || 'active')}</div>
-                  <div class="sub">${esc(w.phone || '—')} · ${esc(w.areas || 'No area')}</div>
+                  <div class="sub">${esc(w.phone || ' ')} · ${esc(w.areas || 'No area')}</div>
                 </div>
                 <div class="actions">
                   <button class="btn btn-ghost btn-sm" data-action="view-worker" data-id="${esc(w.id)}" aria-label="View">${UI.iconSvg('eye')}</button>
@@ -679,7 +679,7 @@
     }
 
     /* ============================================================
-       VIEW 5 — COLLECTIONS
+       VIEW 5, COLLECTIONS
        ============================================================ */
     function renderCollections(c) {
       const all = db.batches.all();
@@ -692,7 +692,7 @@
         <div class="view-head">
           <div>
             <h2>Collections</h2>
-            <div class="desc">Batches just collected — awaiting arrival at sorting facility</div>
+            <div class="desc">Batches just collected, awaiting arrival at sorting facility</div>
           </div>
         </div>
         ${just.length === 0 ? empty('No batches awaiting sorting facility arrival.', 'truck') :
@@ -717,7 +717,7 @@
     }
 
     /* ============================================================
-       VIEW 6 — BATCHES (CENTRAL)
+       VIEW 6, BATCHES (CENTRAL)
        ============================================================ */
     function renderBatches(c) {
       const all = db.batches.all();
@@ -781,7 +781,7 @@
     }
 
     /* ============================================================
-       VIEW 7 — SORTING
+       VIEW 7, SORTING
        ============================================================ */
     function renderSorting(c) {
       const all = db.batches.all().filter((b) => UI.stageStatus(b, 'sorting') === 'in_progress');
@@ -789,7 +789,7 @@
         <div class="view-head">
           <div>
             <h2>Sorting Facility</h2>
-            <div class="desc">Batches currently being segregated at Balkhu facility</div>
+            <div class="desc">Batches currently being segregated at Itahari facility</div>
           </div>
         </div>
         ${all.length === 0 ? empty('No batches in sorting right now.', 'layers') :
@@ -818,7 +818,7 @@
     }
 
     /* ============================================================
-       VIEW 8 — COMPOSTING
+       VIEW 8, COMPOSTING
        ============================================================ */
     function renderComposting(c) {
       const all = db.batches.all().filter((b) => b.status === 'composting');
@@ -826,7 +826,7 @@
         <div class="view-head">
           <div>
             <h2>Composting</h2>
-            <div class="desc">Organic batches in windrow processing at Bhaktapur plant</div>
+            <div class="desc">Organic batches in windrow processing at Itahari plant</div>
           </div>
         </div>
         ${all.length === 0 ? empty('No batches in composting right now.', 'sprout') :
@@ -851,7 +851,7 @@
     }
 
     /* ============================================================
-       VIEW 9 — FARM DELIVERIES
+       VIEW 9, FARM DELIVERIES
        ============================================================ */
     function renderFarm(c) {
       const ready = db.batches.all().filter((b) => b.status === 'ready_for_delivery');
@@ -893,7 +893,7 @@
                 return `<tr>
                   <td><span class="mono">${esc(b.id)}</span></td>
                   <td>${truncate(bizName(b.businessId), 22)}</td>
-                  <td>${fr ? esc(fr.name) : '—'}</td>
+                  <td>${fr ? esc(fr.name) : ' '}</td>
                   <td>${UI.fmtKg(b.deliveredKg)}</td>
                   <td>${workerName(b.workerId)}</td>
                   <td>${UI.fmtDateShort(ev.at || b.createdAt)}</td>
@@ -906,7 +906,7 @@
     }
 
     /* ============================================================
-       VIEW 10 — NOTIFICATIONS
+       VIEW 10, NOTIFICATIONS
        ============================================================ */
     function renderNotifications(c) {
       const f = state.filter;
@@ -965,11 +965,11 @@
                 </div>
                 <div class="msg-text">${esc(msg)}</div>
                 <div class="row">
-                  <span class="muted" style="font-size:.78rem">${it.at ? UI.fmtDate(it.at) : '— not yet sent —'}</span>
+                  <span class="muted" style="font-size:.78rem">${it.at ? UI.fmtDate(it.at) : '  not yet sent  '}</span>
                   <div class="controls">
                     ${it.status === 'not_sent' ? `<button class="btn btn-primary btn-sm" data-action="send-notif" data-id="${esc(it.batchId)}" data-stage="${esc(it.stage)}">Send</button>` : ''}
                     ${it.status === 'failed' ? `<button class="btn btn-primary btn-sm" data-action="retry-notif" data-id="${esc(it.batchId)}" data-stage="${esc(it.stage)}">Retry</button>` : ''}
-                    ${it.status === 'sent' ? `<button class="btn btn-outline btn-sm" data-action="resend-notif" data-id="${esc(it.batchId)}" data-stage="${esc(it.stage)}">Re-send</button>` : ''}
+                    ${it.status === 'sent' ? `<button class="btn btn-outline btn-sm" data-action="resend-notif" data-id="${esc(it.batchId)}" data-stage="${esc(it.stage)}">Resend</button>` : ''}
                     <button class="btn btn-ghost btn-sm" data-action="fail-notif" data-id="${esc(it.batchId)}" data-stage="${esc(it.stage)}">Mark Failed</button>
                   </div>
                 </div>
@@ -981,7 +981,7 @@
     }
 
     /* ============================================================
-       VIEW 11 — REPORTS
+       VIEW 11, REPORTS
        ============================================================ */
     function renderReports(c) {
       const all = db.batches.all();
@@ -1083,8 +1083,8 @@
                     const b = biz(bid);
                     return `<tr>
                       <td>${i + 1}</td>
-                      <td>${b ? esc(b.name) : '—'}</td>
-                      <td>${b ? statusBadge(b.type) : '—'}</td>
+                      <td>${b ? esc(b.name) : ' '}</td>
+                      <td>${b ? statusBadge(b.type) : ' '}</td>
                       <td><strong>${n}</strong></td>
                     </tr>`;
                   }).join('')}
@@ -1097,7 +1097,7 @@
     }
 
     /* ============================================================
-       BATCH DETAIL MODAL — central, used by multiple views
+       BATCH DETAIL MODAL, central, used by multiple views
        ============================================================ */
     function openBatchModal(batchId) {
       const b = db.batches.get(batchId);
@@ -1149,7 +1149,7 @@
           <div class="msg-text">${esc(msg)}</div>
           <label class="checkbox-row">
             <input type="checkbox" data-role="auto-notify-stage" data-stage="${esc(s)}">
-            Auto-send this stage's message when stage is completed
+            Autosend this stage's message when stage is completed
           </label>
         </div>`;
       }).join('');
@@ -1178,11 +1178,11 @@
 
       const info = `
         <div class="kv">
-          <div class="k">Business</div><div class="v">${bz ? esc(bz.name) : '—'} <span class="muted">(${esc(bz ? bz.type : '—')})</span></div>
-          <div class="k">Worker</div><div class="v">${wk ? esc(wk.name) + ' · ' + esc(wk.role) : '—'}</div>
+          <div class="k">Business</div><div class="v">${bz ? esc(bz.name) : ' '} <span class="muted">(${esc(bz ? bz.type : ' ')})</span></div>
+          <div class="k">Worker</div><div class="v">${wk ? esc(wk.name) + ' · ' + esc(wk.role) : ' '}</div>
           <div class="k">Waste Type</div><div class="v">${wasteBadge(b.wasteType)}</div>
           <div class="k">Collected</div><div class="v">${UI.fmtKg(b.weightKg)}</div>
-          ${b.deliveredKg ? `<div class="k">Delivered</div><div class="v">${UI.fmtKg(b.deliveredKg)} to ${fr ? esc(fr.name) : '—'}</div>` : ''}
+          ${b.deliveredKg ? `<div class="k">Delivered</div><div class="v">${UI.fmtKg(b.deliveredKg)} to ${fr ? esc(fr.name) : ' '}</div>` : ''}
         </div>
       `;
 
@@ -1190,7 +1190,7 @@
         ? `<div class="banner"><span class="ico">${UI.iconSvg('checkCircle')}</span> This batch has been completed (${esc(b.status)}).</div>`
         : `<div class="card card-pad" style="background:var(--ink-50);border:1px dashed var(--border)">
             <h3 style="margin:0 0 8px">Advance to next stage</h3>
-            <p class="muted" style="margin:0 0 12px;font-size:.84rem">Clicking below will mark the current stage complete and start the next. If the auto-send checkbox is ticked for the current stage, the customer will be notified automatically.</p>
+            <p class="muted" style="margin:0 0 12px;font-size:.84rem">Clicking below will mark the current stage complete and start the next. If the autosend checkbox is ticked for the current stage, the customer will be notified automatically.</p>
             <button class="btn btn-primary" data-action="${advanceAction}" data-id="${esc(b.id)}">${UI.iconSvg('arrowRight')} ${esc(advanceLabel)}</button>
           </div>`;
 
@@ -1311,7 +1311,7 @@
           setNotif(id, btn.dataset.stage, 'sent', 'Message sent to customer');
           break;
         case 'retry-notif':
-          setNotif(id, btn.dataset.stage, 'sent', 'Retry successful — message sent');
+          setNotif(id, btn.dataset.stage, 'sent', 'Retry successful, message sent');
           break;
         case 'resend-notif':
           setNotif(id, btn.dataset.stage, 'sent', 'Message re-sent to customer');
@@ -1392,7 +1392,7 @@
       const b = db.batches.get(batchId);
       if (!b) return;
       // The stage that is being COMPLETED by this advance action (per spec:
-      // "the JUST-completed stage" — i.e. the stage the customer should be told about).
+      // "the JUST-completed stage", i.e. the stage the customer should be told about).
       // For a 'collected' batch, advancing means collection is finalised + sorting started.
       // For 'sorting', advancing means sorting complete + composting started.
       // For 'composting', advancing means composting done + ready_for_delivery.
@@ -1416,11 +1416,11 @@
         db.batches.pushStage(batchId, { stage: 'sorting', status: 'in_progress', workerId: b.workerId, note: 'Sorting in progress at facility' });
         db.batches.update(batchId, { status: 'sorting' });
         maybeNotify();
-        UI.toast('Stage advanced — collection complete, sorting started.', { title: 'Stage advanced' });
-        if (!autoNotify) UI.toast('Customer not notified (auto-send unchecked for collection).', { title: 'Notifications', type: 'info' });
+        UI.toast('Stage advanced, collection complete, sorting started.', { title: 'Stage advanced' });
+        if (!autoNotify) UI.toast('Customer not notified (autosend unchecked for collection).', { title: 'Notifications', type: 'info' });
       } else if (b.status === 'sorting') {
         if (b.wasteType === 'recyclable') {
-          // should not get here — recyclable branch handled by recycleBatch
+          // should not get here, recyclable branch handled by recycleBatch
           return recycleBatch(batchId);
         }
         // complete sorting, start composting
@@ -1428,15 +1428,15 @@
         db.batches.pushStage(batchId, { stage: 'composting', status: 'in_progress', workerId: b.workerId, note: 'Organic loaded into windrow for composting' });
         db.batches.update(batchId, { status: 'composting' });
         maybeNotify();
-        UI.toast('Stage advanced — sorting complete, composting started.', { title: 'Stage advanced' });
-        if (!autoNotify) UI.toast('Customer not notified (auto-send unchecked for sorting).', { title: 'Notifications', type: 'info' });
+        UI.toast('Stage advanced, sorting complete, composting started.', { title: 'Stage advanced' });
+        if (!autoNotify) UI.toast('Customer not notified (autosend unchecked for sorting).', { title: 'Notifications', type: 'info' });
       } else if (b.status === 'composting') {
         // complete composting, ready for delivery
         markStageDone(batchId, 'composting', 'Compost matured, ready for delivery');
         db.batches.update(batchId, { status: 'ready_for_delivery' });
         maybeNotify();
-        UI.toast('Stage advanced — compost ready for farm delivery.', { title: 'Stage advanced' });
-        if (!autoNotify) UI.toast('Customer not notified (auto-send unchecked for composting).', { title: 'Notifications', type: 'info' });
+        UI.toast('Stage advanced, compost ready for farm delivery.', { title: 'Stage advanced' });
+        if (!autoNotify) UI.toast('Customer not notified (autosend unchecked for composting).', { title: 'Notifications', type: 'info' });
       } else if (b.status === 'ready_for_delivery') {
         // open farm delivery form (which always auto-sends farm_delivery notif)
         UI.closeAllModals();
@@ -1455,15 +1455,15 @@
       markStageDone(batchId, 'sorting', 'Sent to certified recycling partner');
       db.batches.update(batchId, { status: 'recycled' });
       if (autoNotify) db.batches.setNotification(batchId, 'sorting', 'sent');
-      UI.toast('Batch sent to recycling partner — status: Recycled.', { title: 'Recycling branch' });
-      if (!autoNotify) UI.toast('Customer not notified (auto-send unchecked for sorting).', { title: 'Notifications', type: 'info' });
+      UI.toast('Batch sent to recycling partner, status: Recycled.', { title: 'Recycling branch' });
+      if (!autoNotify) UI.toast('Customer not notified (autosend unchecked for sorting).', { title: 'Notifications', type: 'info' });
       openBatchModal(batchId);
     }
 
     function confirmReachedSorting(batchId) {
       const b = db.batches.get(batchId);
       if (!b) return;
-      db.batches.pushStage(batchId, { stage: 'sorting', status: 'in_progress', workerId: b.workerId, note: 'Arrived at sorting facility (Balkhu)' });
+      db.batches.pushStage(batchId, { stage: 'sorting', status: 'in_progress', workerId: b.workerId, note: 'Arrived at sorting facility (Itahari)' });
       db.batches.update(batchId, { status: 'sorting' });
       db.batches.setNotification(batchId, 'sorting', 'not_sent');
       UI.toast('Batch marked as arrived at sorting facility.', { title: 'Collection → Sorting' });
@@ -1474,11 +1474,11 @@
       const b = db.batches.get(batchId);
       if (!b) return;
       if (b.wasteType === 'recyclable') return sendToRecycling(batchId, autoNotify);
-      markStageDone(batchId, 'sorting', 'Sorting complete — organic separated');
+      markStageDone(batchId, 'sorting', 'Sorting complete, organic separated');
       db.batches.pushStage(batchId, { stage: 'composting', status: 'in_progress', workerId: b.workerId, note: 'Organic loaded into windrow' });
       db.batches.update(batchId, { status: 'composting' });
       if (autoNotify) db.batches.setNotification(batchId, 'sorting', 'sent');
-      UI.toast('Sorting complete — composting started.', { title: 'Stage advanced' });
+      UI.toast('Sorting complete, composting started.', { title: 'Stage advanced' });
       render();
     }
 
@@ -1488,7 +1488,7 @@
       markStageDone(batchId, 'sorting', 'Sent to certified recycling partner');
       db.batches.update(batchId, { status: 'recycled' });
       if (autoNotify) db.batches.setNotification(batchId, 'sorting', 'sent');
-      UI.toast('Batch sent to recycling partner — status: Recycled.', { title: 'Recycling branch' });
+      UI.toast('Batch sent to recycling partner, status: Recycled.', { title: 'Recycling branch' });
       render();
     }
 
@@ -1498,7 +1498,7 @@
       markStageDone(batchId, 'composting', 'Compost matured, ready for delivery');
       db.batches.update(batchId, { status: 'ready_for_delivery' });
       if (autoNotify) db.batches.setNotification(batchId, 'composting', 'sent');
-      UI.toast('Compost ready — status: Ready for Delivery.', { title: 'Stage advanced' });
+      UI.toast('Compost ready, status: Ready for Delivery.', { title: 'Stage advanced' });
       render();
     }
 
@@ -1626,10 +1626,10 @@
             <div class="k">ID</div><div class="v id-mono">${esc(b.id)}</div>
             <div class="k">Name</div><div class="v">${esc(b.name)}</div>
             <div class="k">Type</div><div class="v">${statusBadge(b.type)}</div>
-            <div class="k">Contact</div><div class="v">${esc(b.contactPerson || '—')}</div>
-            <div class="k">Phone</div><div class="v">${esc(b.phone || '—')}</div>
-            <div class="k">Email</div><div class="v">${esc(b.email || '—')}</div>
-            <div class="k">Address</div><div class="v">${esc(b.address || '—')}</div>
+            <div class="k">Contact</div><div class="v">${esc(b.contactPerson || ' ')}</div>
+            <div class="k">Phone</div><div class="v">${esc(b.phone || ' ')}</div>
+            <div class="k">Email</div><div class="v">${esc(b.email || ' ')}</div>
+            <div class="k">Address</div><div class="v">${esc(b.address || ' ')}</div>
             <div class="k">Created</div><div class="v">${UI.fmtDate(b.createdAt)}</div>
           </div>
           <div class="sub-h">Bookings (${bks.length})</div>
@@ -1672,7 +1672,7 @@
           <div class="field">
             <label>Business</label>
             <select class="select" name="businessId" required>
-              <option value="">— Select business —</option>
+              <option value="">  Select business  </option>
               ${allBiz.map((b) => `<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}
             </select>
           </div>
@@ -1727,7 +1727,7 @@
           status: 'pending',
         };
         db.bookings.add(data);
-        UI.toast('Booking created — status: Pending.');
+        UI.toast('Booking created, status: Pending.');
         UI.closeAllModals();
         render();
       });
@@ -1746,7 +1746,7 @@
           <div class="field">
             <label>Assign Collector</label>
             <select class="select" name="workerId" required>
-              <option value="">— Select collector —</option>
+              <option value="">  Select collector  </option>
               ${collectors.map((w) => `<option value="${esc(w.id)}">${esc(w.name)} · ${esc(w.areas || '')}</option>`).join('')}
             </select>
           </div>
@@ -1763,7 +1763,7 @@
         const f = root.querySelector('#awForm');
         if (!f.workerId.value) { UI.toast('Please pick a collector.', { type: 'error' }); return; }
         db.bookings.update(bk.id, { workerId: f.workerId.value, status: 'scheduled' });
-        UI.toast('Worker assigned — booking is now Scheduled.');
+        UI.toast('Worker assigned, booking is now Scheduled.');
         UI.closeAllModals();
         render();
       });
@@ -1810,7 +1810,7 @@
           <div class="field-row">
             <div class="field">
               <label>Areas / Zone</label>
-              <input class="input" name="areas" value="${w ? esc(w.areas || '') : ''}" placeholder="e.g. Kathmandu Central" />
+              <input class="input" name="areas" value="${w ? esc(w.areas || '') : ''}" placeholder="e.g. Itahari Central" />
             </div>
             <div class="field">
               <label>Status</label>
@@ -1857,8 +1857,8 @@
             <div class="k">ID</div><div class="v id-mono">${esc(w.id)}</div>
             <div class="k">Name</div><div class="v">${esc(w.name)}</div>
             <div class="k">Role</div><div class="v">${roleBadge(w.role)}</div>
-            <div class="k">Phone</div><div class="v">${esc(w.phone || '—')}</div>
-            <div class="k">Areas</div><div class="v">${esc(w.areas || '—')}</div>
+            <div class="k">Phone</div><div class="v">${esc(w.phone || ' ')}</div>
+            <div class="k">Areas</div><div class="v">${esc(w.areas || ' ')}</div>
             <div class="k">Status</div><div class="v">${statusBadge(w.status || 'active')}</div>
             <div class="k">Joined</div><div class="v">${UI.fmtDate(w.createdAt)}</div>
           </div>
@@ -1898,14 +1898,14 @@
           <div class="field">
             <label>Business</label>
             <select class="select" name="businessId" required>
-              <option value="">— Select business —</option>
+              <option value="">  Select business  </option>
               ${allBiz.map((b) => `<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}
             </select>
           </div>
           <div class="field">
             <label>Collector (Worker)</label>
             <select class="select" name="workerId" required>
-              <option value="">— Select collector —</option>
+              <option value="">  Select collector  </option>
               ${collectors.map((w) => `<option value="${esc(w.id)}">${esc(w.name)} · ${esc(w.areas || '')}</option>`).join('')}
             </select>
           </div>
@@ -1954,7 +1954,7 @@
             { stage: 'collection', status: 'sent', at: now },
           ],
         });
-        UI.toast(`Batch ${batch.id} created — status: Collected.`, { title: 'Batch created' });
+        UI.toast(`Batch ${batch.id} created, status: Collected.`, { title: 'Batch created' });
         UI.closeAllModals();
         render();
       });
@@ -1979,7 +1979,7 @@
           <div class="field">
             <label>Destination Farm</label>
             <select class="select" name="farmId" required>
-              <option value="">— Select farm —</option>
+              <option value="">  Select farm  </option>
               ${farms.map((f) => `<option value="${esc(f.id)}">${esc(f.name)} · ${esc(f.location)}</option>`).join('')}
             </select>
           </div>
@@ -1991,7 +1991,7 @@
             <div class="field">
               <label>Driver</label>
               <select class="select" name="driverId" required>
-                <option value="">— Select driver —</option>
+                <option value="">  Select driver  </option>
                 ${drivers.map((w) => `<option value="${esc(w.id)}">${esc(w.name)}</option>`).join('')}
               </select>
             </div>
@@ -2032,7 +2032,7 @@
         if (fr) db.farms.update(fr.id, { compostReceived: (fr.compostReceived || 0) + deliveredKg });
         // auto-send farm_delivery notification (key milestone)
         db.batches.setNotification(batchId, 'farm_delivery', 'sent');
-        UI.toast('Delivery confirmed — customer notified 🌱', { title: 'Farm Delivery' });
+        UI.toast('Delivery confirmed, customer notified 🌱', { title: 'Farm Delivery' });
         UI.closeAllModals();
         render();
       });

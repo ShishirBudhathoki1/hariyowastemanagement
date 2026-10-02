@@ -1,5 +1,5 @@
 /* =====================================================================
-   Hariyo Waste — Data Layer
+   Hariyo Waste, Data Layer
    Mock data + localStorage persistence (Vanilla JS, no frameworks)
    ===================================================================== */
 
@@ -17,45 +17,45 @@
     const hoursAgo = (n) => new Date(Date.now() - n * 3600000);
 
     const businesses = [
-      { id: 'BZ-1001', name: 'Hotel Annapurna Kitchen', type: 'hotel', address: 'Durbar Marg, Kathmandu', phone: '01-4221711', email: 'kitchen@annapurna.example', contactPerson: 'Ramesh Shrestha', createdAt: iso(daysAgo(120)) },
-      { id: 'BZ-1002', name: 'OR2K Vegetarian Café', type: 'cafe', address: 'Jhamsikhel, Lalitpur', phone: '01-5524733', email: 'hello@or2k.example', contactPerson: 'Sunita Maharjan', createdAt: iso(daysAgo(95)) },
-      { id: 'BZ-1003', name: 'Thamel House Restaurant', type: 'restaurant', address: 'Thamel, Kathmandu', phone: '01-4700832', email: 'ops@thamelhouse.example', contactPerson: 'Bikash Tamang', createdAt: iso(daysAgo(80)) },
-      { id: 'BZ-1004', name: 'Himalayan Java Coffee (Bhaktapur)', type: 'cafe', address: 'Suryabinayak, Bhaktapur', phone: '01-6610890', email: 'bhaktapur@hjcoffee.example', contactPerson: 'Priya Karki', createdAt: iso(daysAgo(60)) },
-      { id: 'BZ-1005', name: 'Kathmandu Guest House Dining', type: 'hotel', address: 'Thamel, Kathmandu', phone: '01-4144144', email: 'dining@kgh.example', contactPerson: 'Anjana Rai', createdAt: iso(daysAgo(40)) },
-      { id: 'BZ-1006', name: 'Newa Chhen Restaurant', type: 'restaurant', address: 'Patan Dhoka, Lalitpur', phone: '01-5531200', email: 'newa@example', contactPerson: 'Saroj Prajapati', createdAt: iso(daysAgo(25)) },
+      { id: 'BZ-1001', name: 'Hotel Annapurna Kitchen', type: 'hotel', address: 'Itahari', phone: '01-4221711', email: 'kitchen@annapurna.example', contactPerson: 'Ramesh Shrestha', createdAt: iso(daysAgo(120)) },
+      { id: 'BZ-1002', name: 'OR2K Vegetarian Café', type: 'cafe', address: 'Itahari', phone: '01-5524733', email: 'hello@or2k.example', contactPerson: 'Sunita Maharjan', createdAt: iso(daysAgo(95)) },
+      { id: 'BZ-1003', name: 'Itahari House Restaurant', type: 'restaurant', address: 'Itahari', phone: '01-4700832', email: 'ops@itaharihouse.example', contactPerson: 'Bikash Tamang', createdAt: iso(daysAgo(80)) },
+      { id: 'BZ-1004', name: 'Himalayan Java Coffee', type: 'cafe', address: 'Itahari', phone: '01-6610890', email: 'itahari@hjcoffee.example', contactPerson: 'Priya Karki', createdAt: iso(daysAgo(60)) },
+      { id: 'BZ-1005', name: 'Itahari Guest House Dining', type: 'hotel', address: 'Itahari', phone: '01-4144144', email: 'dining@kgh.example', contactPerson: 'Anjana Rai', createdAt: iso(daysAgo(40)) },
+      { id: 'BZ-1006', name: 'Newa Chhen Restaurant', type: 'restaurant', address: 'Itahari', phone: '01-5531200', email: 'newa@example', contactPerson: 'Saroj Prajapati', createdAt: iso(daysAgo(25)) },
     ];
 
     const workers = [
-      { id: 'WK-201', name: 'Dipendra Gurung', phone: '9801010101', role: 'collector', areas: 'Kathmandu Central', status: 'active', createdAt: iso(daysAgo(110)) },
-      { id: 'WK-202', name: 'Maya Tamang', phone: '9802020202', role: 'collector', areas: 'Lalitpur', status: 'active', createdAt: iso(daysAgo(100)) },
-      { id: 'WK-203', name: 'Hari Bahadur Magar', phone: '9803030303', role: 'collector', areas: 'Bhaktapur', status: 'active', createdAt: iso(daysAgo(90)) },
-      { id: 'WK-204', name: 'Sita Karki', phone: '9804040404', role: 'sorter', areas: 'Sorting Facility - Balkhu', status: 'active', createdAt: iso(daysAgo(85)) },
-      { id: 'WK-205', name: 'Nabin Shrestha', phone: '9805050505', role: 'sorter', areas: 'Sorting Facility - Balkhu', status: 'active', createdAt: iso(daysAgo(70)) },
-      { id: 'WK-206', name: 'Kamal Thapa', phone: '9806060606', role: 'compost_operator', areas: 'Compost Plant - Bhaktapur', status: 'active', createdAt: iso(daysAgo(65)) },
+      { id: 'WK-201', name: 'Dipendra Gurung', phone: '9801010101', role: 'collector', areas: 'Itahari Central', status: 'active', createdAt: iso(daysAgo(110)) },
+      { id: 'WK-202', name: 'Maya Tamang', phone: '9802020202', role: 'collector', areas: 'Itahari', status: 'active', createdAt: iso(daysAgo(100)) },
+      { id: 'WK-203', name: 'Hari Bahadur Magar', phone: '9803030303', role: 'collector', areas: 'Itahari', status: 'active', createdAt: iso(daysAgo(90)) },
+      { id: 'WK-204', name: 'Sita Karki', phone: '9804040404', role: 'sorter', areas: 'Sorting Facility - Itahari', status: 'active', createdAt: iso(daysAgo(85)) },
+      { id: 'WK-205', name: 'Nabin Shrestha', phone: '9805050505', role: 'sorter', areas: 'Sorting Facility - Itahari', status: 'active', createdAt: iso(daysAgo(70)) },
+      { id: 'WK-206', name: 'Kamal Thapa', phone: '9806060606', role: 'compost_operator', areas: 'Compost Plant - Itahari', status: 'active', createdAt: iso(daysAgo(65)) },
       { id: 'WK-207', name: 'Rojina Maharjan', phone: '9807070707', role: 'driver', areas: 'Farm Deliveries', status: 'active', createdAt: iso(daysAgo(50)) },
     ];
 
     const farms = [
-      { id: 'FR-301', name: 'Sundar Krishi Farm', location: 'Bhaktapur - Sipadole', contact: '9801111111', owner: 'Sundar Adhikari', compostReceived: 0 },
-      { id: 'FR-302', name: 'Green Valley Vegetables', location: 'Kirtipur - Chobar', contact: '9802222222', owner: 'Goma Tamang', compostReceived: 0 },
-      { id: 'FR-303', name: 'Hilltop Organic Farm', location: 'Lele, Lalitpur', contact: '9803333333', owner: 'Dhan Bahadur Lama', compostReceived: 0 },
+      { id: 'FR-301', name: 'Sundar Krishi Farm', location: 'Itahari', contact: '9801111111', owner: 'Sundar Adhikari', compostReceived: 0 },
+      { id: 'FR-302', name: 'Green Valley Vegetables', location: 'Itahari', contact: '9802222222', owner: 'Goma Tamang', compostReceived: 0 },
+      { id: 'FR-303', name: 'Hilltop Organic Farm', location: 'Itahari', contact: '9803333333', owner: 'Dhan Bahadur Lama', compostReceived: 0 },
     ];
 
     const recyclingPartners = [
-      { id: 'RP-401', name: 'Nepal Recyclers Pvt Ltd', material: 'Plastic / Paper / Metal', location: 'Balaju' },
-      { id: 'RP-402', name: 'Himalayan Glass Works', material: 'Glass', location: 'Hetauda' },
-      { id: 'RP-403', name: 'GreenCycle E-waste', material: 'E-waste', location: 'Kathmandu' },
+      { id: 'RP-401', name: 'Nepal Recyclers Pvt Ltd', material: 'Plastic / Paper / Metal', location: 'Itahari' },
+      { id: 'RP-402', name: 'Himalayan Glass Works', material: 'Glass', location: 'Itahari' },
+      { id: 'RP-403', name: 'GreenCycle E-waste', material: 'E-waste', location: 'Itahari' },
     ];
 
     const bookings = [
-      { id: 'BK-5001', businessId: 'BZ-1001', wasteType: 'organic', quantityKg: 45, preferredDate: iso(daysAgo(2)), address: 'Durbar Marg, Kathmandu', status: 'collected', workerId: 'WK-201', createdAt: iso(daysAgo(3)) },
-      { id: 'BK-5002', businessId: 'BZ-1002', wasteType: 'mixed', quantityKg: 22, preferredDate: iso(daysAgo(1)), address: 'Jhamsikhel, Lalitpur', status: 'collected', workerId: 'WK-202', createdAt: iso(daysAgo(2)) },
-      { id: 'BK-5003', businessId: 'BZ-1003', wasteType: 'recyclable', quantityKg: 18, preferredDate: iso(hoursAgo(6)), address: 'Thamel, Kathmandu', status: 'scheduled', workerId: 'WK-201', createdAt: iso(daysAgo(1)) },
-      { id: 'BK-5004', businessId: 'BZ-1004', wasteType: 'organic', quantityKg: 30, preferredDate: iso(daysAgo(0)), address: 'Suryabinayak, Bhaktapur', status: 'pending', workerId: null, createdAt: iso(hoursAgo(8)) },
-      { id: 'BK-5005', businessId: 'BZ-1005', wasteType: 'mixed', quantityKg: 50, preferredDate: iso(daysAgo(0)), address: 'Thamel, Kathmandu', status: 'pending', workerId: null, createdAt: iso(hoursAgo(4)) },
+      { id: 'BK-5001', businessId: 'BZ-1001', wasteType: 'organic', quantityKg: 45, preferredDate: iso(daysAgo(2)), address: 'Itahari', status: 'collected', workerId: 'WK-201', createdAt: iso(daysAgo(3)) },
+      { id: 'BK-5002', businessId: 'BZ-1002', wasteType: 'mixed', quantityKg: 22, preferredDate: iso(daysAgo(1)), address: 'Itahari', status: 'collected', workerId: 'WK-202', createdAt: iso(daysAgo(2)) },
+      { id: 'BK-5003', businessId: 'BZ-1003', wasteType: 'recyclable', quantityKg: 18, preferredDate: iso(hoursAgo(6)), address: 'Itahari', status: 'scheduled', workerId: 'WK-201', createdAt: iso(daysAgo(1)) },
+      { id: 'BK-5004', businessId: 'BZ-1004', wasteType: 'organic', quantityKg: 30, preferredDate: iso(daysAgo(0)), address: 'Itahari', status: 'pending', workerId: null, createdAt: iso(hoursAgo(8)) },
+      { id: 'BK-5005', businessId: 'BZ-1005', wasteType: 'mixed', quantityKg: 50, preferredDate: iso(daysAgo(0)), address: 'Itahari', status: 'pending', workerId: null, createdAt: iso(hoursAgo(4)) },
     ];
 
-    // Central tracking entity — the BATCH
+    // Central tracking entity, the BATCH
     // Each batch follows: Business -> Worker -> Collection -> Sorting -> Processing -> Farm
     const batches = [
       {
@@ -316,7 +316,7 @@
       },
     },
 
-    /* batches — central tracking entity */
+    /* batches, central tracking entity */
     batches: {
       all: () => load().batches,
       get: (id) => load().batches.find(b => b.id === id) || null,

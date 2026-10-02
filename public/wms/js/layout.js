@@ -1,5 +1,5 @@
 /* =====================================================================
-   Hariyo Waste — Public Site Shared Layout
+   Hariyo Waste, Public Site Shared Layout
    Injects sticky header + footer into public pages.
    Each public page includes this script and calls UI.mountPublic(active).
    ===================================================================== */
@@ -20,7 +20,7 @@
     return `
       <a class="brand" href="index.html">
         <span class="mark">H</span>
-        <span>Hariyo Waste<small>Segregated Waste · Kathmandu Valley</small></span>
+        <span>Hariyo Waste<small>Segregated Waste · Itahari</small></span>
       </a>`;
   }
 
@@ -54,7 +54,7 @@
                 <span>Hariyo Waste<small style="color:#9fb6a8">Closing the loop on waste</small></span>
               </div>
               <p style="color:#9fb6a8;font-size:.88rem;max-width:320px">
-                A Nepalese waste-management startup that buys segregated waste from
+                A Nepalese waste management startup that buys segregated waste from
                 businesses, recycles it responsibly and turns organic waste into
                 compost for local farms.
               </p>
@@ -83,10 +83,6 @@
                 <li><a href="track.html">Batch Tracking</a></li>
               </ul>
             </div>
-          </div>
-          <div class="footer-bottom">
-            <span>© ${year} Hariyo Waste Pvt. Ltd. · Kathmandu, Lalitpur & Bhaktapur</span>
-            <span>Built with Vanilla HTML, CSS &amp; JavaScript · Prototype Demo</span>
           </div>
         </div>
       </footer>`;

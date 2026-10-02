@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Book a Collection — Hariyo Waste</title>
-  <link rel="stylesheet" href="/wms/css/styles.css" />
+  <title>Book a Collection, Hariyo Waste</title>
+  <link rel="stylesheet" href="css/styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -44,7 +44,7 @@
       <div class="container hero-inner">
         <span class="eyebrow"><span class="dot"></span> Book a Collection</span>
         <h1>Schedule your <span class="hl">segregated waste pickup</span></h1>
-        <p class="lead">Tell us about your business and the waste you've segregated. Our team will confirm a pickup slot within one business day — and you'll get a Batch ID once collected.</p>
+        <p class="lead">Tell us about your business and the waste you've segregated. Our team will confirm a pickup slot within one business day, and you'll get a Batch ID once collected.</p>
       </div>
     </section>
 
@@ -106,21 +106,21 @@
                   <input type="radio" name="wasteType" value="organic" required />
                   <span class="text">
                     <span class="label">Organic / Kitchen</span>
-                    <span class="desc">Food scraps, vegetable peelings, tea &amp; coffee grounds — composted at our Bhaktapur plant.</span>
+                    <span class="desc">Food scraps, vegetable peelings, tea &amp; coffee grounds, composted at our Itahari plant.</span>
                   </span>
                 </label>
                 <label class="radio-opt">
                   <input type="radio" name="wasteType" value="recyclable" />
                   <span class="text">
                     <span class="label">Recyclable</span>
-                    <span class="desc">Clean plastic, paper, glass, metal — sorted and sent to certified recycling partners.</span>
+                    <span class="desc">Clean plastic, paper, glass, metal, sorted and sent to certified recycling partners.</span>
                   </span>
                 </label>
                 <label class="radio-opt">
                   <input type="radio" name="wasteType" value="mixed" />
                   <span class="text">
                     <span class="label">Mixed</span>
-                    <span class="desc">Mixed organic + recyclable — our Balkhu team will segregate it for you.</span>
+                    <span class="desc">Mixed organic + recyclable, our Itahari team will segregate it for you.</span>
                   </span>
                 </label>
               </div>
@@ -172,9 +172,9 @@
     </section>
   </main>
 
-  <script src="/wms/js/data.js"></script>
-  <script src="/wms/js/utils.js"></script>
-  <script src="/wms/js/layout.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/layout.js"></script>
   <script>
     UI.mountPublic('booking.html');
     document.querySelectorAll('[data-icon]').forEach(function (el) {
@@ -241,7 +241,7 @@
         businessId = newBiz.id;
       }
 
-      // Create booking — store businessName as a field too (for walk-in bookings)
+      // Create booking, store businessName as a field too (for walk-in bookings)
       var booking = WMS.db.bookings.add({
         businessId: businessId,
         businessName: data.businessName,
