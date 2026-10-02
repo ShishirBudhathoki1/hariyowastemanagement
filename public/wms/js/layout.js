@@ -19,7 +19,7 @@
   function brandHtml() {
     return `
       <a class="brand" href="index.html">
-        <span class="mark">H</span>
+        <img class="brand-logo" src="../logo1.png" alt="" width="38" height="38" />
         <span>Hariyo Waste<small>Segregated Waste · Itahari</small></span>
       </a>`;
   }
@@ -50,7 +50,7 @@
           <div class="footer-grid">
             <div>
               <div class="brand" style="color:#fff;margin-bottom:14px">
-                <span class="mark">H</span>
+                <img class="brand-logo" src="../logo1.png" alt="" width="38" height="38" />
                 <span>Hariyo Waste<small style="color:#9fb6a8">Closing the loop on waste</small></span>
               </div>
               <p style="color:#9fb6a8;font-size:.88rem;max-width:320px">

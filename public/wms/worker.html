@@ -23,11 +23,7 @@
       font-weight: 800; font-size: 1rem;
       display: flex; align-items: center; gap: 8px;
     }
-    .worker-top .brand-name .mark {
-      width: 30px; height: 30px; border-radius: 8px;
-      background: linear-gradient(135deg, var(--green-500), var(--green-700));
-      display: grid; place-items: center; color: #fff; font-weight: 900; font-size: .9rem;
-    }
+    .worker-top .brand-name .brand-logo { width: 30px; height: 30px; flex-basis: 30px; }
     .worker-top .worker-info {
       display: flex; align-items: center; gap: 8px; font-size: .82rem; color: #cfe0d6;
       margin-left: auto;
@@ -118,7 +114,7 @@
   <div id="gate" class="gate">
     <div class="gate-card">
       <div class="brand">
-        <span class="mark">H</span>
+        <img class="brand-logo" src="../logo1.png" alt="" width="38" height="38" />
         <span>Hariyo Field<small>Worker Mobile App</small></span>
       </div>
       <h1>Field Login</h1>
@@ -144,7 +140,7 @@
   <div id="app" class="wphone hidden">
     <header class="worker-top">
       <div class="brand-name">
-        <span class="mark">H</span>
+        <img class="brand-logo" src="../logo1.png" alt="" width="30" height="30" />
         <span>Hariyo Field</span>
       </div>
       <div class="worker-info">
