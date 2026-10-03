@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Order Compost Manure, Hariyo Waste</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .hero.smaller .hero-inner { padding: 56px 20px 44px; }
+    .hero.smaller h1 { font-size: 2.4rem; }
+    .order-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, .9fr); gap: 30px; align-items: start; }
+    .product-copy { padding: 10px 0; }
+    .product-copy h2 { margin: 12px 0; }
+    .product-copy > p { max-width: 560px; color: var(--ink-600); }
+    .product-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 24px; }
+    .product-fact { padding: 16px; background: #fff; border: 1px solid var(--border); border-radius: var(--r-sm); }
+    .product-fact strong { display: block; color: var(--ink-800); font-size: .9rem; }
+    .product-fact span { color: var(--ink-500); font-size: .82rem; }
+    .order-note { padding: 14px 16px; margin-top: 20px; border-left: 3px solid var(--earth-500); background: var(--earth-100); color: var(--ink-700); font-size: .9rem; }
+    .order-form h2 { margin: 0 0 18px; font-size: 1.35rem; }
+    .submit-note { margin: 10px 0 0; text-align: center; color: var(--ink-500); font-size: .8rem; }
+    @media (max-width: 760px) { .order-layout { grid-template-columns: 1fr; } }
+    @media (max-width: 480px) { .hero.smaller h1 { font-size: 2rem; } }
+    @media (max-width: 480px) { .product-facts { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero smaller">
+      <div class="container hero-inner">
+        <span class="eyebrow"><span class="dot"></span> Compost from Itahari</span>
+        <h1>Bring better soil to your <span class="hl">farm or garden</span></h1>
+        <p class="lead">Request Hariyo organic compost manure. Share what you need and our team will contact you to confirm availability, price, and delivery.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container order-layout">
+        <div class="product-copy">
+          <span class="badge badge-green">Organic compost manure</span>
+          <h2>Made from collected organic waste</h2>
+          <p>Our Itahari composting process turns segregated kitchen and organic waste into mature compost for local farms. Tell us your required quantity and where you need it.</p>
+          <div class="product-facts">
+            <div class="product-fact"><strong>Quantity to suit your needs</strong><span>Request the amount you need in kilograms.</span></div>
+            <div class="product-fact"><strong>Local delivery</strong><span>Tell us your area and we will confirm delivery options.</span></div>
+            <div class="product-fact"><strong>Price confirmed by our team</strong><span>No payment is collected on this website.</span></div>
+            <div class="product-fact"><strong>Personal follow-up</strong><span>We will contact you to confirm your order.</span></div>
+          </div>
+          <div class="order-note">Submitting an inquiry does not require payment and does not confirm a final order. Hariyo will confirm the details with you first.</div>
+        </div>
+
+        <form class="card card-pad order-form" id="compost-order-form">
+          <h2>Request compost</h2>
+          <div class="field">
+            <label for="customer-name">Your name <span style="color:var(--status-failed)">*</span></label>
+            <input class="input" id="customer-name" name="name" type="text" autocomplete="name" required />
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="customer-phone">Phone number <span style="color:var(--status-failed)">*</span></label>
+              <input class="input" id="customer-phone" name="phone" type="tel" autocomplete="tel" required />
+            </div>
+            <div class="field">
+              <label for="quantity-kg">Quantity (kg) <span style="color:var(--status-failed)">*</span></label>
+              <input class="input" id="quantity-kg" name="quantity" type="number" min="1" step="1" required />
+            </div>
+          </div>
+          <div class="field">
+            <label for="delivery-area">Delivery area <span style="color:var(--status-failed)">*</span></label>
+            <input class="input" id="delivery-area" name="area" type="text" autocomplete="address-level2" placeholder="Area or address in/near Itahari" required />
+          </div>
+          <div class="field">
+            <label for="order-notes">Additional details <span class="muted">(optional)</span></label>
+            <textarea class="textarea" id="order-notes" name="notes" rows="3" placeholder="Farm or garden use, preferred delivery time, or questions"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg btn-block">Send order request</button>
+          <p class="submit-note">WhatsApp will open with your request. Tap Send there to contact our team. No payment is required.</p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    UI.mountPublic('compost.html');
+    document.querySelectorAll('[data-icon]').forEach(function (el) {
+      el.innerHTML = UI.iconSvg(el.getAttribute('data-icon'));
+    });
+
+    document.getElementById('compost-order-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      if (!event.currentTarget.reportValidity()) return;
+
+      var order = {
+        name: document.getElementById('customer-name').value.trim(),
+        phone: document.getElementById('customer-phone').value.trim(),
+        quantity: document.getElementById('quantity-kg').value,
+        area: document.getElementById('delivery-area').value.trim(),
+        notes: document.getElementById('order-notes').value.trim() || 'None',
+      };
+      var message = [
+        'Hariyo compost manure order request',
+        'Name: ' + order.name,
+        'Customer phone: ' + order.phone,
+        'Quantity: ' + order.quantity + ' kg',
+        'Delivery area: ' + order.area,
+        'Additional details: ' + order.notes,
+        'Please contact me to confirm price and delivery. No payment has been made.',
+      ].join('\n');
+
+      window.location.href = 'https://wa.me/9779702689270?text=' + encodeURIComponent(message);
+    });
+  </script>
+</body>
+</html>

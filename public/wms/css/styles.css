@@ -150,6 +150,8 @@ ul { margin: 0; padding: 0; }
   height: 66px;
 }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; color: var(--ink-900); font-size: 1.12rem; letter-spacing: -0.02em; }
+.site-header .brand { flex-shrink: 0; }
+.site-header .brand > span { white-space: nowrap; }
 .brand .mark {
   width: 38px; height: 38px; border-radius: 11px;
   background: linear-gradient(135deg, var(--green-500), var(--green-700));
@@ -165,14 +167,16 @@ ul { margin: 0; padding: 0; }
   border-radius: var(--r-full);
   font-weight: 600;
   font-size: .94rem;
+  white-space: nowrap;
   transition: background .15s, color .15s;
 }
 .nav-links a:hover { background: var(--green-50); color: var(--green-800); }
 .nav-links a.active { background: var(--green-600); color: #fff; }
+.site-header .nav-links a { padding-inline: 10px; }
 .header-cta { display: flex; align-items: center; gap: 10px; }
 .menu-btn { display: none; background: transparent; border: 1px solid var(--border); border-radius: var(--r-sm); padding: 8px 10px; }
 
-@media (max-width: 880px) {
+@media (max-width: 1180px) {
   .header-cta > a { display: none; }
   .nav-links {
     position: fixed;

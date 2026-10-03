@@ -11,6 +11,7 @@
     { href: 'index.html',       label: 'Home' },
     { href: 'about.html',       label: 'About' },
     { href: 'how-it-works.html', label: 'How It Works' },
+    { href: 'compost.html',     label: 'Buy Compost' },
     { href: 'booking.html',     label: 'Book Collection' },
     { href: 'track.html',       label: 'Track Waste' },
     { href: 'contact.html',     label: 'Contact' },
@@ -72,7 +73,7 @@
               <ul>
                 <li><a href="booking.html">Book Collection</a></li>
                 <li><a href="track.html">Track Your Waste</a></li>
-                <li><a href="how-it-works.html#farms">Farm Compost</a></li>
+                <li><a href="compost.html">Buy Compost</a></li>
               </ul>
             </div>
             <div>
