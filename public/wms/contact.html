@@ -13,10 +13,10 @@
     .contact-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 26px; align-items: start; }
     @media (max-width: 820px) { .contact-grid { grid-template-columns: 1fr; } }
     .info-card { padding: 26px; }
-    .info-card h3 { display: flex; align-items: center; gap: 10px; margin-top: 18px; }
-    .info-card h3:first-of-type { margin-top: 0; }
-    .info-card h3 .ico { display: inline-flex; width: 22px; height: 22px; color: var(--green-700); }
-    .info-card h3 .ico svg { width: 18px; height: 18px; }
+    .info-card h2 { display: flex; align-items: center; gap: 10px; margin: 18px 0 0; font-size: 1.25rem; }
+    .info-card h2:first-of-type { margin-top: 0; }
+    .info-card h2 .ico { display: inline-flex; width: 22px; height: 22px; color: var(--green-700); }
+    .info-card h2 .ico svg { width: 18px; height: 18px; }
     .info-card .row { font-size: .92rem; color: var(--ink-700); margin-top: 4px; }
     .info-card .row a { color: var(--green-800); font-weight: 600; }
     .info-card .row .muted { color: var(--ink-500); font-size: .82rem; display: block; margin-top: 2px; }
@@ -86,7 +86,7 @@
 
           <!-- RIGHT: info card + map placeholder -->
           <div class="card info-card">
-            <h3><span class="ico" data-icon="mapPin"></span> Visit us</h3>
+            <h2><span class="ico" data-icon="mapPin"></span> Visit us</h2>
             <div class="row">
               Hariyo Waste Pvt. Ltd.<br />
                Itahari<br />
@@ -94,19 +94,19 @@
               <span class="muted">Open Mon–Fri · 9:00 AM – 6:00 PM</span>
             </div>
 
-            <h3><span class="ico" data-icon="phone"></span> Call us</h3>
+            <h2><span class="ico" data-icon="phone"></span> Call us</h2>
             <div class="row">
               <a href="tel:+97714221711">+977 9702689270</a>
               <span class="muted">Field operations · 9:00 AM – 6:00 PM</span>
             </div>
 
-            <h3><span class="ico" data-icon="mail"></span> Email us</h3>
+            <h2><span class="ico" data-icon="mail"></span> Email us</h2>
             <div class="row">
               <a href="mailto:hello@hariyowaste.example">hello@hariyowaste.example</a>
               <span class="muted">We reply within 1 business day</span>
             </div>
 
-            <h3><span class="ico" data-icon="clock"></span> Operating hours</h3>
+            <h2><span class="ico" data-icon="clock"></span> Operating hours</h2>
             <div class="row">
               Sunday – Friday: 9:00 AM – 6:00 PM<br />
               Saturday: Closed

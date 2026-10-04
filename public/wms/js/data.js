@@ -27,10 +27,7 @@
 
     const workers = [
       { id: 'WK-201', name: 'Dipendra Gurung', phone: '9801010101', role: 'collector', areas: 'Itahari Central', status: 'active', createdAt: iso(daysAgo(110)) },
-      { id: 'WK-202', name: 'Maya Tamang', phone: '9802020202', role: 'collector', areas: 'Itahari', status: 'active', createdAt: iso(daysAgo(100)) },
-      { id: 'WK-203', name: 'Hari Bahadur Magar', phone: '9803030303', role: 'collector', areas: 'Itahari', status: 'active', createdAt: iso(daysAgo(90)) },
       { id: 'WK-204', name: 'Sita Karki', phone: '9804040404', role: 'sorter', areas: 'Sorting Facility - Itahari', status: 'active', createdAt: iso(daysAgo(85)) },
-      { id: 'WK-205', name: 'Nabin Shrestha', phone: '9805050505', role: 'sorter', areas: 'Sorting Facility - Itahari', status: 'active', createdAt: iso(daysAgo(70)) },
       { id: 'WK-206', name: 'Kamal Thapa', phone: '9806060606', role: 'compost_operator', areas: 'Compost Plant - Itahari', status: 'active', createdAt: iso(daysAgo(65)) },
       { id: 'WK-207', name: 'Rojina Maharjan', phone: '9807070707', role: 'driver', areas: 'Farm Deliveries', status: 'active', createdAt: iso(daysAgo(50)) },
     ];
@@ -49,7 +46,7 @@
 
     const bookings = [
       { id: 'BK-5001', businessId: 'BZ-1001', wasteType: 'organic', quantityKg: 45, preferredDate: iso(daysAgo(2)), address: 'Itahari', status: 'collected', workerId: 'WK-201', createdAt: iso(daysAgo(3)) },
-      { id: 'BK-5002', businessId: 'BZ-1002', wasteType: 'mixed', quantityKg: 22, preferredDate: iso(daysAgo(1)), address: 'Itahari', status: 'collected', workerId: 'WK-202', createdAt: iso(daysAgo(2)) },
+      { id: 'BK-5002', businessId: 'BZ-1002', wasteType: 'mixed', quantityKg: 22, preferredDate: iso(daysAgo(1)), address: 'Itahari', status: 'collected', workerId: 'WK-201', createdAt: iso(daysAgo(2)) },
       { id: 'BK-5003', businessId: 'BZ-1003', wasteType: 'recyclable', quantityKg: 18, preferredDate: iso(hoursAgo(6)), address: 'Itahari', status: 'scheduled', workerId: 'WK-201', createdAt: iso(daysAgo(1)) },
       { id: 'BK-5004', businessId: 'BZ-1004', wasteType: 'organic', quantityKg: 30, preferredDate: iso(daysAgo(0)), address: 'Itahari', status: 'pending', workerId: null, createdAt: iso(hoursAgo(8)) },
       { id: 'BK-5005', businessId: 'BZ-1005', wasteType: 'mixed', quantityKg: 50, preferredDate: iso(daysAgo(0)), address: 'Itahari', status: 'pending', workerId: null, createdAt: iso(hoursAgo(4)) },
@@ -83,14 +80,14 @@
       {
         id: 'WM-2026-004280',
         businessId: 'BZ-1002',
-        workerId: 'WK-202',
+        workerId: 'WK-201',
         bookingId: 'BK-5002',
         wasteType: 'mixed',
         weightKg: 22,
         status: 'composting',
         timeline: [
-          { stage: 'collection', status: 'done', at: iso(hoursAgo(28)), workerId: 'WK-202', note: 'Collected 22kg mixed waste' },
-          { stage: 'sorting', status: 'done', at: iso(hoursAgo(22)), workerId: 'WK-205', note: 'Sorted: 14kg organic + 8kg recyclables' },
+          { stage: 'collection', status: 'done', at: iso(hoursAgo(28)), workerId: 'WK-201', note: 'Collected 22kg mixed waste' },
+          { stage: 'sorting', status: 'done', at: iso(hoursAgo(22)), workerId: 'WK-204', note: 'Sorted: 14kg organic + 8kg recyclables' },
           { stage: 'composting', status: 'in_progress', at: iso(hoursAgo(18)), workerId: 'WK-206', note: '14kg organic in windrow #5' },
         ],
         notifications: [
@@ -157,12 +154,39 @@
   /* ---------- Persistence ---------- */
   let cache = null;
 
+  function migrateLeanRoster(data) {
+    const replacements = { 'WK-202': 'WK-201', 'WK-203': 'WK-201', 'WK-205': 'WK-204' };
+    let changed = false;
+
+    if (Array.isArray(data.workers)) {
+      const workers = data.workers.filter((worker) => !replacements[worker.id]);
+      changed = workers.length !== data.workers.length;
+      data.workers = workers;
+    }
+
+    const remapWorker = (record) => {
+      if (record && replacements[record.workerId]) {
+        record.workerId = replacements[record.workerId];
+        changed = true;
+      }
+    };
+
+    (data.bookings || []).forEach(remapWorker);
+    (data.batches || []).forEach((batch) => {
+      remapWorker(batch);
+      (batch.timeline || []).forEach(remapWorker);
+    });
+
+    return changed;
+  }
+
   function load() {
     if (cache) return cache;
     try {
       const raw = localStorage.getItem(STORE_KEY);
       if (raw) {
         cache = JSON.parse(raw);
+        if (migrateLeanRoster(cache)) save();
         return cache;
       }
     } catch (e) {

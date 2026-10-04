@@ -27,17 +27,17 @@
 
   function headerHTML(active) {
     const links = NAV.map(n =>
-      `<a href="${n.href}" class="${active === n.href ? 'active' : ''}">${n.label}</a>`
+      `<a href="${n.href}" class="${active === n.href ? 'active' : ''}"${active === n.href ? ' aria-current="page"' : ''}>${n.label}</a>`
     ).join('');
     return `
       <header class="site-header">
         <div class="container bar">
           ${brandHtml()}
-          <nav class="nav-links" id="navLinks">${links}</nav>
+          <nav class="nav-links" id="navLinks" aria-label="Main navigation">${links}</nav>
           <div class="header-cta">
             <a href="track.html" class="btn btn-outline btn-sm">Track Waste</a>
             <a href="booking.html" class="btn btn-primary btn-sm">Book Collection</a>
-            <button class="menu-btn" id="menuBtn" aria-label="Open menu">${UI.iconSvg('menu')}</button>
+            <button type="button" class="menu-btn" id="menuBtn" aria-label="Open navigation menu" aria-controls="navLinks" aria-expanded="false">${UI.iconSvg('menu')}</button>
           </div>
         </div>
       </header>`;
@@ -61,7 +61,7 @@
               </p>
             </div>
             <div>
-              <h4>Company</h4>
+              <h2>Company</h2>
               <ul>
                 <li><a href="about.html">About Us</a></li>
                 <li><a href="how-it-works.html">How It Works</a></li>
@@ -69,7 +69,7 @@
               </ul>
             </div>
             <div>
-              <h4>Services</h4>
+              <h2>Services</h2>
               <ul>
                 <li><a href="booking.html">Book Collection</a></li>
                 <li><a href="track.html">Track Your Waste</a></li>
@@ -77,7 +77,7 @@
               </ul>
             </div>
             <div>
-              <h4>Staff Access</h4>
+              <h2>Staff Access</h2>
               <ul>
                 <li><a href="dashboard.html">Staff Dashboard</a></li>
                 <li><a href="worker.html">Worker Mobile App</a></li>
@@ -104,10 +104,36 @@
     const menuBtn = document.getElementById('menuBtn');
     const navLinks = document.getElementById('navLinks');
     if (menuBtn && navLinks) {
-      menuBtn.addEventListener('click', () => navLinks.classList.toggle('open'));
-      navLinks.addEventListener('click', (e) => {
-        if (e.target.tagName === 'A') navLinks.classList.remove('open');
+      const mobileMenu = window.matchMedia('(max-width: 1180px)');
+      const setMenuOpen = (open) => {
+        navLinks.classList.toggle('open', open);
+        navLinks.hidden = mobileMenu.matches && !open;
+        menuBtn.setAttribute('aria-expanded', String(open));
+        menuBtn.setAttribute('aria-label', open ? 'Close navigation menu' : 'Open navigation menu');
+      };
+      setMenuOpen(false);
+      menuBtn.addEventListener('click', () => {
+        const open = menuBtn.getAttribute('aria-expanded') !== 'true';
+        setMenuOpen(open);
+        if (open) navLinks.querySelector('a')?.focus();
       });
+      navLinks.addEventListener('click', (e) => {
+        if (e.target.closest('a')) setMenuOpen(false);
+      });
+      menuBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') setMenuOpen(false);
+      });
+      navLinks.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') { setMenuOpen(false); menuBtn.focus(); }
+      });
+      mobileMenu.addEventListener('change', () => setMenuOpen(false));
+    }
+
+    if (!document.querySelector('script[data-accessibility-controller]')) {
+      const script = document.createElement('script');
+      script.src = 'js/accessibility.js';
+      script.dataset.accessibilityController = 'true';
+      document.body.appendChild(script);
     }
   }
 

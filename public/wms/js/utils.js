@@ -45,11 +45,11 @@
   };
 
   function icon(name, cls) {
-    const svg = ICONS[name] || '';
+    const svg = (ICONS[name] || '').replace('<svg ', '<svg aria-hidden="true" focusable="false" ');
     const c = cls ? ` class="${cls}"` : '';
     return `<span ${c} style="display:inline-flex;width:1em;height:1em">${svg}</span>`;
   }
-  function iconSvg(name) { return ICONS[name] || ''; }
+  function iconSvg(name) { return (ICONS[name] || '').replace('<svg ', '<svg aria-hidden="true" focusable="false" '); }
 
   /* ---------- Formatting ---------- */
   function fmtDate(d) {
@@ -98,12 +98,14 @@
     const w = ensureToastWrap();
     const el = document.createElement('div');
     el.className = 'toast' + (opts.type === 'error' ? ' error' : opts.type === 'info' ? ' info' : '');
+    el.setAttribute('role', opts.type === 'error' ? 'alert' : 'status');
+    el.setAttribute('aria-live', opts.type === 'error' ? 'assertive' : 'polite');
     el.innerHTML = `
       <div style="flex:1">
         <div class="title">${escapeHtml(opts.title || (opts.type === 'error' ? 'Error' : 'Success'))}</div>
         <div class="msg">${escapeHtml(message)}</div>
       </div>
-      <button class="modal-close" aria-label="Close" style="font-size:1rem;padding:0 4px">×</button>
+      <button class="modal-close" aria-label="Dismiss notification" style="font-size:1rem;padding:0 4px">×</button>
     `;
     w.appendChild(el);
     const close = () => { el.style.opacity = '0'; el.style.transform = 'translateY(8px)'; setTimeout(() => el.remove(), 220); };
@@ -211,6 +213,7 @@
 
   /* ---------- Modals ---------- */
   let modalRoot = null;
+  let modalTrigger = null;
   function modalRootEl() {
     if (!modalRoot) {
       modalRoot = document.createElement('div');
@@ -223,9 +226,14 @@
   function openModal({ title, body, footer, size }) {
     const root = modalRootEl();
     clear(root);
+    modalTrigger = document.activeElement;
     const m = el('div', { class: 'modal' + (size === 'lg' ? ' modal-lg' : '') });
+    m.setAttribute('role', 'dialog');
+    m.setAttribute('aria-modal', 'true');
+    m.setAttribute('aria-labelledby', 'modal-title');
+    m.tabIndex = -1;
     const head = el('div', { class: 'modal-head' }, [
-      el('h3', { text: title }),
+      el('h3', { text: title, id: 'modal-title' }),
       el('button', { class: 'modal-close', 'aria-label': 'Close', onclick: closeAllModals }, '×')
     ]);
     const bd = el('div', { class: 'modal-body' });
@@ -239,6 +247,7 @@
     root.appendChild(m);
     root.classList.add('open');
     document.body.style.overflow = 'hidden';
+    m.focus();
     return { root, m, body: bd };
   }
   function closeAllModals() {
@@ -246,7 +255,42 @@
     modalRoot.classList.remove('open');
     clear(modalRoot);
     document.body.style.overflow = '';
+    if (modalTrigger && modalTrigger.isConnected) modalTrigger.focus();
+    modalTrigger = null;
   }
+
+  document.addEventListener('keydown', (event) => {
+    if (!modalRoot || !modalRoot.classList.contains('open')) return;
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeAllModals();
+      return;
+    }
+    if (event.key !== 'Tab') return;
+    const modal = modalRoot.querySelector('[role="dialog"]');
+    if (!modal) return;
+    const focusable = qa('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])', modal)
+      .filter((item) => !item.hidden && item.getAttribute('aria-hidden') !== 'true');
+    if (!focusable.length) {
+      event.preventDefault();
+      modal.focus();
+      return;
+    }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (!modal.contains(document.activeElement)) {
+      event.preventDefault();
+      (event.shiftKey ? last : first).focus();
+      return;
+    }
+    if (event.shiftKey && (document.activeElement === first || document.activeElement === modal)) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
 
   /* ---------- Confirm dialog ---------- */
   function confirmDialog({ title, message, confirmText, cancelText, danger }) {

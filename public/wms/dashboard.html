@@ -14,7 +14,7 @@
       border-radius:var(--r-sm); font-size:.9rem; font-weight:600;
       transition:background .15s, color .15s; cursor:pointer; }
     .nav-link:hover { background:rgba(255,255,255,.06); color:#fff; }
-    .nav-link.active { background:var(--green-600); color:#fff; }
+    .nav-link.active { background:var(--green-700); color:#fff; }
     .nav-link .ico { width:18px; height:18px; flex-shrink:0; display:inline-flex; }
     .nav-link .ico svg { width:18px; height:18px; }
     .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
@@ -157,7 +157,7 @@
     function mountGate() {
       const root = document.getElementById('root');
       root.innerHTML = `
-        <div class="gate">
+        <main class="gate" id="dashboard-gate">
           <div class="gate-card">
             <div class="brand">
               <img class="brand-logo" src="../logo1.png" alt="" width="38" height="38" />
@@ -172,7 +172,7 @@
               </div>
               <div class="field">
                 <label for="g-code">Staff code</label>
-                <input class="input" id="g-code" type="password" placeholder="hariyo" autocomplete="current-password" />
+                <input class="input" id="g-code" name="staffCode" type="password" placeholder="hariyo" autocomplete="current-password" required />
                 <div class="hint">Demo code: <code>hariyo</code> (or any nonempty value).</div>
               </div>
               <button type="submit" class="btn btn-primary btn-block">Sign in</button>
@@ -182,7 +182,7 @@
               <button class="btn btn-outline btn-block" id="demoLogin">Demo login, Sarita (Operations)</button>
             </div>
           </div>
-        </div>
+        </main>
       `;
       document.getElementById('gateForm').addEventListener('submit', (e) => {
         e.preventDefault();
@@ -249,15 +249,15 @@
               <img class="brand-logo" src="../logo1.png" alt="" width="38" height="38" />
               <span>Hariyo Waste<small>Staff Console</small></span>
             </div>
-            <nav class="dash-nav" id="dashNav"></nav>
+            <nav class="dash-nav" id="dashNav" aria-label="Staff navigation"></nav>
             <div class="foot" id="sideFoot"></div>
           </aside>
-          <div class="dash-backdrop" id="dashBackdrop"></div>
+          <button type="button" class="dash-backdrop" id="dashBackdrop" aria-label="Close staff navigation"></button>
           <div class="dash-main">
             <header class="dash-top">
               <div style="display:flex;align-items:center;gap:10px">
-                <button class="dash-toggle" id="dashToggle" aria-label="Toggle menu">${UI.iconSvg('menu')}</button>
-                <h1 id="viewTitle">Overview</h1>
+                <button type="button" class="dash-toggle" id="dashToggle" aria-label="Open staff navigation" aria-controls="dashSide" aria-expanded="false">${UI.iconSvg('menu')}</button>
+                <h1 id="viewTitle" tabindex="-1">Overview</h1>
               </div>
               <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
                 <span class="badge badge-green"><span class="dot"></span> Live · Itahari </span>
@@ -298,6 +298,7 @@
       state.filter = 'all';
       closeSidebar();
       render();
+      document.getElementById('viewTitle').focus();
     }
 
     function buildSideFoot() {
@@ -317,10 +318,13 @@
 
     function wireShell() {
       document.getElementById('dashToggle').addEventListener('click', () => {
-        document.getElementById('dashSide').classList.toggle('open');
-        document.getElementById('dashBackdrop').classList.toggle('open');
+        const open = !document.getElementById('dashSide').classList.contains('open');
+        document.getElementById('dashSide').classList.toggle('open', open);
+        document.getElementById('dashBackdrop').classList.toggle('open', open);
+        document.getElementById('dashToggle').setAttribute('aria-expanded', String(open));
+        if (open) document.querySelector('#dashNav button')?.focus();
       });
-      document.getElementById('dashBackdrop').addEventListener('click', closeSidebar);
+      document.getElementById('dashBackdrop').addEventListener('click', () => closeSidebar(true));
       document.getElementById('resetBtn').addEventListener('click', () => {
         WMS.reset();
         UI.toast('Demo data reset to seed state.', { title: 'Reset complete', type: 'info' });
@@ -328,7 +332,13 @@
       });
       // Esc closes modals
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') UI.closeAllModals();
+        if (e.key === 'Escape') {
+          UI.closeAllModals();
+          if (document.getElementById('dashSide').classList.contains('open')) {
+            closeSidebar();
+            document.getElementById('dashToggle').focus();
+          }
+        }
       });
       // Delegated click for action buttons, bound to document so it catches
       // clicks inside BOTH the dashboard content AND open modals.
@@ -357,9 +367,11 @@
       });
     }
 
-    function closeSidebar() {
+    function closeSidebar(returnFocus) {
       document.getElementById('dashSide').classList.remove('open');
       document.getElementById('dashBackdrop').classList.remove('open');
+      document.getElementById('dashToggle').setAttribute('aria-expanded', 'false');
+      if (returnFocus) document.getElementById('dashToggle').focus();
     }
 
     /* ============================================================
@@ -368,7 +380,10 @@
     function render() {
       document.getElementById('viewTitle').textContent = VIEW_TITLES[state.view] || 'Dashboard';
       document.querySelectorAll('#dashNav button[data-view]').forEach((b) => {
-        b.classList.toggle('active', b.dataset.view === state.view);
+        const active = b.dataset.view === state.view;
+        b.classList.toggle('active', active);
+        if (active) b.setAttribute('aria-current', 'page');
+        else b.removeAttribute('aria-current');
       });
       const c = document.getElementById('dashContent');
       UI.clear(c);
@@ -2085,5 +2100,6 @@
     }
   })();
   </script>
+  <script src="js/accessibility.js"></script>
 </body>
 </html>

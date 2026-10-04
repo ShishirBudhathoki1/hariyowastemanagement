@@ -17,7 +17,7 @@
       display: grid; place-items: center; margin: 0 auto 12px;
     }
     .accept-card .ico svg { width: 26px; height: 26px; }
-    .accept-card h4 { margin: 0 0 4px; font-size: 1rem; }
+    .accept-card h3 { margin: 0 0 4px; font-size: 1rem; }
     .accept-card p { margin: 0; font-size: .82rem; color: var(--ink-600); }
     .accept-card .examples {
       margin-top: 10px; font-size: .76rem; color: var(--ink-500);
@@ -49,7 +49,7 @@
       color: #fff; display: grid; place-items: center; margin-bottom: 12px;
     }
     .farm-card .av svg { width: 22px; height: 22px; }
-    .farm-card h4 { margin: 0 0 4px; font-size: 1rem; }
+    .farm-card h3 { margin: 0 0 4px; font-size: 1rem; }
     .farm-card .loc { font-size: .82rem; color: var(--ink-500); margin-bottom: 6px; }
     .farm-card .kg {
       font-size: .82rem; color: var(--green-800); font-weight: 700;
@@ -91,31 +91,31 @@
           <div class="j-step done">
             <div class="node" data-icon="check"></div>
             <div class="meta">Step 1 · At your business</div>
-            <h4>1. Business segregates waste</h4>
+            <h3>1. Business segregates waste</h3>
             <p style="color:var(--ink-600);margin:0">Your staff separate organic (food scraps, peelings) from recyclable (plastic, paper, glass, metal) at source. Clean separation at source is what makes everything downstream possible.</p>
           </div>
           <div class="j-step done">
             <div class="node" data-icon="check"></div>
             <div class="meta">Step 2 · Pickup at your door</div>
-            <h4>2. Field worker collects (Batch ID generated)</h4>
+            <h3>2. Field worker collects (Batch ID generated)</h3>
             <p style="color:var(--ink-600);margin:0">Our collector arrives on schedule, weighs the segregated waste and generates a unique Batch ID like <code class="mono">WM-2026-004283</code>. You receive an SMS with this ID.</p>
           </div>
           <div class="j-step done">
             <div class="node" data-icon="check"></div>
             <div class="meta">Step 3 · Sorting Facility, Itahari</div>
-            <h4>3. Sorting facility segregation</h4>
+            <h3>3. Sorting facility segregation</h3>
             <p style="color:var(--ink-600);margin:0">At our Itahari facility, trained sorters separate the waste into clean organic and recyclable streams. Contamination is removed; recyclables are baled by material type.</p>
           </div>
           <div class="j-step active">
             <div class="node" data-icon="sprout"></div>
             <div class="meta">Step 4 · Compost Plant, Itahari</div>
-            <h4>4. Composting / recycling</h4>
+            <h3>4. Composting / recycling</h3>
             <p style="color:var(--ink-600);margin:0">Organic waste is loaded into windrows at our Itahari plant for a 14 day composting cycle. Recyclable streams are sent to certified recycling partners in Itahari.</p>
           </div>
           <div class="j-step">
             <div class="node" data-icon="wheat"></div>
             <div class="meta">Step 5 · Partner farm</div>
-            <h4>5. Compost delivered to farm</h4>
+            <h3>5. Compost delivered to farm</h3>
             <p style="color:var(--ink-600);margin:0">Matured compost is weighed and delivered to a partner farm. You receive a final SMS confirming how much compost was delivered and to which farm.</p>
           </div>
         </div>
@@ -133,31 +133,31 @@
         <div class="grid-5">
           <div class="card card-hover accept-card">
             <div class="ico" data-icon="sprout"></div>
-            <h4>Organic / Kitchen</h4>
+            <h3>Organic / Kitchen</h3>
             <p>Food scraps &amp; peelings.</p>
             <div class="examples">Veg, fruit, tea, coffee grounds</div>
           </div>
           <div class="card card-hover accept-card">
             <div class="ico" data-icon="package"></div>
-            <h4>Plastic</h4>
+            <h3>Plastic</h3>
             <p>Clean, dry plastics.</p>
             <div class="examples">Bottles, containers, film</div>
           </div>
           <div class="card card-hover accept-card">
             <div class="ico" data-icon="layers"></div>
-            <h4>Paper</h4>
+            <h3>Paper</h3>
             <p>Cardboard &amp; paper.</p>
             <div class="examples">Boxes, newspaper, office paper</div>
           </div>
           <div class="card card-hover accept-card">
             <div class="ico" data-icon="recycle"></div>
-            <h4>Glass</h4>
+            <h3>Glass</h3>
             <p>Bottles &amp; jars.</p>
             <div class="examples">Beverage bottles, food jars</div>
           </div>
           <div class="card card-hover accept-card">
             <div class="ico" data-icon="buildings"></div>
-            <h4>Metal</h4>
+            <h3>Metal</h3>
             <p>Cans &amp; scrap.</p>
             <div class="examples">Cans, foil, kitchen scrap</div>
           </div>
@@ -248,7 +248,7 @@
         card.className = 'card card-hover farm-card';
         card.innerHTML =
           '<div class="av" data-icon="wheat"></div>' +
-          '<h4>' + UI.escapeHtml(f.name) + '</h4>' +
+          '<h3>' + UI.escapeHtml(f.name) + '</h3>' +
           '<div class="loc">' + UI.escapeHtml(f.location) + '</div>' +
           '<div class="kg">Owner: ' + UI.escapeHtml(f.owner) + ' · ' + UI.fmtKg(f.compostReceived) + ' received</div>';
         farmsGrid.appendChild(card);

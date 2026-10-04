@@ -99,8 +99,8 @@
 
             <h2>Waste details</h2>
 
-            <div class="field">
-              <label>Waste type <span style="color:var(--status-failed)">*</span></label>
+            <fieldset class="field waste-fieldset">
+              <legend>Waste type <span aria-hidden="true">*</span></legend>
               <div class="radio-row">
                 <label class="radio-opt">
                   <input type="radio" name="wasteType" value="organic" required />
@@ -124,7 +124,7 @@
                   </span>
                 </label>
               </div>
-            </div>
+            </fieldset>
 
             <div class="field-row">
               <div class="field">
@@ -151,9 +151,9 @@
 
         <!-- Success view (hidden until submit) -->
         <div id="success-view" class="hidden">
-          <div class="card success-card">
+          <div class="card success-card" aria-live="polite" aria-atomic="true" aria-labelledby="booking-success-title">
             <div class="check-ico" data-icon="checkCircle"></div>
-            <h2 style="margin:0">Booking confirmed!</h2>
+            <h2 id="booking-success-title" tabindex="-1" style="margin:0">Booking confirmed!</h2>
             <div class="muted" style="font-size:.9rem">Your Booking ID is</div>
             <div class="booking-id" id="success-booking-id">BK-5006</div>
             <p class="note">
@@ -320,6 +320,7 @@
 
       formView.classList.add('hidden');
       successView.classList.remove('hidden');
+      document.getElementById('booking-success-title').focus();
       window.scrollTo({ top: 0, behavior: 'smooth' });
       UI.toast('Booking confirmed · ' + booking.id, { title: 'Success', type: 'success' });
     }

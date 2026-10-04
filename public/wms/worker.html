@@ -30,7 +30,7 @@
     }
     .worker-top .worker-info .name { font-weight: 700; color: #fff; }
     .worker-top .role-badge {
-      background: var(--green-600); color: #fff;
+      background: var(--green-700); color: #fff;
       padding: 3px 8px; border-radius: var(--r-full);
       font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
     }
@@ -45,6 +45,7 @@
 
     /* ---- App body ---- */
     .worker-main { padding: 16px; }
+    .worker-heading { font-size: 1.35rem; margin: 8px 0 14px; }
     .kpi-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
     .kpi-mini {
       background: #fff; border: 1px solid var(--border); border-radius: var(--r-md);
@@ -56,8 +57,7 @@
       text-transform: uppercase; letter-spacing: .04em; margin-top: 4px;
     }
     .section-label {
-      font-size: .76rem; color: var(--ink-500); font-weight: 700;
-      text-transform: uppercase; letter-spacing: .05em;
+      font-size: 1rem; color: var(--ink-700); font-weight: 700;
       margin: 8px 0 12px;
     }
 
@@ -72,7 +72,7 @@
     .wtask .cta .waiting {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 8px 12px; background: var(--ink-100); border-radius: var(--r-sm);
-      color: var(--ink-500); font-size: .8rem; font-weight: 600;
+      color: var(--ink-700); font-size: .8rem; font-weight: 600;
     }
     .wtask .cta .waiting svg { width: 14px; height: 14px; }
     .wtask .cta .completed {
@@ -111,7 +111,7 @@
 <body>
 
   <!-- =================== LOGIN GATE =================== -->
-  <div id="gate" class="gate">
+  <main id="gate" class="gate">
     <div class="gate-card">
       <div class="brand">
         <img class="brand-logo" src="../logo1.png" alt="" width="38" height="38" />
@@ -122,7 +122,7 @@
 
       <div class="field">
         <label for="worker-select">Select your worker profile</label>
-        <select class="select" id="worker-select"></select>
+        <select class="select" id="worker-select" required></select>
       </div>
       <button type="button" class="btn btn-primary btn-lg btn-block" id="login-btn">Sign in</button>
 
@@ -134,7 +134,7 @@
         Tip: log in as <strong>Sita Karki</strong> (sorter), <strong>Kamal Thapa</strong> (compost operator) or <strong>Rojina Maharjan</strong> (driver) to see pending stage actions.
       </p>
     </div>
-  </div>
+  </main>
 
   <!-- =================== APP SHELL =================== -->
   <div id="app" class="wphone hidden">
@@ -151,6 +151,7 @@
     </header>
 
     <main class="worker-main">
+      <h1 class="worker-heading" id="worker-heading" tabindex="-1">My assigned work</h1>
       <div class="kpi-row">
         <div class="kpi-mini">
           <div class="v" id="kpi-assigned">0</div>
@@ -161,7 +162,7 @@
           <div class="l">Pending Action</div>
         </div>
       </div>
-      <div class="section-label">All Batches</div>
+      <h2 class="section-label">All Batches</h2>
       <div id="tasks"></div>
     </main>
   </div>
@@ -225,10 +226,10 @@
         sel.appendChild(opt);
       });
 
-      // Quick login: Dipendra / Maya / Hari
+      // Quick login: one profile for each field role
       var quick = document.getElementById('quick-row');
       UI.clear(quick);
-      ['WK-201', 'WK-202', 'WK-203'].forEach(function (id) {
+      ['WK-201', 'WK-204', 'WK-206', 'WK-207'].forEach(function (id) {
         var w = WMS.db.workers.get(id);
         if (!w) return;
         var btn = document.createElement('button');
@@ -255,6 +256,7 @@
       document.getElementById('app').classList.add('hidden');
       document.getElementById('gate').classList.remove('hidden');
       setupGate();
+      document.getElementById('worker-select').focus();
       window.scrollTo(0, 0);
     }
 
@@ -266,6 +268,7 @@
       document.getElementById('worker-name').textContent = w.name;
       document.getElementById('worker-role').textContent = roleLabel(w.role);
       renderTasks();
+      document.getElementById('worker-heading').focus();
     }
 
     // ----- Task list + KPIs -----
@@ -398,6 +401,7 @@
       // 4. Toast & re-render
       UI.toast('Stage confirmed, customer notified', { title: 'Done', type: 'success' });
       renderTasks();
+      document.getElementById('worker-heading').focus();
     }
 
     function openDeliveryModal(batchId, workerId) {
@@ -409,16 +413,16 @@
       }).join('');
 
       var bodyHTML =
-        '<div class="field">' +
+        '<form id="delivery-form"><div class="field">' +
           '<label for="dlv-farm">Deliver to farm <span style="color:var(--status-failed)">*</span></label>' +
-          '<select id="dlv-farm" class="select">' + farmOptions + '</select>' +
+          '<select id="dlv-farm" class="select" required>' + farmOptions + '</select>' +
           '<div class="hint">Choose the partner farm receiving this compost.</div>' +
         '</div>' +
         '<div class="field">' +
           '<label for="dlv-kg">Delivered compost (kg) <span style="color:var(--status-failed)">*</span></label>' +
-          '<input id="dlv-kg" type="number" min="1" step="1" class="input" placeholder="e.g. 28" />' +
+          '<input id="dlv-kg" type="number" min="1" step="1" class="input" placeholder="e.g. 28" required />' +
           '<div class="hint">Enter the actual weight of matured compost delivered.</div>' +
-        '</div>';
+        '</div></form>';
 
       var cancelBtn = UI.el('button', {
         class: 'btn btn-ghost',
@@ -427,6 +431,7 @@
 
       var confirmBtn = UI.el('button', {
         class: 'btn btn-primary',
+        id: 'deliverySave',
         onclick: function () {
           var farmId = document.getElementById('dlv-farm').value;
           var kg = parseFloat(document.getElementById('dlv-kg').value);
@@ -483,6 +488,7 @@
 
       UI.toast('Compost delivered 🌱, customer notified', { title: 'Delivered', type: 'success' });
       renderTasks();
+      document.getElementById('worker-heading').focus();
     }
 
     // ----- Wire up + initial render -----
@@ -502,5 +508,6 @@
       document.getElementById('app').classList.add('hidden');
     }
   </script>
+  <script src="js/accessibility.js"></script>
 </body>
 </html>

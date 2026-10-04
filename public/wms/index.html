@@ -13,7 +13,7 @@
     .feature .feature-num {
       position: absolute; top: 18px; right: 22px;
       font-size: 2.6rem; font-weight: 900; line-height: 1;
-      color: var(--green-100);
+      color: var(--green-600);
     }
     .impact-band {
       background:
@@ -64,12 +64,12 @@
     @media (max-width: 700px) { .tracker-desc { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 460px) { .tracker-desc { grid-template-columns: 1fr; } }
     .tracker-desc .item { padding: 14px; border-radius: var(--r-md); background: var(--ink-50); border: 1px solid var(--border); }
-    .tracker-desc .item h4 { margin: 0 0 4px; font-size: .95rem; color: var(--ink-800); }
+    .tracker-desc .item h3 { margin: 0 0 4px; font-size: .95rem; color: var(--ink-800); }
     .tracker-desc .item p { margin: 0; font-size: .82rem; color: var(--ink-600); }
     .mini-card { background: #fff; border: 1px solid var(--border); border-radius: var(--r-md); padding: 16px; box-shadow: var(--shadow-xs); height: 100%; }
     .mini-card .ico { width: 40px; height: 40px; border-radius: 10px; background: var(--green-50); color: var(--green-700); display: grid; place-items: center; margin-bottom: 10px; }
     .mini-card .ico svg { width: 22px; height: 22px; }
-    .mini-card h4 { margin: 0 0 4px; font-size: 1rem; }
+    .mini-card h3 { margin: 0 0 4px; font-size: 1rem; }
     .mini-card p { margin: 0; font-size: .85rem; color: var(--ink-600); }
     .cta-panel {
       background: linear-gradient(135deg, var(--green-600), var(--green-800));
@@ -113,19 +113,19 @@
         </div>
         <div class="grid grid-3">
           <div class="card card-hover feature">
-            <span class="feature-num">01</span>
+            <span class="feature-num" aria-hidden="true">01</span>
             <div class="ico" data-icon="truck"></div>
             <h3>Collect</h3>
             <p>Our field workers collect segregated waste from your business on a schedule that suits you. Every pickup generates a Batch ID for full traceability.</p>
           </div>
           <div class="card card-hover feature">
-            <span class="feature-num">02</span>
+            <span class="feature-num" aria-hidden="true">02</span>
             <div class="ico" data-icon="layers"></div>
             <h3>Segregate</h3>
             <p>At our Itahari sorting facility, waste is split into organic and recyclable streams, clean separation is what makes real recycling possible.</p>
           </div>
           <div class="card card-hover feature">
-            <span class="feature-num">03</span>
+            <span class="feature-num" aria-hidden="true">03</span>
             <div class="ico" data-icon="sprout"></div>
             <h3>Compost</h3>
             <p>Organic waste is composted at our Itahari plant and delivered to partner farms. Recyclables go to certified recycling partners.</p>
@@ -149,22 +149,22 @@
         <div class="grid grid-4">
           <div class="mini-card">
             <div class="ico" data-icon="buildings"></div>
-            <h4>Hospitality Bulk Pickup</h4>
+            <h3>Hospitality Bulk Pickup</h3>
             <p>Daily or scheduled collections for hotels, restaurants, cafés and offices across Itahari.</p>
           </div>
           <div class="mini-card">
             <div class="ico" data-icon="eye"></div>
-            <h4>Transparent Tracking</h4>
+            <h3>Transparent Tracking</h3>
             <p>Every pickup gets a Batch ID. Follow your waste from collection to compost on our public Track page.</p>
           </div>
           <div class="mini-card">
             <div class="ico" data-icon="recycle"></div>
-            <h4>Certified Recycling Partners</h4>
+            <h3>Certified Recycling Partners</h3>
             <p>Recyclable streams go to vetted partners, Nepal Recyclers, Himalayan Glass Works and more.</p>
           </div>
           <div class="mini-card">
             <div class="ico" data-icon="sprout"></div>
-            <h4>Closing the Loop</h4>
+            <h3>Closing the Loop</h3>
             <p>Matured compost is delivered to partner farms in Itahari.</p>
           </div>
         </div>
@@ -219,19 +219,19 @@
 
         <div class="tracker-desc">
           <div class="item">
-            <h4>1 · Collection</h4>
+            <h3>1 · Collection</h3>
             <p>Field worker arrives on schedule, weighs and loads segregated waste, opens a Batch ID.</p>
           </div>
           <div class="item">
-            <h4>2 · Sorting</h4>
+            <h3>2 · Sorting</h3>
             <p>At our Itahari facility, organic is separated from recyclable streams for clean downstream processing.</p>
           </div>
           <div class="item">
-            <h4>3 · Composting</h4>
+            <h3>3 · Composting</h3>
             <p>Organic waste is windrow composted at our Itahari plant over a 14 day cycle.</p>
           </div>
           <div class="item">
-            <h4>4 · Farm Delivery</h4>
+            <h3>4 · Farm Delivery</h3>
             <p>Matured compost is weighed and delivered to a partner farm. Recyclables go to certified partners.</p>
           </div>
         </div>

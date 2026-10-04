@@ -45,9 +45,9 @@
       .batch-header .meta-grid { text-align: left; }
     }
     .track-section { margin-top: 18px; }
-    .track-section h3 { font-size: 1.02rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-    .track-section h3 .ico { display: inline-flex; width: 22px; height: 22px; color: var(--green-700); }
-    .track-section h3 .ico svg { width: 18px; height: 18px; }
+    .track-section h2 { font-size: 1.15rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .track-section h2 .ico { display: inline-flex; width: 22px; height: 22px; color: var(--green-700); }
+    .track-section h2 .ico svg { width: 18px; height: 18px; }
     .waste-badge { text-transform: capitalize; }
     .notif-row {
       display: flex; align-items: center; justify-content: space-between; gap: 10px;
@@ -64,7 +64,7 @@
     .notif-row .s-sent { color: var(--status-sent); }
     .notif-row .s-notsent { color: var(--status-notsent); }
     .notif-row .s-failed { color: var(--status-failed); }
-    .journey .j-step h4 { margin-top: 0; }
+    .journey .j-step h3 { margin-top: 0; }
     .journey .j-step .worker {
       font-size: .78rem; color: var(--ink-500); margin-top: 2px;
     }
@@ -89,6 +89,7 @@
       <div class="container container-narrow">
         <div class="track-box">
           <div class="track-input-row">
+            <label class="track-label" for="batch-input">Batch ID</label>
             <input type="text" id="batch-input" class="input" placeholder="e.g. WM-2026-004281" maxlength="14" autocomplete="off" spellcheck="false" />
             <button type="button" class="btn btn-primary btn-lg" id="track-btn">Track</button>
           </div>
@@ -101,7 +102,7 @@
           </div>
         </div>
 
-        <div class="track-result" id="track-result">
+        <div class="track-result" id="track-result" aria-live="polite" aria-atomic="true">
           <!-- placeholder before any lookup -->
           <div class="card card-pad text-center muted" id="track-placeholder">
             <p style="margin:0">Enter a Batch ID above (or try a sample) to see the full journey of your waste.</p>
@@ -204,7 +205,7 @@
       // ----- Horizontal tracker -----
       var trackerWrap = document.createElement('div');
       trackerWrap.className = 'card card-pad track-section';
-      trackerWrap.innerHTML = '<h3><span class="ico" data-icon="layers"></span> Batch journey</h3>';
+      trackerWrap.innerHTML = '<h2><span class="ico" data-icon="layers"></span> Batch journey</h2>';
       var tracker = document.createElement('div');
       tracker.className = 'tracker';
       UI.STAGE_ORDER.forEach(function (stage) {
@@ -230,7 +231,7 @@
       // ----- Vertical journey timeline -----
       var journeyWrap = document.createElement('div');
       journeyWrap.className = 'card card-pad track-section';
-      journeyWrap.innerHTML = '<h3><span class="ico" data-icon="clock"></span> Timeline of events</h3>';
+      journeyWrap.innerHTML = '<h2><span class="ico" data-icon="clock"></span> Timeline of events</h2>';
       var journey = document.createElement('div');
       journey.className = 'journey';
       if (!b.timeline || !b.timeline.length) {
@@ -248,7 +249,7 @@
           step.innerHTML =
             '<div class="node">' + UI.iconSvg(meta.icon || 'check') + '</div>' +
             '<div class="meta">' + UI.escapeHtml(UI.fmtDate(ev.at)) + '</div>' +
-            '<h4>' + UI.escapeHtml(meta.label) + ' · ' + UI.escapeHtml(ev.status.replace('_', ' ')) + '</h4>' +
+            '<h3>' + UI.escapeHtml(meta.label) + ' · ' + UI.escapeHtml(ev.status.replace('_', ' ')) + '</h3>' +
             '<div class="worker">Worker: ' + UI.escapeHtml(workerName) + '</div>' +
             (ev.note ? '<div class="note">' + UI.escapeHtml(ev.note) + '</div>' : '');
           journey.appendChild(step);
@@ -263,7 +264,7 @@
       // ----- Notification status row -----
       var notifWrap = document.createElement('div');
       notifWrap.className = 'card card-pad track-section';
-      notifWrap.innerHTML = '<h3><span class="ico" data-icon="bell"></span> Customer notifications</h3>' +
+      notifWrap.innerHTML = '<h2><span class="ico" data-icon="bell"></span> Customer notifications</h2>' +
         '<p class="muted" style="margin:0 0 12px;font-size:.85rem">SMS updates sent to the business at each stage of the journey.</p>';
       UI.STAGE_ORDER.forEach(function (stage) {
         var ns = UI.notifStatus(b, stage);
