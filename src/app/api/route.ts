@@ -107,7 +107,12 @@ export async function POST(request: Request) {
     });
 
     if (!providerResponse.ok) {
-      return NextResponse.json({ error: "The AI service could not answer right now. Please try again shortly." }, { status: 502 });
+      const error = providerResponse.status === 401 || providerResponse.status === 403
+        ? "The AI provider rejected the API key. Check the key in .env."
+        : providerResponse.status === 404
+          ? "The AI endpoint or model was not found. Check AI_BASE_URL and AI_MODEL."
+          : `The AI provider returned HTTP ${providerResponse.status}. Check the provider settings and try again.`;
+      return NextResponse.json({ error }, { status: 502 });
     }
 
     const result = await providerResponse.json();
