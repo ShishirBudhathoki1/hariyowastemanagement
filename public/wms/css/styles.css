@@ -728,7 +728,7 @@ table.tbl td .mono { font-family: 'SFMono-Regular', ui-monospace, Menlo, monospa
 .hariyo-chat-suggestions button { min-height: 34px; padding: 4px 9px; border: 1px solid var(--green-300); border-radius: 6px; background: #fff; color: var(--green-800); font-size: .78rem; font-weight: 600; }
 .hariyo-chat-suggestions button:hover { background: var(--green-50); }
 .hariyo-chat-form { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--border); background: #fff; }
-.hariyo-chat-form input { min-width: 0; flex: 1; min-height: 42px; padding: 8px 10px; border: 1px solid var(--control-border); border-radius: 6px; color: var(--text); }
+.hariyo-chat-form input { min-width: 0; flex: 1; min-height: 48px; padding: 9px 12px; border: 1px solid var(--control-border); border-radius: 6px; color: var(--text); }
 .hariyo-chat-form button { display: grid; flex: 0 0 44px; place-items: center; min-height: 42px; border: 0; border-radius: 6px; background: var(--green-700); color: #fff; }
 .hariyo-chat-form button:hover { background: var(--green-800); }
 .hariyo-chat-form button svg { width: 19px; height: 19px; }

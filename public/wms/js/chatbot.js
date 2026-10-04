@@ -23,7 +23,7 @@
       </div>
       <form class="hariyo-chat-form">
         <label class="sr-only" for="hariyoChatInput">Ask a question</label>
-        <input id="hariyoChatInput" type="text" maxlength="1200" placeholder="Write a message..." autocomplete="off" required />
+        <input id="hariyoChatInput" type="text" maxlength="1200" placeholder="Write a message..." autocomplete="off" />
         <button type="submit" aria-label="Send message">${window.UI ? UI.iconSvg('send') : 'Send'}</button>
       </form>
     </div>
