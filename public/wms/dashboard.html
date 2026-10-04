@@ -916,6 +916,7 @@
       for (const b of all) {
         for (const s of UI.STAGE_ORDER) {
           const st = UI.notifStatus(b, s);
+          if (st === 'not_sent') continue;
           if (f !== 'all' && st !== f) continue;
           if (q && !b.id.toLowerCase().includes(q)) continue;
           const notif = (b.notifications || []).find((n) => n.stage === s) || { at: null };
@@ -923,7 +924,6 @@
         }
       }
       const sent = countNotifs('sent');
-      const notSent = countNotifs('not_sent');
       const failed = countNotifs('failed');
       const html = `
         <div class="view-head">
@@ -934,7 +934,6 @@
         </div>
         <div class="summary-row">
           <div class="mini-stat"><span class="dot" style="background:var(--status-sent)"></span> <strong>${sent}</strong> Sent</div>
-          <div class="mini-stat"><span class="dot" style="background:var(--status-notsent)"></span> <strong>${notSent}</strong> Not Sent</div>
           <div class="mini-stat"><span class="dot" style="background:var(--status-failed)"></span> <strong>${failed}</strong> Failed</div>
         </div>
         <div class="toolbar">
@@ -946,7 +945,6 @@
           <select class="select" data-role="filter">
             <option value="all" ${f === 'all' ? 'selected' : ''}>All</option>
             <option value="sent" ${f === 'sent' ? 'selected' : ''}>Sent</option>
-            <option value="not_sent" ${f === 'not_sent' ? 'selected' : ''}>Not Sent</option>
             <option value="failed" ${f === 'failed' ? 'selected' : ''}>Failed</option>
           </select>
         </div>
