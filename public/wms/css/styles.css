@@ -708,6 +708,37 @@ table.tbl td .mono { font-family: 'SFMono-Regular', ui-monospace, Menlo, monospa
 .muted { color: var(--ink-500); }
 .divider { height: 1px; background: var(--border); border: 0; margin: 18px 0; }
 .mono { font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace; }
+
+/* Hariyo help assistant */
+.hariyo-chat { position: fixed; z-index: 120; right: 20px; bottom: 84px; font-size: .9rem; }
+.hariyo-chat-toggle { display: flex; align-items: center; gap: 9px; min-height: 48px; padding: 0 18px; border: 0; border-radius: 8px; background: var(--green-800); color: #fff; font-weight: 700; box-shadow: var(--shadow-md); }
+.hariyo-chat-toggle:hover { background: var(--green-900); }
+.hariyo-chat-panel { position: absolute; right: 0; bottom: 60px; display: flex; flex-direction: column; width: min(360px, calc(100vw - 32px)); height: min(490px, calc(100dvh - 100px)); overflow: hidden; border: 1px solid var(--border); border-radius: 12px; background: #fff; box-shadow: var(--shadow-lg); }
+.hariyo-chat-panel[hidden] { display: none; }
+.hariyo-chat-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; background: var(--green-900); color: #fff; }
+.hariyo-chat-head strong { display: block; font-size: .98rem; }
+.hariyo-chat-head small { color: #d3ead9; }
+.hariyo-chat-close { display: grid; place-items: center; width: 36px; height: 36px; min-height: 36px; border: 0; border-radius: 6px; background: transparent; color: #fff; font-size: 1.45rem; }
+.hariyo-chat-close:hover { background: rgba(255,255,255,.14); }
+.hariyo-chat-messages { display: flex; flex: 1; flex-direction: column; gap: 10px; overflow-y: auto; padding: 16px; background: var(--bg); }
+.hariyo-chat-message { max-width: 88%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: #fff; color: var(--ink-800); overflow-wrap: anywhere; }
+.hariyo-chat-message.user { align-self: flex-end; border-color: var(--green-200); background: var(--green-50); }
+.hariyo-chat-message a { display: inline-block; margin-top: 5px; font-weight: 700; }
+.hariyo-chat-suggestions { display: flex; flex-wrap: wrap; gap: 6px; }
+.hariyo-chat-suggestions button { min-height: 34px; padding: 4px 9px; border: 1px solid var(--green-300); border-radius: 6px; background: #fff; color: var(--green-800); font-size: .78rem; font-weight: 600; }
+.hariyo-chat-suggestions button:hover { background: var(--green-50); }
+.hariyo-chat-form { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--border); background: #fff; }
+.hariyo-chat-form input { min-width: 0; flex: 1; min-height: 42px; padding: 8px 10px; border: 1px solid var(--control-border); border-radius: 6px; color: var(--text); }
+.hariyo-chat-form button { display: grid; flex: 0 0 44px; place-items: center; min-height: 42px; border: 0; border-radius: 6px; background: var(--green-700); color: #fff; }
+.hariyo-chat-form button:hover { background: var(--green-800); }
+.hariyo-chat-form button svg { width: 19px; height: 19px; }
+@media (max-width: 480px) {
+  .hariyo-chat { right: 12px; bottom: 76px; }
+  .hariyo-chat-panel { right: -4px; bottom: 58px; height: min(480px, calc(100dvh - 84px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hariyo-chat *, .hariyo-chat *::before, .hariyo-chat *::after { scroll-behavior: auto !important; }
+}
 .center { text-align: center; }
 .nowrap { white-space: nowrap; }
 .cursor-pointer { cursor: pointer; }

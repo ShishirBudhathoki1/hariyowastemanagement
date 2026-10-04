@@ -135,6 +135,13 @@
       script.dataset.accessibilityController = 'true';
       document.body.appendChild(script);
     }
+
+    if (!document.querySelector('script[data-hariyo-chat]')) {
+      const script = document.createElement('script');
+      script.src = 'js/chatbot.js';
+      script.dataset.hariyoChat = 'true';
+      document.body.appendChild(script);
+    }
   }
 
   global.UI.mountPublic = mountPublic;
