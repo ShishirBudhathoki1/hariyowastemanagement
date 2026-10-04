@@ -265,7 +265,8 @@
                 <a class="btn btn-ghost btn-sm" href="index.html" aria-label="Public site">${UI.iconSvg('home')} Public Site</a>
               </div>
             </header>
-            <main class="dash-content" id="dashContent"></main>
+            <div id="dashLiveRegion" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+            <main class="dash-content" id="dashContent" aria-live="polite" aria-atomic="true"></main>
           </div>
         </div>
       `;
@@ -292,12 +293,22 @@
       });
     }
 
+    function announceDashboard(message) {
+      const live = document.getElementById('dashLiveRegion');
+      if (!live) return;
+      live.textContent = '';
+      requestAnimationFrame(() => {
+        live.textContent = message;
+      });
+    }
+
     function setView(v) {
       state.view = v;
       state.search = '';
       state.filter = 'all';
       closeSidebar();
       render();
+      announceDashboard(`${VIEW_TITLES[v] || 'Dashboard'} view loaded.`);
       document.getElementById('viewTitle').focus();
     }
 
@@ -329,6 +340,7 @@
         WMS.reset();
         UI.toast('Demo data reset to seed state.', { title: 'Reset complete', type: 'info' });
         render();
+        announceDashboard('Demo data reset. Dashboard refreshed.');
       });
       // Esc closes modals
       document.addEventListener('keydown', (e) => {
@@ -387,6 +399,7 @@
       });
       const c = document.getElementById('dashContent');
       UI.clear(c);
+      c.setAttribute('aria-label', `${VIEW_TITLES[state.view] || 'Dashboard'} content`);
       const map = {
         overview: renderOverview,
         businesses: renderBusinesses,

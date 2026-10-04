@@ -7,6 +7,24 @@
   const defaults = { textLevel: 0, highContrast: false, colorblind: false, reduceMotion: false, underlineLinks: false };
   let preferences = { ...defaults };
   let generatedId = 0;
+  let liveRegion = null;
+
+  function announce(message) {
+    if (!message) return;
+    if (!liveRegion) {
+      liveRegion = document.createElement('div');
+      liveRegion.id = 'wms-accessibility-live-region';
+      liveRegion.className = 'sr-only';
+      liveRegion.setAttribute('role', 'status');
+      liveRegion.setAttribute('aria-live', 'polite');
+      liveRegion.setAttribute('aria-atomic', 'true');
+      document.body.appendChild(liveRegion);
+    }
+    liveRegion.textContent = '';
+    requestAnimationFrame(() => {
+      liveRegion.textContent = message;
+    });
+  }
 
   try {
     preferences = { ...defaults, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') };
@@ -27,6 +45,15 @@
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences)); } catch (_) {}
     applyPreferences();
     updateControls();
+
+    const active = Object.entries(preferences)
+      .filter(([key, value]) => key !== 'textLevel' && value)
+      .map(([key]) => key.replace(/([A-Z])/g, ' $1').trim());
+    const textSetting = `${100 + preferences.textLevel * 10}%`;
+    const summary = active.length
+      ? `Accessibility settings updated. Active options: ${active.join(', ')}. Text size: ${textSetting}.`
+      : `Accessibility settings updated. Text size: ${textSetting}.`;
+    announce(summary);
   }
 
   function updateControls() {
@@ -235,6 +262,7 @@
     trigger.className = 'a11y-trigger';
     trigger.id = 'a11y-trigger';
     trigger.textContent = 'Accessibility';
+    trigger.setAttribute('aria-label', 'Open accessibility settings');
     trigger.setAttribute('aria-expanded', 'false');
     trigger.setAttribute('aria-controls', 'a11y-panel');
 
@@ -267,6 +295,7 @@
     panel.className = 'a11y-panel';
     panel.id = 'a11y-panel';
     panel.hidden = true;
+    panel.setAttribute('aria-label', 'Accessibility settings panel');
     panel.setAttribute('aria-labelledby', 'a11y-title');
     panel.innerHTML = `
       <div class="a11y-panel-head">
