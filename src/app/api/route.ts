@@ -85,13 +85,7 @@ export async function POST(request: Request) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 30000);
   try {
-    const providerResponse = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    const requestBody = JSON.stringify({
         model,
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
@@ -101,16 +95,33 @@ export async function POST(request: Request) {
           })),
         ],
         stream: false,
-      }),
-      signal: controller.signal,
-      cache: "no-store",
     });
+    let providerResponse: Response | undefined;
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      providerResponse = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: requestBody,
+        signal: controller.signal,
+        cache: "no-store",
+      });
+      if ((providerResponse.status !== 502 && providerResponse.status !== 503) || attempt === 1) break;
+      await new Promise((resolve) => setTimeout(resolve, 700));
+    }
 
+    if (!providerResponse) throw new Error("AI provider request was not sent.");
     if (!providerResponse.ok) {
       const error = providerResponse.status === 401 || providerResponse.status === 403
         ? "The AI provider rejected the API key. Check the key in .env."
         : providerResponse.status === 404
           ? "The AI endpoint or model was not found. Check AI_BASE_URL and AI_MODEL."
+          : providerResponse.status === 429
+            ? "The AI provider rate limit or quota was reached. Please try again later."
+            : providerResponse.status === 502 || providerResponse.status === 503
+              ? "Gemini is temporarily unavailable. Please try again in a moment."
           : `The AI provider returned HTTP ${providerResponse.status}. Check the provider settings and try again.`;
       return NextResponse.json({ error }, { status: 502 });
     }
